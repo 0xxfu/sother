@@ -14,5 +14,7 @@ Once these files are updated with your plugin, you can install it:
 ```bash
 python setup.py develop
 ```
-
+```shell
+python setup.py install
+```
 We recommend to use a Python virtual environment (for example: [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)).
