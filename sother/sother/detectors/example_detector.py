@@ -3,7 +3,7 @@ from slither.detectors.abstract_detector import AbstractDetector, DetectorClassi
 import unittest
 
 
-class Example(AbstractDetector):  # pylint: disable=too-few-public-methods
+class ExampleDetector(AbstractDetector):  # pylint: disable=too-few-public-methods
     """
     Documentation
     """
@@ -12,10 +12,10 @@ class Example(AbstractDetector):  # pylint: disable=too-few-public-methods
         "mydetector"  # slither will launch the detector with slither.py --mydetector
     )
     HELP = "Help printed by slither"
-    IMPACT = DetectorClassification.HIGH
-    CONFIDENCE = DetectorClassification.HIGH
+    IMPACT = DetectorClassification.MEDIUM
+    CONFIDENCE = DetectorClassification.MEDIUM
 
-    WIKI = "This is WIKI"
+    WIKI = "https://github.com/crytic/slither/wiki/Detector-Documentation#constant-functions-using-assembly-code"
 
     WIKI_TITLE = "This is WIKI_TITLE"
     WIKI_DESCRIPTION = "This is WIKI_DESCRIPTION"
@@ -23,7 +23,7 @@ class Example(AbstractDetector):  # pylint: disable=too-few-public-methods
     WIKI_RECOMMENDATION = "This is WIKI_RECOMMENDATION"
 
     def _detect(self):
-        info = "This is an example! 0.1"
+        info = "This is an example!\n"
 
         json = self.generate_result(info)
 
