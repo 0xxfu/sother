@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "sother"
+version = "0.1.0"
+description = ""
+authors = ["xfu <angerpeanut@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+slither-analyzer = "^0.9.3"
+
+[tool.poetry.scripts]
+sother = "sother:main"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
