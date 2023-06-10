@@ -8,9 +8,10 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 slither-analyzer = "^0.9.3"
+pydantic = "^1.10.9"
 
 [tool.poetry.scripts]
-sother = "sother:main"
+sother = "sother.main:start"
 
 
 [build-system]
