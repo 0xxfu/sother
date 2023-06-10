@@ -41,8 +41,7 @@ def _to_markdown(
     if detector_wiki.wiki_recommendation:
         markdown += f"{detector_wiki.wiki_recommendation}\n"
     markdown += f"\n### location:\n"
-    for element in output_result.elements:
-        markdown += f"- {element.source_mapping.get_location()}\n"
+    markdown += f"- {output_result.first_markdown_element}\n"
     markdown += f"\n### severity:\n"
     markdown += f"{output_result.impact}\n"
     markdown += f"\n### category:\n"
