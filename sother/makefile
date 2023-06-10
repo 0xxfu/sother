@@ -1,2 +1,2 @@
 local:
-	python setup.py install & sother sample.sol
+	sother ./solidity/sample.sol --print markdown
