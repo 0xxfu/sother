@@ -23,6 +23,12 @@ class OutputSourceMapping(BaseModel):
     starting_column: int
     ending_column: int
 
+    def get_location(self):
+        lines = f"#L{self.lines[0]}" if len(self.lines) > 0 else ""
+        if len(self.lines) > 1:
+            lines += f"-L{self.lines[len(self.lines)-1]}"
+        return f"{self.filename_relative}{lines}"
+
 
 class OutputElement(BaseModel):
     type: str
@@ -42,8 +48,10 @@ class OutputResult(BaseModel):
     impact: str
     confidence: str
 
-    def to_markdown(self) -> str:
-        mk = f"### {self.markdown}"
+    def get_first_element_file(self) -> str:
+        if len(self.elements) > 0:
+            return self.elements[0].source_mapping.filename_relative
+        return "unknow"
 
 
 class DetectorWiki(BaseModel):
@@ -109,6 +117,7 @@ class SourceMappingTestCase(unittest.TestCase):
     def test_source_mapping(self):
         source = OutputSourceMapping(**self.source_dict)
         self.assertEqual(self.source_dict, source.dict())
+        self.assertEqual("sample.sol#L8-L10", source.get_location())
 
     def test_element(self):
         ele = OutputElement(**self.element)
