@@ -1,2 +1,2 @@
 local:
-	sother ./solidity/sample.sol --print markdown
+	sother ./solidity --print markdown
