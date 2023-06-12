@@ -42,11 +42,13 @@ def _to_markdown(
         markdown += f"{detector_wiki.wiki_description}\n\n"
 
     if len(output_results) <= 1:
-        markdown += f"There is `{len(output_results)}` instance of this issue:\n"
+        markdown += f"**There is `{len(output_results)}` instance of this issue:**\n\n"
     else:
-        markdown += f"There are `{len(output_results)}` instances of this issue:\n"
+        markdown += (
+            f"**There are `{len(output_results)}` instances of this issue:**\n\n"
+        )
     for result in output_results:
-        markdown += f"{result.markdown}\n"
+        markdown += f"- {result.markdown}\n"
 
     if detector_wiki.wiki_exploit_scenario:
         markdown += f"#### Exploit scenario\n"
