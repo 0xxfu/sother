@@ -8,7 +8,10 @@ import unittest
 from collections import OrderedDict
 from typing import Tuple, Type
 
-from slither.detectors.abstract_detector import classification_txt
+from slither.detectors.abstract_detector import (
+    classification_txt,
+    DetectorClassification,
+)
 from slither.printers.abstract_printer import AbstractPrinter
 from slither.utils import output
 from slither.utils.output import Output
@@ -31,20 +34,17 @@ def _to_markdown(
     """
     if len(output_results) <= 0:
         return "", ""
-    markdown = f"\n## {detector_wiki.wiki_title}\n"
+    detector_impact = f"{classification_txt[detector_wiki.impact]}"
+    markdown = f"\n## [{detector_impact}] {detector_wiki.wiki_title}\n"
     if detector_wiki.wiki_description or detector_wiki.wiki_exploit_scenario:
         markdown += f"\n### description:\n"
     if detector_wiki.wiki_description:
         markdown += f"{detector_wiki.wiki_description}\n\n"
 
     if len(output_results) <= 1:
-        markdown += (
-            f"There is `{len(output_results)}` instance of this issue:\n"
-        )
+        markdown += f"There is `{len(output_results)}` instance of this issue:\n"
     else:
-        markdown += (
-            f"There are `{len(output_results)}` instances of this issue:\n"
-        )
+        markdown += f"There are `{len(output_results)}` instances of this issue:\n"
     for result in output_results:
         markdown += f"{result.markdown}\n"
 
@@ -59,10 +59,51 @@ def _to_markdown(
     for result in output_results:
         markdown += f"- {result.first_markdown_element}\n"
     markdown += f"\n### severity:\n"
-    markdown += f"{classification_txt[detector_wiki.impact]}\n"
+    markdown += f"{detector_impact}\n"
     markdown += f"\n### category:\n"
     markdown += f"{detector_wiki.argument}\n"
     return markdown, detector_wiki.argument
+
+
+def _to_summary_markdown(
+    detector_wikis: dict[str, DetectorWiki],
+    detector_outputs: dict[
+        str,
+        list[OutputResult],
+    ],
+) -> str:
+    markdown = "## Summary \n\n"
+
+    impact_checks: [str, str] = dict()
+    for detector_check in detector_outputs:
+        if detector_check not in detector_wikis:
+            continue
+        wiki = detector_wikis[detector_check]
+        if wiki.impact in impact_checks:
+            impact_checks[wiki.impact].append(detector_check)
+        else:
+            impact_checks[wiki.impact] = [detector_check]
+
+    for impact in impact_checks:
+        if impact.value <= DetectorClassification.LOW.value:
+            markdown += f"### {classification_txt[impact]} Risk Issues\n\n"
+            impact_tag = classification_txt[impact][:1]
+        elif impact.value == DetectorClassification.OPTIMIZATION.value:
+            impact_tag = "G"
+            markdown += f"### Gas Optimizations\n\n"
+        else:
+            impact_tag = "N"
+            markdown += f"### Non-critical Issues\n\n"
+        markdown += f"| |Issue|Instances|\n"
+        markdown += f"|---|:---|:---:|\n"
+        idx = 0
+        for check in impact_checks[impact]:
+            wiki = detector_wikis[check]
+            markdown += f"| [{impact_tag}-{idx}] | {wiki.wiki_title} | {len(detector_outputs[check])} |\n"
+            idx += 1
+        markdown += f"\n\n"
+
+    return markdown
 
 
 class Markdown(AbstractPrinter):
@@ -84,6 +125,7 @@ class Markdown(AbstractPrinter):
                 else:
                     detector_outputs[output_result.check] = [output_result]
         output_markdown = ""
+        output_markdown += _to_summary_markdown(detector_wikis, detector_outputs)
         for detector_check in detector_outputs:
             print(detector_check, len(detector_outputs[detector_check]))
             wiki = (
