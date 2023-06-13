@@ -15,15 +15,13 @@ from sother.detectors import all_detectors
 
 
 def get_all_detectors() -> list[Type[AbstractDetector]]:
-    detectors_ = [getattr(all_detectors, name) for name in dir(all_detectors)]
-    detectors_ += [
-        getattr(slither_all_detectors, name)
-        for name in dir(slither_all_detectors)
+    detectors_ = [
+        getattr(slither_all_detectors, name) for name in dir(slither_all_detectors)
     ]
+    detectors_ += [getattr(all_detectors, name) for name in dir(all_detectors)]
+
     return [
-        d
-        for d in detectors_
-        if inspect.isclass(d) and issubclass(d, AbstractDetector)
+        d for d in detectors_ if inspect.isclass(d) and issubclass(d, AbstractDetector)
     ]
 
 
