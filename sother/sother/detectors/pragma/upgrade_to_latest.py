@@ -42,11 +42,26 @@ class UpgradeToLatest(AbstractDetector):
         return results
 
     def _detect_pragma(self, pragma: Pragma) -> Optional[Pragma]:
+        if not pragma.is_solidity_version:
+            return None
+        pragma_version = self._get_version(pragma)
+
         if version.parse(DetectorSettings.latest_version) <= version.parse(
-            pragma.version
+            pragma_version
         ):
             return None
         return pragma
+
+    def _get_version(self, pragma: Pragma) -> str:
+        ops = [">", "=", "^"]
+
+        def _remove_op(p_version):
+            if p_version[0] in ops:
+                p_version = p_version[1:]
+                p_version = _remove_op(p_version)
+            return p_version
+
+        return _remove_op(pragma.version)
 
 
 if __name__ == "__main__":
