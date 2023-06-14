@@ -5,4 +5,7 @@
 """
 # from sother.detectors.example_detector import ExampleDetector
 from sother.detectors.variables.could_be_immutable import CouldBeImmutable
+from sother.detectors.variables.fetch_storage_to_memory import (
+    FetchStorageToMemory,
+)
 from sother.detectors.pragma.upgrade_to_latest import UpgradeToLatest

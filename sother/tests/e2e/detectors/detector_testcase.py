@@ -3,6 +3,7 @@
 @email: angerpeanut@gmail.com
 @date: 2023-06
 """
+import os
 import unittest
 from typing import Type
 
@@ -32,9 +33,14 @@ class DetectorTestCase(unittest.TestCase):
     ) -> None:
         detector_wikis = get_all_detector_wikis()
         for output_result in results:
-            print("wiki:\n", detector_wikis[output_result.check].wiki_title, "\n")
+            print(
+                "wiki:\n", detector_wikis[output_result.check].wiki_title, "\n"
+            )
             print("description:\n", output_result.description, "\n")
             assert detector_wikis[output_result.check].wiki_title == wiki_title
+
+    def get_test_solidity_filename(self, file):
+        return os.path.basename(file).split(".")[0]
 
 
 if __name__ == "__main__":

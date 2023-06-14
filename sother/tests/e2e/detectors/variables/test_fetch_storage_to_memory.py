@@ -3,23 +3,23 @@
 @email: angerpeanut@gmail.com
 @date: 2023-06
 """
+import os
 import unittest
 
-from slither import Slither
-
 from sother.core.models import OutputResult
-from sother.detectors import get_all_detector_wikis
-from sother.detectors.variables.could_be_immutable import CouldBeImmutable
+from sother.detectors.variables.fetch_storage_to_memory import (
+    FetchStorageToMemory,
+)
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 
-class TestCouldBeImmutable(DetectorTestCase):
+class TestFetchStorageToMemory(DetectorTestCase):
     def test_detect(self):
         results: list[OutputResult] = self.detect(
             f"{self.get_test_solidity_filename(__file__)}.sol",
-            CouldBeImmutable,
+            FetchStorageToMemory,
         )
-        self.check_detect_results(CouldBeImmutable.WIKI_TITLE, results)
+        self.check_detect_results(FetchStorageToMemory.WIKI_TITLE, results)
 
 
 if __name__ == "__main__":
