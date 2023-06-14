@@ -11,3 +11,6 @@ from sother.detectors.variables.fetch_storage_to_memory import (
 )
 from sother.detectors.pragma.upgrade_to_latest import UpgradeToLatest
 from sother.detectors.attributes.incorrect_solc import IncorrectSolc
+from sother.detectors.statements.assignment_left_operation import (
+    AssignmentLeftOperation,
+)
