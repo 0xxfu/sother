@@ -22,7 +22,10 @@ class TestCouldBeImmutable(unittest.TestCase):
             for detector in detector_result:
                 output_result = OutputResult(**detector)
                 print(output_result.description, "\n")
-                print(f"wiki title: {detector_wikis[output_result.check].wiki_title}\n")
+                assert (
+                    detector_wikis[output_result.check].wiki_title
+                    == "State variables only set in the constructor should be declared immutable"
+                )
 
 
 if __name__ == "__main__":
