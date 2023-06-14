@@ -5,18 +5,17 @@
 | |Issue|Instances|
 |---|:---|:---:|
 | [N-0] | Function Initializing State | 2 |
-| [N-1] | Incorrect versions of Solidity | 2 |
-| [N-2] | Conformance to Solidity naming conventions | 16 |
-| [N-3] | Variable names too similar | 11 |
-| [N-4] | Unused state variable | 16 |
+| [N-1] | Conformance to Solidity naming conventions | 16 |
+| [N-2] | Variable names too similar | 11 |
+| [N-3] | Unused state variable | 16 |
 
 
 ### Gas Optimizations
 
 | |Issue|Instances|
 |---|:---|:---:|
-| [G-0] | State variables that could be declared constant | 7 |
-| [G-1] | State variables only set in the constructor should be declared immutable | 4 |
+| [G-0] | State variables only set in the constructor should be declared immutable | 4 |
+| [G-1] | State variables that could be declared constant | 7 |
 
 
 
@@ -75,44 +74,6 @@ Informational
 
 ### category:
 function-init-state
-
-## [Informational] Incorrect versions of Solidity
-
-### description:
-
-`solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
-We also recommend avoiding complex `pragma` statement.
-
-**There are `2` instances of this issue:**
-
-- solc-0.8.19 is not recommended for deployment
-
-- Pragma version[0.8.19](solidity/immut_stat_variables.sol#L1) necessitates a version too recent to be trusted. Consider deploying with 0.8.18.
-
-
-### recommendation:
-
-Deploy with any of the following Solidity versions:
-- 0.8.18
-
-The recommendations take into account:
-- Risks related to recent releases
-- Risks of complex code generation changes
-- Risks of new language features
-- Risks of known bugs
-
-Use a simple pragma version that allows any of these versions.
-Consider using the latest version of Solidity for testing.
-
-### location:
-- 
-- solidity/immut_stat_variables.sol#L1
-
-### severity:
-Informational
-
-### category:
-solc-version
 
 ## [Informational] Conformance to Solidity naming conventions
 
@@ -306,6 +267,41 @@ Informational
 ### category:
 unused-state
 
+## [Optimization] State variables only set in the constructor should be declared immutable
+
+### description:
+
+    Avoids a Gsset (20000 gas) in the constructor, and replaces the first access in each transaction (Gcoldsload - 2100 gas) and each access thereafter (Gwarmacces - 100 gas) with a PUSH32 (3 gas).
+
+While strings are not value types, and therefore cannot be immutable/constant if not hard-coded outside of the constructor, the same behavior can be achieved by making the current contract abstract with virtual functions for the string accessors, and having a child contract override the functions with the hard-coded implementation-specific values.
+    
+
+**There are `4` instances of this issue:**
+
+- [Bad.should_be_immutable_5](solidity/immut_stat_variables.sol#L46) should be immutable 
+
+- [Bad.should_be_immutable_2](solidity/immut_stat_variables.sol#L44) should be immutable 
+
+- [Bad.should_be_immutable](solidity/immut_stat_variables.sol#L43) should be immutable 
+
+- [Bad.should_be_immutable_3](solidity/immut_stat_variables.sol#L45) should be immutable 
+
+
+### recommendation:
+Add the `immutable` attribute to state variables that never change or are set only in the constructor.
+
+### location:
+- solidity/immut_stat_variables.sol#L46
+- solidity/immut_stat_variables.sol#L44
+- solidity/immut_stat_variables.sol#L43
+- solidity/immut_stat_variables.sol#L45
+
+### severity:
+Optimization
+
+### category:
+immutable-states
+
 ## [Optimization] State variables that could be declared constant
 
 ### description:
@@ -345,38 +341,3 @@ Optimization
 
 ### category:
 constable-states
-
-## [Optimization] State variables only set in the constructor should be declared immutable
-
-### description:
-
-    Avoids a Gsset (20000 gas) in the constructor, and replaces the first access in each transaction (Gcoldsload - 2100 gas) and each access thereafter (Gwarmacces - 100 gas) with a PUSH32 (3 gas).
-
-While strings are not value types, and therefore cannot be immutable/constant if not hard-coded outside of the constructor, the same behavior can be achieved by making the current contract abstract with virtual functions for the string accessors, and having a child contract override the functions with the hard-coded implementation-specific values.
-    
-
-**There are `4` instances of this issue:**
-
-- [Bad.should_be_immutable_5](solidity/immut_stat_variables.sol#L46) should be immutable 
-
-- [Bad.should_be_immutable_2](solidity/immut_stat_variables.sol#L44) should be immutable 
-
-- [Bad.should_be_immutable](solidity/immut_stat_variables.sol#L43) should be immutable 
-
-- [Bad.should_be_immutable_3](solidity/immut_stat_variables.sol#L45) should be immutable 
-
-
-### recommendation:
-Add the `immutable` attribute to state variables that never change or are set only in the constructor.
-
-### location:
-- solidity/immut_stat_variables.sol#L46
-- solidity/immut_stat_variables.sol#L44
-- solidity/immut_stat_variables.sol#L43
-- solidity/immut_stat_variables.sol#L45
-
-### severity:
-Optimization
-
-### category:
-immutable-states

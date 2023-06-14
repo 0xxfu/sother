@@ -1,12 +1,5 @@
 ## Summary 
 
-### Non-critical Issues
-
-| |Issue|Instances|
-|---|:---|:---:|
-| [N-0] | Incorrect versions of Solidity | 2 |
-
-
 ### Gas Optimizations
 
 | |Issue|Instances|
@@ -14,44 +7,6 @@
 | [G-0] | Using `storage` instead of `memory` for structs/arrays saves gas | 2 |
 
 
-
-## [Informational] Incorrect versions of Solidity
-
-### description:
-
-`solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
-We also recommend avoiding complex `pragma` statement.
-
-**There are `2` instances of this issue:**
-
-- solc-0.8.19 is not recommended for deployment
-
-- Pragma version[0.8.19](solidity/fetch_storage_to_memory.sol#L2) necessitates a version too recent to be trusted. Consider deploying with 0.8.18.
-
-
-### recommendation:
-
-Deploy with any of the following Solidity versions:
-- 0.8.18
-
-The recommendations take into account:
-- Risks related to recent releases
-- Risks of complex code generation changes
-- Risks of new language features
-- Risks of known bugs
-
-Use a simple pragma version that allows any of these versions.
-Consider using the latest version of Solidity for testing.
-
-### location:
-- 
-- solidity/fetch_storage_to_memory.sol#L2
-
-### severity:
-Informational
-
-### category:
-solc-version
 
 ## [Optimization] Using `storage` instead of `memory` for structs/arrays saves gas
 

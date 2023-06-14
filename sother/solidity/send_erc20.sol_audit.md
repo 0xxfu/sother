@@ -12,8 +12,7 @@
 
 | |Issue|Instances|
 |---|:---|:---:|
-| [N-0] | Incorrect versions of Solidity | 2 |
-| [N-1] | Conformance to Solidity naming conventions | 1 |
+| [N-0] | Conformance to Solidity naming conventions | 1 |
 
 
 ### Gas Optimizations
@@ -105,44 +104,6 @@ High
 
 ### category:
 unchecked-transfer
-
-## [Informational] Incorrect versions of Solidity
-
-### description:
-
-`solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
-We also recommend avoiding complex `pragma` statement.
-
-**There are `2` instances of this issue:**
-
-- solc-0.8.19 is not recommended for deployment
-
-- Pragma version[0.8.19](solidity/send_erc20.sol#L1) necessitates a version too recent to be trusted. Consider deploying with 0.8.18.
-
-
-### recommendation:
-
-Deploy with any of the following Solidity versions:
-- 0.8.18
-
-The recommendations take into account:
-- Risks related to recent releases
-- Risks of complex code generation changes
-- Risks of new language features
-- Risks of known bugs
-
-Use a simple pragma version that allows any of these versions.
-Consider using the latest version of Solidity for testing.
-
-### location:
-- 
-- solidity/send_erc20.sol#L1
-
-### severity:
-Informational
-
-### category:
-solc-version
 
 ## [Informational] Conformance to Solidity naming conventions
 
