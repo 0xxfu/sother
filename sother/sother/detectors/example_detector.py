@@ -1,16 +1,19 @@
-from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
-
 import unittest
 
+from slither.detectors.abstract_detector import (
+    AbstractDetector,
+    DetectorClassification,
+)
 
-class ExampleDetector(AbstractDetector):  # pylint: disable=too-few-public-methods
+
+class ExampleDetector(
+    AbstractDetector
+):  # pylint: disable=too-few-public-methods
     """
     Documentation
     """
 
-    ARGUMENT = (
-        "mydetector"  # slither will launch the detector with slither.py --mydetector
-    )
+    ARGUMENT = "mydetector"  # slither will launch the detector with slither.py --mydetector
     HELP = "Help printed by slither"
     IMPACT = DetectorClassification.MEDIUM
     CONFIDENCE = DetectorClassification.MEDIUM

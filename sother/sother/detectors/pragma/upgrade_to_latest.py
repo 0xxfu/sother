@@ -8,7 +8,10 @@ from typing import List, Optional
 
 from packaging import version
 from slither.core.declarations import Pragma
-from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.detectors.abstract_detector import (
+    AbstractDetector,
+    DetectorClassification,
+)
 from slither.utils.output import Output
 
 from sother.detectors.detector_settings import DetectorSettings
