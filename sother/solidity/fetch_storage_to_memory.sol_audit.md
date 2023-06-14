@@ -67,7 +67,7 @@ When fetching data from a storage location, assigning the data to a `memory` var
 
 
 ### recommendation:
-Fetching data from `storage` directly, don't convert `storage` it to `memory`
+Fetching data from `storage` directly, don't convert `storage` to `memory`
 
 ### location:
 - solidity/fetch_storage_to_memory.sol#L15
