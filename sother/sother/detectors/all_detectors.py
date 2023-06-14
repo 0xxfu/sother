@@ -5,6 +5,7 @@
 """
 # from sother.detectors.example_detector import ExampleDetector
 from sother.detectors.variables.could_be_immutable import CouldBeImmutable
+from sother.detectors.variables.bool_state_variables import BoolStateVariables
 from sother.detectors.variables.fetch_storage_to_memory import (
     FetchStorageToMemory,
 )
