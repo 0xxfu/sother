@@ -1,4 +1,4 @@
-pragma solidity 0.8.18;
+pragma solidity 0.8.19;
 
 library SafeERC20 {
     function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {}

@@ -12,7 +12,8 @@
 
 | |Issue|Instances|
 |---|:---|:---:|
-| [N-0] | Conformance to Solidity naming conventions | 1 |
+| [N-0] | Incorrect versions of Solidity | 2 |
+| [N-1] | Conformance to Solidity naming conventions | 1 |
 
 
 ### Gas Optimizations
@@ -20,7 +21,6 @@
 | |Issue|Instances|
 |---|:---|:---:|
 | [G-0] | State variables only set in the constructor should be declared immutable | 3 |
-| [G-1] | Reduce gas usage by moving to Solidity 0.8.19 or later | 1 |
 
 
 
@@ -106,6 +106,44 @@ High
 ### category:
 unchecked-transfer
 
+## [Informational] Incorrect versions of Solidity
+
+### description:
+
+`solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
+We also recommend avoiding complex `pragma` statement.
+
+**There are `2` instances of this issue:**
+
+- solc-0.8.19 is not recommended for deployment
+
+- Pragma version[0.8.19](solidity/send_erc20.sol#L1) necessitates a version too recent to be trusted. Consider deploying with 0.8.18.
+
+
+### recommendation:
+
+Deploy with any of the following Solidity versions:
+- 0.8.18
+
+The recommendations take into account:
+- Risks related to recent releases
+- Risks of complex code generation changes
+- Risks of new language features
+- Risks of known bugs
+
+Use a simple pragma version that allows any of these versions.
+Consider using the latest version of Solidity for testing.
+
+### location:
+- 
+- solidity/send_erc20.sol#L1
+
+### severity:
+Informational
+
+### category:
+solc-version
+
 ## [Informational] Conformance to Solidity naming conventions
 
 ### description:
@@ -163,24 +201,3 @@ Optimization
 
 ### category:
 immutable-states
-
-## [Optimization] Reduce gas usage by moving to Solidity 0.8.19 or later
-
-### description:
-See this [link](https://blog.soliditylang.org/2023/02/22/solidity-0.8.19-release-announcement/#preventing-dead-code-in-runtime-bytecode) for the full details
-
-**There is `1` instance of this issue:**
-
-- pragma solidity version [0.8.18](solidity/send_erc20.sol#L1) should upgrade to the latest version: 0.8.19
-
-### recommendation:
-Upgrade solidity version to the latest version: 0.8.19
-
-### location:
-- solidity/send_erc20.sol#L1
-
-### severity:
-Optimization
-
-### category:
-upgrade-to-latest

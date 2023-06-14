@@ -7,11 +7,11 @@
 | [H-0] | Arbitrary `from` in transferFrom | 2 |
 
 
-### Gas Optimizations
+### Non-critical Issues
 
 | |Issue|Instances|
 |---|:---|:---:|
-| [G-0] | Reduce gas usage by moving to Solidity 0.8.19 or later | 1 |
+| [N-0] | Incorrect versions of Solidity | 2 |
 
 
 
@@ -50,23 +50,40 @@ High
 ### category:
 arbitrary-send-erc20
 
-## [Optimization] Reduce gas usage by moving to Solidity 0.8.19 or later
+## [Informational] Incorrect versions of Solidity
 
 ### description:
-See this [link](https://blog.soliditylang.org/2023/02/22/solidity-0.8.19-release-announcement/#preventing-dead-code-in-runtime-bytecode) for the full details
 
-**There is `1` instance of this issue:**
+`solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
+We also recommend avoiding complex `pragma` statement.
 
-- pragma solidity version [0.8.18](solidity/send_erc20_2.sol#L1) should upgrade to the latest version: 0.8.19
+**There are `2` instances of this issue:**
+
+- Pragma version[0.8.19](solidity/send_erc20_2.sol#L1) necessitates a version too recent to be trusted. Consider deploying with 0.8.18.
+
+- solc-0.8.19 is not recommended for deployment
+
 
 ### recommendation:
-Upgrade solidity version to the latest version: 0.8.19
+
+Deploy with any of the following Solidity versions:
+- 0.8.18
+
+The recommendations take into account:
+- Risks related to recent releases
+- Risks of complex code generation changes
+- Risks of new language features
+- Risks of known bugs
+
+Use a simple pragma version that allows any of these versions.
+Consider using the latest version of Solidity for testing.
 
 ### location:
 - solidity/send_erc20_2.sol#L1
+- 
 
 ### severity:
-Optimization
+Informational
 
 ### category:
-upgrade-to-latest
+solc-version
