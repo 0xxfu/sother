@@ -6,11 +6,15 @@
 import unittest
 from typing import List
 
+from slither.core.solidity_types import UserDefinedType, ArrayType
+from slither.core.variables import StateVariable
+from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import (
     AbstractDetector,
     DetectorClassification,
 )
 from slither.utils.output import Output
+from slither.visitors.expression.export_values import ExportValues
 
 from sother.detectors.detector_settings import DetectorSettings
 
@@ -32,9 +36,60 @@ class FetchStorageToMemory(AbstractDetector):
 
     WIKI_RECOMMENDATION = "Fetching data from `storage` directly, don't convert `storage` it to `memory`"
 
+    def _get_array_or_structure(
+        self, variables: list[LocalVariable]
+    ) -> list[LocalVariable]:
+        results: list[LocalVariable] = []
+        for variable in variables:
+            if variable.location == "memory":
+                if isinstance(variable.type, UserDefinedType) or isinstance(
+                    variable.type, ArrayType
+                ):
+                    results.append(variable)
+        return results
+
+    def _detect_memory_init_from_state(
+        self,
+        state_variables: list[StateVariable],
+        local_variables: list[LocalVariable],
+    ) -> list[(LocalVariable, StateVariable)]:
+        results = []
+
+        for local in local_variables:
+            if not local.expression:
+                continue
+
+            exported_values = ExportValues(local.expression).result()
+            for exported_value in exported_values:
+                if isinstance(exported_value, StateVariable):
+                    results.append((local, exported_value))
+        return results
+
     def _detect(self) -> List[Output]:
-        # todo impl storage detect
-        return [self.generate_result(self.WIKI_TITLE)]
+        results = []
+        for contract in self.compilation_unit.contracts_derived:
+            state_variables: list[StateVariable] = contract.state_variables
+            for function in contract.functions:
+                if function.is_implemented and function.entry_point:
+                    memory_variables = self._get_array_or_structure(
+                        function.local_variables
+                    )
+                    result_variables = self._detect_memory_init_from_state(
+                        state_variables, memory_variables
+                    )
+
+                    for local, state in result_variables:
+                        json = self.generate_result(
+                            [
+                                "local memory variable ",
+                                local,
+                                " is initialized from storage: ",
+                                state,
+                                "\n",
+                            ]
+                        )
+                        results.append(json)
+        return results
 
 
 if __name__ == "__main__":
