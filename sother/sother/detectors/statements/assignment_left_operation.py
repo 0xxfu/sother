@@ -55,9 +55,15 @@ class AssignmentLeftOperation(AbstractDetector):
                 continue
             if str(node_expression.type) not in self.LEFT_OPERATIONS:
                 continue
-            print(f"node: {node_expression}")
-            print(f"node_expression: {node_expression.expression_left}")
-            print(f"node_expression: {node_expression.type}")
+
+            json = self.generate_result(
+                [
+                    "should use arithmetic operator `=` replace ",
+                    f"`{str(node_expression.type)}` in ",
+                    node,
+                ]
+            )
+            self.results.append(json)
 
 
 if __name__ == "__main__":
