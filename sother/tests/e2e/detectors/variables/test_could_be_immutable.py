@@ -10,22 +10,15 @@ from slither import Slither
 from sother.core.models import OutputResult
 from sother.detectors import get_all_detector_wikis
 from sother.detectors.variables.could_be_immutable import CouldBeImmutable
+from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 
-class TestCouldBeImmutable(unittest.TestCase):
+class TestCouldBeImmutable(DetectorTestCase):
     def test_detect(self):
-        slither = Slither("test_could_be_immutable.sol")
-        slither.register_detector(CouldBeImmutable)
-        results = slither.run_detectors()
-        detector_wikis = get_all_detector_wikis()
-        for detector_result in results:
-            for detector in detector_result:
-                output_result = OutputResult(**detector)
-                print(output_result.description, "\n")
-                assert (
-                    detector_wikis[output_result.check].wiki_title
-                    == "State variables only set in the constructor should be declared immutable"
-                )
+        results: list[OutputResult] = self.detect(
+            "test_could_be_immutable.sol", CouldBeImmutable
+        )
+        self.check_detect_results(CouldBeImmutable.WIKI_TITLE, results)
 
 
 if __name__ == "__main__":
