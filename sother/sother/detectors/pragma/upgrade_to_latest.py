@@ -24,9 +24,7 @@ class UpgradeToLatest(AbstractDetector):
 
     WIKI_TITLE = f"Reduce gas usage by moving to Solidity {DetectorSettings.latest_version} or later"
     WIKI_DESCRIPTION = "See this [link](https://blog.soliditylang.org/2023/02/22/solidity-0.8.19-release-announcement/#preventing-dead-code-in-runtime-bytecode) for the full details"
-    WIKI_RECOMMENDATION = (
-        f"Upgrade solidity version to latest version: {DetectorSettings.latest_version}"
-    )
+    WIKI_RECOMMENDATION = f"Upgrade solidity version to the latest version: {DetectorSettings.latest_version}"
 
     def _detect(self) -> List[Output]:
         results = []
@@ -37,7 +35,7 @@ class UpgradeToLatest(AbstractDetector):
                     [
                         "pragma solidity version ",
                         info,
-                        f" should upgrade to latest version: {DetectorSettings.latest_version}",
+                        f" should upgrade to the latest version: {DetectorSettings.latest_version}",
                     ]
                 )
                 results.append(result)
