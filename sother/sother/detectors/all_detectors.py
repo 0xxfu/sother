@@ -10,3 +10,4 @@ from sother.detectors.variables.fetch_storage_to_memory import (
     FetchStorageToMemory,
 )
 from sother.detectors.pragma.upgrade_to_latest import UpgradeToLatest
+from sother.detectors.attributes.incorrect_solc import IncorrectSolc
