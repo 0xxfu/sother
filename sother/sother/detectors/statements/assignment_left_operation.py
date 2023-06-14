@@ -46,7 +46,7 @@ class AssignmentLeftOperation(AbstractDetector):
     def _detect_function_assignment(self, function: FunctionContract):
         state_variables: list[StateVariable] = function.state_variables_written
         state_names = [state.name for state in state_variables]
-        print(f"function: {function.name} states: {state_names}")
+
         for node in function.nodes:
             node_expression = node.expression
             if not isinstance(node_expression, AssignmentOperation):
