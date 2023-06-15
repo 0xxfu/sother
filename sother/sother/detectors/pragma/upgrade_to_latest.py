@@ -19,7 +19,6 @@ from sother.detectors.detector_settings import DetectorSettings
 from sother.utils.pragma_utils import PragmaUtil
 
 
-# todo support pragma: `>=0.6.2 <0.9.0`
 class UpgradeToLatest(AbstractDetector):
     ARGUMENT = "upgrade-to-latest"
     HELP = f"Reduce gas usage by moving to Solidity {DetectorSettings.latest_version} or later"

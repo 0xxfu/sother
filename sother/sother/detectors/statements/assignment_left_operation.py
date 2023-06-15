@@ -17,6 +17,7 @@ from slither.utils.output import Output
 from slither.visitors.expression.export_values import ExportValues
 
 from sother.detectors.detector_settings import DetectorSettings
+from sother.utils.gas_utils import GasUtils
 
 
 # arithmetic operator =
@@ -38,9 +39,10 @@ class AssignmentLeftOperation(AbstractDetector):
 
     def _detect(self) -> List[Output]:
         self.results = []
-        for contract in self.compilation_unit.contracts_derived:
-            for function in contract.functions:
-                self._detect_function_assignment(function)
+        for function in GasUtils.get_available_functions(
+            self.compilation_unit
+        ):
+            self._detect_function_assignment(function)
         return self.results
 
     def _detect_function_assignment(self, function: FunctionContract):

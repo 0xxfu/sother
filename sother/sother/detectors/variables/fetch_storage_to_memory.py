@@ -18,7 +18,7 @@ from slither.utils.output import Output
 from slither.visitors.expression.export_values import ExportValues
 
 from sother.detectors.detector_settings import DetectorSettings
-from sother.utils.gas_optimization_utils import GasOptimizationUtils
+from sother.utils.gas_utils import GasUtils
 
 
 # todo do not detect external view and pure function
@@ -70,9 +70,7 @@ class FetchStorageToMemory(AbstractDetector):
     def _detect(self) -> List[Output]:
         results = []
 
-        for (
-            function
-        ) in GasOptimizationUtils.get_for_gas_optimization_functions(
+        for function in GasUtils.get_available_functions(
             self.compilation_unit
         ):
             state_variables: list[

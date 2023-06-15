@@ -9,9 +9,9 @@ from slither.core.compilation_unit import SlitherCompilationUnit
 from slither.core.declarations import FunctionContract
 
 
-class GasOptimizationUtils:
+class GasUtils:
     @classmethod
-    def get_for_gas_optimization_functions(
+    def get_available_functions(
         cls, compilation_unit: "SlitherCompilationUnit"
     ) -> list["FunctionContract"]:
         result_functions: list["FunctionContract"] = []
