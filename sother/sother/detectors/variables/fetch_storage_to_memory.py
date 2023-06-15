@@ -6,6 +6,7 @@
 import unittest
 from typing import List
 
+from loguru import logger
 from slither.core.solidity_types import UserDefinedType, ArrayType
 from slither.core.variables import StateVariable
 from slither.core.variables.local_variable import LocalVariable
@@ -17,8 +18,10 @@ from slither.utils.output import Output
 from slither.visitors.expression.export_values import ExportValues
 
 from sother.detectors.detector_settings import DetectorSettings
+from sother.utils.gas_optimization_utils import GasOptimizationUtils
 
 
+# todo do not detect external view and pure function
 class FetchStorageToMemory(AbstractDetector):
     ARGUMENT = "fetch-storage-to-memory"
     HELP = "Using `storage` instead of `memory` for structs/arrays saves gas"
@@ -66,28 +69,36 @@ class FetchStorageToMemory(AbstractDetector):
 
     def _detect(self) -> List[Output]:
         results = []
-        for contract in self.compilation_unit.contracts_derived:
-            state_variables: list[StateVariable] = contract.state_variables
-            for function in contract.functions:
-                if function.is_implemented and function.entry_point:
-                    memory_variables = self._get_array_or_structure(
-                        function.local_variables
-                    )
-                    result_variables = self._detect_memory_init_from_state(
-                        state_variables, memory_variables
-                    )
 
-                    for local, state in result_variables:
-                        json = self.generate_result(
-                            [
-                                "local memory variable ",
-                                local,
-                                " is initialized from storage: ",
-                                state,
-                                "\n",
-                            ]
-                        )
-                        results.append(json)
+        for (
+            function
+        ) in GasOptimizationUtils.get_for_gas_optimization_functions(
+            self.compilation_unit
+        ):
+            state_variables: list[
+                StateVariable
+            ] = function.contract.state_variables
+
+            if function.is_implemented and function.entry_point:
+                memory_variables = self._get_array_or_structure(
+                    function.local_variables
+                )
+                result_variables = self._detect_memory_init_from_state(
+                    state_variables, memory_variables
+                )
+
+                for local, state in result_variables:
+                    json = self.generate_result(
+                        [
+                            "local memory variable ",
+                            local,
+                            " is initialized from storage: ",
+                            state,
+                            " should read data from `storage` directly\n",
+                        ]
+                    )
+                    results.append(json)
+
         return results
 
 
