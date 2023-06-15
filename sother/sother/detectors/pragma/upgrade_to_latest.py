@@ -51,19 +51,16 @@ class UpgradeToLatest(AbstractDetector):
         if not pragma.is_solidity_version:
             return None
         version1, version2 = PragmaUtil.get_version(pragma.version)
-        if not version1:
-            return
         latest_version = version.parse(DetectorSettings.latest_version)
-        if not version2:
-            if latest_version <= version.parse(version1):
-                return
-        if (
-            version.parse(version1)
-            <= latest_version
-            <= version.parse(version2)
-        ):
-            return
-        return pragma
+        if version1 and version2:
+            if latest_version < version.parse(
+                version1
+            ) or latest_version > version.parse(version2):
+                return pragma
+        if version1 and not version2:
+            if latest_version > version.parse(version1):
+                return pragma
+        return
 
 
 if __name__ == "__main__":

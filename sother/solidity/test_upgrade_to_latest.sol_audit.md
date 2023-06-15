@@ -18,7 +18,7 @@ We also recommend avoiding complex `pragma` statement.
 
 **There is `1` instance of this issue:**
 
-- Pragma version[>=0.6.2<0.9.0](solidity/test_upgrade_to_latest.sol#L3) is too complex
+- Pragma version[>=0.6.2<=0.8.19](solidity/test_upgrade_to_latest.sol#L3) is too complex
 
 
 ### recommendation:
