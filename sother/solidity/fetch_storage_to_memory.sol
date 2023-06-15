@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
 contract StorageMemory {
     struct St {
         uint a;
@@ -23,6 +22,21 @@ contract StorageMemory {
         address tmpAddress = testAddress;
         tmpAddress = address(0);
         testAddress = tmpAddress;
+    }
+
+    function externalView(uint abc) external view returns (uint) {
+        St memory tmpSt = userSt[msg.sender];
+        return abc + tmpSt.a;
+    }
+
+    function externalPure(uint abc) external pure returns (uint) {
+        // St memory tmpSt = userSt[msg.sender];
+        return abc;
+    }
+
+    function internalView(uint abc) internal view returns (uint) {
+        St memory tmpSt = userSt[msg.sender];
+        return abc + tmpSt.a;
     }
 
     function good(uint testInt) external {
