@@ -22,7 +22,7 @@ Functions that are not sued.
 
 **There is `1` instance of this issue:**
 
-- [LoopArrayLength.internalView(uint256[])](solidity/test_loop_array_length.sol#L39-L48) is never used and should be removed
+- [LoopArrayLength.internalView(uint256[])](solidity/test_array_length_in_loop.sol#L39-L48) is never used and should be removed
 
 #### Exploit scenario
 
@@ -37,7 +37,7 @@ contract Contract{
 Remove unused functions.
 
 ### location:
-- solidity/test_loop_array_length.sol#L39-L48
+- solidity/test_array_length_in_loop.sol#L39-L48
 
 ### severity:
 Informational
@@ -60,9 +60,9 @@ More detail optimization see [this](https://gist.github.com/0xxfu/80fcbc39d2d38d
 
 **There are `2` instances of this issue:**
 
-- [i < ns.length](solidity/test_loop_array_length.sol#L41) `<array>.length` should be cached.
+- [i < ns.length](solidity/test_array_length_in_loop.sol#L41) `<array>.length` should be cached.
 
-- [i < ns.length](solidity/test_loop_array_length.sol#L8) `<array>.length` should be cached.
+- [i < ns.length](solidity/test_array_length_in_loop.sol#L8) `<array>.length` should be cached.
 
 
 ### recommendation:
@@ -83,11 +83,11 @@ function loopArray_cached(uint256[] calldata ns) public returns (uint256 sum) {
 
 
 ### location:
-- solidity/test_loop_array_length.sol#L41
-- solidity/test_loop_array_length.sol#L8
+- solidity/test_array_length_in_loop.sol#L41
+- solidity/test_array_length_in_loop.sol#L8
 
 ### severity:
 Optimization
 
 ### category:
-loop-array-length
+array-length-in-loop

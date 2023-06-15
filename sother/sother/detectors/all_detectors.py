@@ -17,4 +17,4 @@ from sother.detectors.statements.assignment_left_operation import (
 from sother.detectors.functions.internal_function_to_inline import (
     InternalFunctionToInline,
 )
-from sother.detectors.statements.loop_array_length import LoopArrayLength
+from sother.detectors.statements.array_length_in_loop import ArrayLengthInLoop

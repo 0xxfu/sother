@@ -61,8 +61,8 @@ def array_length_in_loop(
         array_length_in_loop(son, in_loop_counter, visited, ret)
 
 
-class LoopArrayLength(AbstractDetector):
-    ARGUMENT = "loop-array-length"
+class ArrayLengthInLoop(AbstractDetector):
+    ARGUMENT = "array-length-in-loop"
     HELP = "Cache the `<array>.length` for the loop condition"
     IMPACT = DetectorClassification.OPTIMIZATION
     CONFIDENCE = DetectorClassification.HIGH
