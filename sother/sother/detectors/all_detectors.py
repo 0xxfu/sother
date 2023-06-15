@@ -14,3 +14,6 @@ from sother.detectors.attributes.incorrect_solc import IncorrectSolc
 from sother.detectors.statements.assignment_left_operation import (
     AssignmentLeftOperation,
 )
+from sother.detectors.functions.internal_function_to_inline import (
+    InternalFunctionToInline,
+)
