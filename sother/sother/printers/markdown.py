@@ -144,7 +144,10 @@ class Markdown(AbstractPrinter):
             output_markdown += markdown_str
 
         res = self.generate_output(info)
-        file_path = f"{filename}_audit.md"
+        if filename == ".":
+            file_path = f"sother_audit.md"
+        else:
+            file_path = f"{filename}_audit.md"
         self.info(f" export markdown file -> {file_path}")
         with open(file_path, "w", encoding="utf8") as f:
             f.write(output_markdown)

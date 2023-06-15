@@ -19,6 +19,7 @@ def _is_valid_type(v: StateVariable) -> bool:
     t = v.type
     if isinstance(t, ElementaryType):
         return True
+    # isinstance contract or structure
     if isinstance(t, UserDefinedType) and isinstance(t.type, Contract):
         return True
     return False

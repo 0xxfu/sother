@@ -10,6 +10,7 @@ from slither.detectors.variables.could_be_immutable import (
 )
 
 
+# todo support detect structure
 class CouldBeImmutable(SliCouldBeImmutable):
     WIKI_TITLE = "State variables only set in the constructor should be declared immutable"
     WIKI_DESCRIPTION = """
