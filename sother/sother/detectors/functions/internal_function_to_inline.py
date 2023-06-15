@@ -23,6 +23,7 @@ from slither.utils.output import Output
 from sother.detectors.detector_settings import DetectorSettings
 
 
+# todo should not detect abstract contract
 class InternalFunctionToInline(AbstractDetector):
     ARGUMENT = "internal-function-to-inline"
     HELP = "`internal` functions only called once can be inlined to save gas"
