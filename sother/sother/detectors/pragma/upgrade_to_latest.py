@@ -6,6 +6,7 @@
 import unittest
 from typing import List, Optional
 
+from loguru import logger
 from packaging import version
 from slither.core.declarations import Pragma
 from slither.detectors.abstract_detector import (
@@ -15,8 +16,10 @@ from slither.detectors.abstract_detector import (
 from slither.utils.output import Output
 
 from sother.detectors.detector_settings import DetectorSettings
+from sother.utils.pragma_utils import PragmaUtil
 
 
+# todo support pragma: `>=0.6.2 <0.9.0`
 class UpgradeToLatest(AbstractDetector):
     ARGUMENT = "upgrade-to-latest"
     HELP = f"Reduce gas usage by moving to Solidity {DetectorSettings.latest_version} or later"
@@ -47,24 +50,20 @@ class UpgradeToLatest(AbstractDetector):
     def _detect_pragma(self, pragma: Pragma) -> Optional[Pragma]:
         if not pragma.is_solidity_version:
             return None
-        pragma_version = self._get_version(pragma)
-
-        if version.parse(DetectorSettings.latest_version) <= version.parse(
-            pragma_version
+        version1, version2 = PragmaUtil.get_version(pragma.version)
+        if not version1:
+            return
+        latest_version = version.parse(DetectorSettings.latest_version)
+        if not version2:
+            if latest_version <= version.parse(version1):
+                return
+        if (
+            version.parse(version1)
+            <= latest_version
+            <= version.parse(version2)
         ):
-            return None
+            return
         return pragma
-
-    def _get_version(self, pragma: Pragma) -> str:
-        ops = [">", "=", "^"]
-
-        def _remove_op(p_version):
-            if p_version[0] in ops:
-                p_version = p_version[1:]
-                p_version = _remove_op(p_version)
-            return p_version
-
-        return _remove_op(pragma.version)
 
 
 if __name__ == "__main__":
