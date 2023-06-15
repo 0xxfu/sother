@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.10"
 slither-analyzer = "^0.9.3"
 pydantic = "^1.10.9"
+loguru = "^0.7.0"
 
 [tool.poetry.scripts]
 sother = "sother.main:start"

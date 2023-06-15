@@ -6,6 +6,7 @@
 import unittest
 from typing import List, Type, Optional
 
+from loguru import logger
 from slither.core.declarations import FunctionContract
 from slither.core.expressions import (
     AssignmentOperation,
@@ -102,7 +103,7 @@ more detail see [this](https://docs.soliditylang.org/en/v0.8.20/internals/optimi
                 if function.visibility == "internal":
                     internal_functions[function.name] = function
                     internal_func_names.append(function.name)
-        print(f"func names: {internal_func_names} \n\n")
+        logger.debug(f"func names: {internal_func_names} \n\n")
 
         called_func_names: dict[str, int] = dict()
         for contract in self.compilation_unit.contracts_derived:
@@ -118,7 +119,7 @@ more detail see [this](https://docs.soliditylang.org/en/v0.8.20/internals/optimi
                     else:
                         called_func_names[func_name] = 1
 
-        print(f"called func names: {called_func_names} \n\n")
+        logger.debug(f"called func names: {called_func_names} \n\n")
 
         for func_name in called_func_names:
             if called_func_names[func_name] > 1:
