@@ -14,7 +14,6 @@ loguru = "^0.7.0"
 [tool.poetry.scripts]
 sother = "sother.main:start"
 
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
