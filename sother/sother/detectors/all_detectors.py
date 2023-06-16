@@ -19,3 +19,4 @@ from sother.detectors.functions.internal_function_to_inline import (
 )
 from sother.detectors.statements.array_length_in_loop import ArrayLengthInLoop
 from sother.detectors.statements.unchecked_in_loop import UncheckedInLoop
+from sother.detectors.variables.smaller_uint_int import SmallerUintInt
