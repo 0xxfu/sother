@@ -7,6 +7,7 @@ import os
 import unittest
 from typing import Type
 
+from loguru import logger
 from slither import Slither
 from slither.detectors.abstract_detector import AbstractDetector
 
@@ -33,10 +34,10 @@ class DetectorTestCase(unittest.TestCase):
     ) -> None:
         detector_wikis = get_all_detector_wikis()
         for output_result in results:
-            print(
-                "wiki:\n", detector_wikis[output_result.check].wiki_title, "\n"
+            logger.debug(
+                f"\nwiki:\n{detector_wikis[output_result.check].wiki_title}\n"
+                f"description:\n{output_result.description}\n"
             )
-            print("description:\n", output_result.description, "\n")
             assert detector_wikis[output_result.check].wiki_title == wiki_title
 
     def get_test_solidity_filename(self, file):
