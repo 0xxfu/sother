@@ -9,6 +9,7 @@ from typing import List, Optional
 from loguru import logger
 from slither.core.cfg.node import Node, NodeType
 from slither.core.declarations import FunctionContract
+from slither.core.expressions import UnaryOperationType, UnaryOperation
 from slither.detectors.abstract_detector import (
     AbstractDetector,
     DetectorClassification,
@@ -49,8 +50,20 @@ def array_length_in_loop(
 
     if in_loop_counter > 0:
         for ir in node.all_slithir_operations():
-            # check length in loop
-            if isinstance(ir, Length):
+            exp = ir.expression
+            # has ++i/i++ and has checked
+            if (
+                isinstance(exp, UnaryOperation)
+                and exp.type
+                in [
+                    UnaryOperationType.PLUSPLUS_POST,
+                    UnaryOperationType.PLUSPLUS_PRE,
+                    # remove --i/i--
+                    # UnaryOperationType.MINUSMINUS_PRE,
+                    # UnaryOperationType.MINUSMINUS_POST,
+                ]
+                and node.scope.is_checked
+            ):
                 ret.append(ir.node)
                 break
             if isinstance(ir, (InternalCall)) and ir.function:
@@ -62,39 +75,23 @@ def array_length_in_loop(
         array_length_in_loop(son, in_loop_counter, visited, ret)
 
 
-class ArrayLengthInLoop(AbstractDetector):
-    ARGUMENT = "array-length-in-loop"
-    HELP = "Cache the `<array>.length` for the loop condition"
+class UncheckedInLoop(AbstractDetector):
+    ARGUMENT = "unchecked-in-loop"
+    HELP = "The increment `++i/i++` in `for-loop`/`while-loop` post condition can be made `unchecked{++i}/unchecked{i++}`"
     IMPACT = DetectorClassification.OPTIMIZATION
     CONFIDENCE = DetectorClassification.HIGH
 
     WIKI = DetectorSettings.default_wiki
 
-    WIKI_TITLE = "Cache the `<array>.length` for the loop condition"
+    WIKI_TITLE = "The increment `++i/i++` in `for-loop`/`while-loop` post condition can be made `unchecked{++i}/unchecked{i++}`"
     WIKI_DESCRIPTION = """
-The overheads outlined below are _PER LOOP_, excluding the first loop
-* storage arrays incur a Gwarmaccess (**100 gas**)
-* memory arrays use `MLOAD` (**3 gas**)
-* calldata arrays use `CALLDATALOAD` (**3 gas**)
-
-Caching the length changes each of these to a `DUP<N>` (**3 gas**), and gets rid of the extra `DUP<N>` needed to store the stack offset.
-More detail optimization see [this](https://gist.github.com/0xxfu/80fcbc39d2d38d85ae61b4b8838ef30b)
+The unchecked keyword is new in solidity version 0.8.0, so this only applies to that version or higher, which these instances are. 
+Gas savings: roughly speaking this can save 30-40 gas per loop iteration. For lengthy loops, this can be significant!
+More detail see [this.](https://gist.github.com/0xxfu/67eb8e3d8fe0b8d35370c1263e606d38)
 """
 
     WIKI_RECOMMENDATION = """
-Caching the `<array>.length` for the loop condition, for example:
-```solidity
-// gas save (-230)
-function loopArray_cached(uint256[] calldata ns) public returns (uint256 sum) {
-    uint256 length = ns.length;
-    for(uint256 i = 0; i < length;) {
-        sum += ns[i];
-        unchecked {
-            i++;
-        }
-    }
-}
-```
+Using `unchecked{++i}/unchecked{i++}` replace `++i/i++` in loop.
 """
 
     def _detect(self) -> List[Output]:
@@ -104,9 +101,12 @@ function loopArray_cached(uint256[] calldata ns) public returns (uint256 sum) {
             GasUtils.get_available_functions(self.compilation_unit)
         )
         for node in result_nodes:
-            logger.debug(f"length in loop: {str(node)}")
+            logger.debug(f"unchecked in loop: {str(node)}")
             res = self.generate_result(
-                [node, " `<array>.length` should be cached.\n"]
+                [
+                    node,
+                    " should be used `unchecked{++i}/unchecked{i++}`.\n",
+                ]
             )
             results.append(res)
 
