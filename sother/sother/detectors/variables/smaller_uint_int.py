@@ -20,6 +20,7 @@ from sother.detectors.detector_settings import DetectorSettings
 from sother.utils.gas_utils import GasUtils
 
 
+# todo detect uint/int in mapping and struct
 class SmallerUintInt(AbstractDetector):
     ARGUMENT = "smaller-uint-int"
     HELP = "Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead"
