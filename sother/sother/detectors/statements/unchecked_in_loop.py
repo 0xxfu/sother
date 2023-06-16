@@ -51,7 +51,7 @@ def array_length_in_loop(
     if in_loop_counter > 0:
         for ir in node.all_slithir_operations():
             exp = ir.expression
-            # has ++i/i++ and has checked
+            # has ++i/i++ and has checked, detail:https://github.com/crytic/slither/issues/1187
             if (
                 isinstance(exp, UnaryOperation)
                 and exp.type
