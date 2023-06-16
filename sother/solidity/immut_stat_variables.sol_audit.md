@@ -15,7 +15,8 @@
 | |Issue|Instances|
 |---|:---|:---:|
 | [G-0] | State variables only set in the constructor should be declared immutable | 4 |
-| [G-1] | State variables that could be declared constant | 7 |
+| [G-1] | Using `private` rather than `public` for constants, saves gas | 1 |
+| [G-2] | State variables that could be declared constant | 7 |
 
 
 
@@ -301,6 +302,34 @@ Optimization
 
 ### category:
 immutable-states
+
+## [Optimization] Using `private` rather than `public` for constants, saves gas
+
+### description:
+
+If needed, the values can be read from the verified contract source code, or if there are multiple values there can be a single getter function that [returns a tuple](https://github.com/code-423n4/2022-08-frax/blob/90f55a9ce4e25bceed3a74290b854341d8de6afa/src/contracts/FraxlendPair.sol#L156-L178) of the values of all currently-public constants. 
+
+Saves **3406-3606 gas** in deployment gas due to the compiler not having to create non-payable getter functions for deployment calldata, not having to store the bytes of the value outside of where it's used, and not adding another entry to the method ID table
+
+
+**There is `1` instance of this issue:**
+
+- [A.MY_ADDRESS](solidity/immut_stat_variables.sol#L4) should be used `private` visibility to save gas.
+
+
+### recommendation:
+
+Using `private` replace `public` with constant.
+
+
+### location:
+- solidity/immut_stat_variables.sol#L4
+
+### severity:
+Optimization
+
+### category:
+public-to-private-constant
 
 ## [Optimization] State variables that could be declared constant
 
