@@ -12,6 +12,7 @@
 | |Issue|Instances|
 |---|:---|:---:|
 | [G-0] | Using `bool` replace `uint256(1)` and `uint256(2)` for true/false | 1 |
+| [G-1] | Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead | 3 |
 
 
 
@@ -83,3 +84,39 @@ Optimization
 
 ### category:
 bool-state-variables
+
+## [Optimization] Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead
+
+### description:
+
+> When using elements that are smaller than 32 bytes, your contract’s gas usage may be higher. This is because the EVM operates on 32 bytes at a time. Therefore, if the element is smaller than that, the EVM must use more operations in order to reduce the size of the element from 32 bytes to the desired size.
+
+More detail see [this.](https://docs.soliditylang.org/en/v0.8.11/internals/layout_in_storage.html)
+
+Each operation involving a `uint8` costs an extra [**22-28 gas**](https://gist.github.com/0xxfu/3672fec07eb3031cd5da14ac015e04a1) (depending on whether the other operand is also a variable of type `uint8`) as compared to ones involving `uint256`, due to the compiler having to clear the higher bits of the memory word before operating on the `uint8`, as well as the associated stack operations of doing so. Use a larger size then downcast where needed
+
+
+**There are `3` instances of this issue:**
+
+- [MappingUint8s.data2](solidity/test_bool_state_variables.sol#L28) should be used `uint256/int256`.
+
+- [MappingUint8s.set2(uint8).value](solidity/test_bool_state_variables.sol#L38) should be used `uint256/int256`.
+
+- [MappingUint8s.set_Hl1r(uint256,uint8).value](solidity/test_bool_state_variables.sol#L32) should be used `uint256/int256`.
+
+
+### recommendation:
+
+Using `uint256/int256` replace `uint128/uint64/uint32/uint16/uint8` or `int128/int64/int32/int16/int8`
+
+
+### location:
+- solidity/test_bool_state_variables.sol#L28
+- solidity/test_bool_state_variables.sol#L38
+- solidity/test_bool_state_variables.sol#L32
+
+### severity:
+Optimization
+
+### category:
+smaller-uint-int
