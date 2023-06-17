@@ -8,7 +8,7 @@ from typing import List
 
 from loguru import logger
 from slither.core.cfg.node import Node
-from slither.core.expressions import BinaryOperation, Literal
+from slither.core.expressions import BinaryOperation, Literal, BinaryOperationType
 from slither.core.expressions.expression import Expression
 from slither.core.solidity_types.elementary_type import Int, Uint
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
@@ -45,7 +45,10 @@ Using bit shifting (`>>` operator) replace division divided by constant.
                 for ir in node.all_slithir_operations():
                     ir_exp = ir.expression
                     # expression is `/` operator
-                    if isinstance(ir_exp, BinaryOperation) and str(ir_exp.type) == "/":
+                    if (
+                        isinstance(ir_exp, BinaryOperation)
+                        and ir_exp.type == BinaryOperationType.DIVISION
+                    ):
                         exp_right = ir_exp.expression_right
                         # division divided by constant(uint)
                         if (
@@ -59,7 +62,7 @@ Using bit shifting (`>>` operator) replace division divided by constant.
             res = self.generate_result(
                 [
                     exp,
-                    " should use bit shifting `>>` operator to save gas.\n",
+                    " should use right shift `>>` operator to save gas.\n",
                 ]
             )
             results.append(res)
