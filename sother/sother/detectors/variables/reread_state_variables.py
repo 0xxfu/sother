@@ -82,15 +82,14 @@ Cache storage-based state variables in local memory-based variables appropriatel
             for func in result_nodes:
                 logger.debug(f"reread state: {func} {result_nodes[func]}")
                 for state_read_in_func in result_nodes[func]:
-                    result = []
-                    for node in result_nodes[func][state_read_in_func]:
-                        result.append(node)
-                        result.append(" ; ")
-                    result += [
-                        " more than once read data from ",
+                    result = [
                         state_read_in_func,
-                        " should cache the state in local memory-based variable",
+                        " should be cached with local memory-based variable in ",
+                        func,
+                        ", It is called more than once:\n",
                     ]
+                    for node in result_nodes[func][state_read_in_func]:
+                        result += ["\t- ", node, "\n"]
                     res = self.generate_result(result)
                     results.append(res)
 
