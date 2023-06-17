@@ -87,6 +87,7 @@ class UncheckedInLoop(AbstractDetector):
     WIKI_DESCRIPTION = """
 The unchecked keyword is new in solidity version 0.8.0, so this only applies to that version or higher, which these instances are. 
 Gas savings: roughly speaking this can save 30-40 gas per loop iteration. For lengthy loops, this can be significant!
+
 More detail see [this.](https://gist.github.com/0xxfu/67eb8e3d8fe0b8d35370c1263e606d38)
 """
 
