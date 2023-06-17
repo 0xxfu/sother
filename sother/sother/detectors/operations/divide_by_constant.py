@@ -54,6 +54,7 @@ Using bit shifting (`>>` operator) replace division divided by constant.
                         ):
                             logger.debug(f"divided by constant: {ir_exp}")
                             divide_expressions.append(node)
+
         for exp in divide_expressions:
             res = self.generate_result(
                 [
