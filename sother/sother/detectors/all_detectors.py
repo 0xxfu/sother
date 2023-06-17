@@ -23,3 +23,4 @@ from sother.detectors.variables.smaller_uint_int import SmallerUintInt
 from sother.detectors.variables.public_to_private_constant import (
     PublicToPrivateConstant,
 )
+from sother.detectors.operations.divide_by_constant import DivideByConstant
