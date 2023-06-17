@@ -16,44 +16,43 @@ from slither.utils.output import Output
 from sother.detectors.detector_settings import DetectorSettings
 
 
-def detect_reread_state(contract: Contract) -> dict[FunctionContract, list[Node]]:
-    state_variable_reads: dict[StateVariable, list[Node]] = dict()
+def detect_reread_state(
+    contract: Contract,
+) -> dict[FunctionContract, dict[StateVariable, list[Node]]]:
+    state_variable_reads: list[StateVariable] = contract.state_variables
 
-    for state in contract.state_variables:
-        state_variable_reads[state] = []
-    logger.debug(f"state names: {state_variable_reads}")
-
+    result_nodes: dict[FunctionContract, dict[StateVariable, list[Node]]] = dict()
     for function in contract.functions:
         if function.visibility == "external" and (function.view or function.pure):
             continue
-        logger.debug(f"function: {function.name}")
+        func_state_reads: [StateVariable, list[Node]] = dict()
         for node in function.nodes:
-            logger.debug(
-                f"node: {node.expression}\n"
-                f"state read: {node.state_variables_read}\n"
-                f"state written: {node.state_variables_written}\n"
-            )
             node_state_reads = node.state_variables_read
             node_state_written = node.state_variables_written
             if len(node_state_written) <= 0:
                 for state_read in node_state_reads:
                     if state_read not in state_variable_reads:
                         continue
-                    state_variable_reads[state_read].append(node)
+                    if state_read not in func_state_reads:
+                        func_state_reads[state_read] = []
+                    func_state_reads[state_read].append(node)
 
             else:
                 for state_written in node_state_written:
-                    if state_written.name not in state_variable_reads:
+                    if state_written not in state_variable_reads:
                         continue
-                    if len(state_variable_reads[state_written]) <= 1:
-                        state_variable_reads[state_written] = []
-    result_states: dict[StateVariable, list[Node]] = dict()
-    for state in state_variable_reads:
-        if len(state_variable_reads[state]) > 1:
-            result_states[state] = state_variable_reads[state]
+                    if (
+                        state_written in func_state_reads
+                        and len(func_state_reads[state_written]) <= 1
+                    ):
+                        func_state_reads[state_written] = []
 
-    logger.debug(f"state reads: {result_states}")
-    return result_states
+        for state_read in func_state_reads:
+            if len(func_state_reads[state_read]) > 1:
+                if function not in result_nodes:
+                    result_nodes[function] = dict()
+                result_nodes[function][state_read] = func_state_reads[state_read]
+    return result_nodes
 
 
 class RereadStateVariables(AbstractDetector):
@@ -78,20 +77,23 @@ Cache storage-based state variables in local memory-based variables appropriatel
     def _detect(self) -> List[Output]:
         results = []
         for contract in self.compilation_unit.contracts_derived:
-            state_reads = detect_reread_state(contract)
-            for state in state_reads:
-                logger.debug(f"reread state: {state} {state_reads[state]}")
-                result = []
-                for item in state_reads[state]:
-                    result.append(item)
-                    result.append("  ")
-                result += [
-                    " more than once read data from state ",
-                    state,
-                    " should cache the state in local memory-based variable",
-                ]
-                res = self.generate_result(result)
-                results.append(res)
+            # dict: function -> state -> list[node]
+            result_nodes = detect_reread_state(contract)
+            for func in result_nodes:
+                logger.debug(f"reread state: {func} {result_nodes[func]}")
+                for state_read_in_func in result_nodes[func]:
+                    result = []
+                    for node in result_nodes[func][state_read_in_func]:
+                        result.append(node)
+                        result.append(" ; ")
+                    result += [
+                        " more than once read data from ",
+                        state_read_in_func,
+                        " should cache the state in local memory-based variable",
+                    ]
+                    res = self.generate_result(result)
+                    results.append(res)
+
         return results
 
 
