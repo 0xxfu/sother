@@ -43,7 +43,6 @@ Remove default fields(`block.timestamp` or `block.number`) in event.
                 for ir in node.all_slithir_operations():
                     if not isinstance(ir, EventCall):
                         continue
-                    logger.debug(f"type: {ir.expression}")
                     for var_read in ir.read:
                         if is_dependent(
                             var_read, SolidityVariableComposed("block.timestamp"), node
@@ -55,6 +54,7 @@ Remove default fields(`block.timestamp` or `block.number`) in event.
                             result_nodes.add(node)
 
         for node in result_nodes:
+            logger.debug(f"superfluous field: {node.expression}")
             res = self.generate_result(
                 [
                     node,
