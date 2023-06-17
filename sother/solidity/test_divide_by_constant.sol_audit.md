@@ -61,9 +61,9 @@ divide-before-multiply
 
 **There are `2` instances of this issue:**
 
-- [a = result / 10](solidity/test_divide_by_constant.sol#L21) should use bit shifting `>>` operator to save gas.
+- [a = result / 10](solidity/test_divide_by_constant.sol#L21) should use right shift `>>` operator to save gas.
 
-- [result = x / 2](solidity/test_divide_by_constant.sol#L19) should use bit shifting `>>` operator to save gas.
+- [result = x / 2](solidity/test_divide_by_constant.sol#L19) should use right shift `>>` operator to save gas.
 
 
 ### recommendation:
