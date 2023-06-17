@@ -24,3 +24,4 @@ from sother.detectors.variables.public_to_private_constant import (
     PublicToPrivateConstant,
 )
 from sother.detectors.operations.divide_by_constant import DivideByConstant
+from sother.detectors.events.superfluous_fields_event import SuperfluousFieldsEvent
