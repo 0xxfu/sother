@@ -7,7 +7,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-slither-analyzer = "^0.9.3"
+#slither-analyzer = "^0.9.3"
+# updated: May 17, 2023
+slither-analyzer = { git = "https://github.com/0xxfu/slither.git" , branch = "master"}
 pydantic = "^1.10.9"
 loguru = "^0.7.0"
 
