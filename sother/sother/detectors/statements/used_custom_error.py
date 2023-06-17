@@ -12,6 +12,7 @@ from slither.detectors.abstract_detector import AbstractDetector, DetectorClassi
 from slither.utils.output import Output
 
 from sother.detectors.detector_settings import DetectorSettings
+from sother.utils.gas_utils import GasUtils
 
 
 class UsedCustomError(AbstractDetector):
@@ -36,11 +37,11 @@ Using custom errors replace `require` or `assert`.
     def _detect(self) -> List[Output]:
         results = []
         result_nodes: list[Node] = []
-        for contract in self.compilation_unit.contracts_derived:
-            for function in contract.functions:
-                for node in function.nodes:
-                    if node.contains_require_or_assert():
-                        result_nodes.append(node)
+        for function in GasUtils.get_available_functions(self.compilation_unit):
+            for node in function.nodes:
+                if node.contains_require_or_assert():
+                    result_nodes.append(node)
+
         for node in result_nodes:
             logger.debug(f"not custom error: {str(node.expression)}")
             res = self.generate_result(
