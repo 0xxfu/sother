@@ -63,8 +63,14 @@ More detail see [this.](https://gist.github.com/0xxfu/af8f63ccbf36af9d067ed6eff9
 
 **There are `2` instances of this issue:**
 
-- [a = stateUint256 + 1](solidity/test_reread_state_variables.sol#L9) ; [b = stateUint256 + x](solidity/test_reread_state_variables.sol#L10) ;  more than once read data from [RereadStateVariables.stateUint256](solidity/test_reread_state_variables.sol#L4) should cache the state in local memory-based variable
-- [a = stateUint256 + x](solidity/test_reread_state_variables.sol#L15) ; [StateEvent(stateUint256,a)](solidity/test_reread_state_variables.sol#L16) ;  more than once read data from [RereadStateVariables.stateUint256](solidity/test_reread_state_variables.sol#L4) should cache the state in local memory-based variable
+- [RereadStateVariables.stateUint256](solidity/test_reread_state_variables.sol#L4) should be cached with local memory-based variable in [RereadStateVariables.bad2(uint256)](solidity/test_reread_state_variables.sol#L14-L17), It is called more than once:
+	- [a = stateUint256 + x](solidity/test_reread_state_variables.sol#L15)
+	- [StateEvent(stateUint256,a)](solidity/test_reread_state_variables.sol#L16)
+
+- [RereadStateVariables.stateUint256](solidity/test_reread_state_variables.sol#L4) should be cached with local memory-based variable in [RereadStateVariables.bad(uint256)](solidity/test_reread_state_variables.sol#L8-L12), It is called more than once:
+	- [a = stateUint256 + 1](solidity/test_reread_state_variables.sol#L9)
+	- [b = stateUint256 + x](solidity/test_reread_state_variables.sol#L10)
+
 
 ### recommendation:
 
@@ -72,8 +78,8 @@ Cache storage-based state variables in local memory-based variables appropriatel
 
 
 ### location:
-- solidity/test_reread_state_variables.sol#L9
-- solidity/test_reread_state_variables.sol#L15
+- solidity/test_reread_state_variables.sol#L4
+- solidity/test_reread_state_variables.sol#L4
 
 ### severity:
 Optimization

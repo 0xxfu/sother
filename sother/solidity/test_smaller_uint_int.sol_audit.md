@@ -13,7 +13,8 @@
 | |Issue|Instances|
 |---|:---|:---:|
 | [G-0] | Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead | 21 |
-| [G-1] | State variables that could be declared constant | 12 |
+| [G-1] | Remove or replace unused state variables | 12 |
+| [G-2] | State variables that could be declared constant | 12 |
 
 
 
@@ -188,6 +189,53 @@ Optimization
 
 ### category:
 smaller-uint-int
+
+## [Optimization] Remove or replace unused state variables
+
+### description:
+
+Saves a storage slot. If the variable is assigned a non-zero value, saves Gsset (20000 gas). If it's assigned a zero value, saves Gsreset (2900 gas). If the variable remains unassigned, there is no gas savings unless the variable is public, in which case the compiler-generated non-payable getter deployment cost is saved. If the state variable is overriding an interface's public function, mark the variable as constant or immutable so that it does not use a storage slot
+
+
+**There are `12` instances of this issue:**
+
+- [SmallerUintInt.stateUint8](solidity/test_smaller_uint_int.sol#L9) is never used.
+- [SmallerUintInt.stateUint256](solidity/test_smaller_uint_int.sol#L4) is never used.
+- [SmallerUintInt.stateint8](solidity/test_smaller_uint_int.sol#L16) is never used.
+- [SmallerUintInt.stateint256](solidity/test_smaller_uint_int.sol#L11) is never used.
+- [SmallerUintInt.stateint32](solidity/test_smaller_uint_int.sol#L14) is never used.
+- [SmallerUintInt.stateUint16](solidity/test_smaller_uint_int.sol#L8) is never used.
+- [SmallerUintInt.stateint16](solidity/test_smaller_uint_int.sol#L15) is never used.
+- [SmallerUintInt.stateint128](solidity/test_smaller_uint_int.sol#L12) is never used.
+- [SmallerUintInt.stateUint32](solidity/test_smaller_uint_int.sol#L7) is never used.
+- [SmallerUintInt.stateUint64](solidity/test_smaller_uint_int.sol#L6) is never used.
+- [SmallerUintInt.stateint64](solidity/test_smaller_uint_int.sol#L13) is never used.
+- [SmallerUintInt.stateUint128](solidity/test_smaller_uint_int.sol#L5) is never used.
+
+### recommendation:
+
+Remove or replace the unused state variables
+
+
+### location:
+- solidity/test_smaller_uint_int.sol#L9
+- solidity/test_smaller_uint_int.sol#L4
+- solidity/test_smaller_uint_int.sol#L16
+- solidity/test_smaller_uint_int.sol#L11
+- solidity/test_smaller_uint_int.sol#L14
+- solidity/test_smaller_uint_int.sol#L8
+- solidity/test_smaller_uint_int.sol#L15
+- solidity/test_smaller_uint_int.sol#L12
+- solidity/test_smaller_uint_int.sol#L7
+- solidity/test_smaller_uint_int.sol#L6
+- solidity/test_smaller_uint_int.sol#L13
+- solidity/test_smaller_uint_int.sol#L5
+
+### severity:
+Optimization
+
+### category:
+unused-state-variables
 
 ## [Optimization] State variables that could be declared constant
 
