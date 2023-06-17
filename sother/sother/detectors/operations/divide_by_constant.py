@@ -52,9 +52,7 @@ Using bit shifting (`>>` operator) replace division divided by constant.
                             isinstance(exp_right, Literal)
                             and str(exp_right.type) in uint_list
                         ):
-                            logger.debug(
-                                f"ir exp: {ir_exp} type: {str(ir_exp.type)} right: {ir_exp.expression_right.type}"
-                            )
+                            logger.debug(f"divided by constant: {ir_exp}")
                             divide_expressions.append(node)
         for exp in divide_expressions:
             res = self.generate_result(
