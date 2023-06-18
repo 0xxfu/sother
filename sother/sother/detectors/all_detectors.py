@@ -31,3 +31,4 @@ from sother.detectors.events.superfluous_fields_event import SuperfluousFieldsEv
 from sother.detectors.functions.cache_call_function_result import (
     CacheCallFunctionResult,
 )
+from sother.detectors.source.safe_math_lib import SafeMathLib
