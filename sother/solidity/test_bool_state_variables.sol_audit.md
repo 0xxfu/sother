@@ -2,14 +2,14 @@
 
 ### Non-critical Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Conformance to Solidity naming conventions | 3 |
 
 
 ### Gas Optimizations
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Using `bool` replace `uint256(1)` and `uint256(2)` for true/false | 1 |
 | [G-1] | Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead | 3 |

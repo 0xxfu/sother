@@ -2,7 +2,7 @@
 
 ### Non-critical Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 1 |
 | [N-1] | Conformance to Solidity naming conventions | 1 |
@@ -10,7 +10,7 @@
 
 ### Gas Optimizations
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | use custom errors instead of revert strings | 2 |
 

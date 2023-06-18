@@ -2,14 +2,14 @@
 
 ### Medium Risk Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [M-0] | Divide before multiply | 8 |
 
 
 ### Non-critical Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 1 |
 | [N-1] | Assembly usage | 1 |
@@ -18,7 +18,7 @@
 
 ### Gas Optimizations
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Using `x >> constant(uint)` with the right shift operator is a more gas-efficient | 1 |
 | [G-1] | `internal` functions only called once can be inlined to save gas | 6 |

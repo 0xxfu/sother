@@ -2,7 +2,7 @@
 
 ### Gas Optimizations
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | `<x> += <y>` costs more gas than `<x> = <x> + <y>` for state variables | 2 |
 

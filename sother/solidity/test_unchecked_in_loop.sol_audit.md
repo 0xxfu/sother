@@ -2,14 +2,14 @@
 
 ### Non-critical Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Dead-code | 1 |
 
 
 ### Gas Optimizations
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Cache the `<array>.length` for the loop condition | 3 |
 | [G-1] | The increment `++i/i++` in `for-loop`/`while-loop` post condition can be made `unchecked{++i}/unchecked{i++}` | 2 |

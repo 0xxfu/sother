@@ -2,7 +2,7 @@
 
 ### Non-critical Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Function Initializing State | 2 |
 | [N-1] | Conformance to Solidity naming conventions | 16 |
@@ -12,7 +12,7 @@
 
 ### Gas Optimizations
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | State variables only set in the constructor should be declared immutable | 4 |
 | [G-1] | Using `private` rather than `public` for constants, saves gas | 1 |

@@ -2,7 +2,7 @@
 
 ### High Risk Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [H-0] | Arbitrary `from` in transferFrom | 2 |
 

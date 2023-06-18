@@ -2,14 +2,14 @@
 
 ### Non-critical Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Dead-code | 1 |
 
 
 ### Gas Optimizations
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Using `storage` instead of `memory` for structs/arrays saves gas | 3 |
 

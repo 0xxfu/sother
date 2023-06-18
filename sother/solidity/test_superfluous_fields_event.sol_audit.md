@@ -2,7 +2,7 @@
 
 ### Gas Optimizations
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Superfluous fields in event | 2 |
 

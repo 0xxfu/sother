@@ -2,14 +2,14 @@
 
 ### Non-critical Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Conformance to Solidity naming conventions | 3 |
 
 
 ### Gas Optimizations
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Using `private` rather than `public` for constants, saves gas | 3 |
 

@@ -2,7 +2,7 @@
 
 ### High Risk Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [H-0] | Arbitrary `from` in transferFrom | 3 |
 | [H-1] | Unchecked transfer | 3 |
@@ -10,14 +10,14 @@
 
 ### Non-critical Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Conformance to Solidity naming conventions | 1 |
 
 
 ### Gas Optimizations
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | State variables only set in the constructor should be declared immutable | 3 |
 

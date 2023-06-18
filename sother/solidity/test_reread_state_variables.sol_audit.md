@@ -2,14 +2,14 @@
 
 ### Medium Risk Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [M-0] | Write after write | 1 |
 
 
 ### Gas Optimizations
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | State variables should be cached in stack variables rather than re-reading them from storage | 2 |
 

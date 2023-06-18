@@ -2,7 +2,7 @@
 
 ### Non-critical Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Variable names too similar | 2 |
 | [N-1] | Unused state variable | 12 |
@@ -10,7 +10,7 @@
 
 ### Gas Optimizations
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead | 21 |
 | [G-1] | Remove or replace unused state variables | 12 |

@@ -2,14 +2,14 @@
 
 ### High Risk Issues
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [H-0] | Uninitialized state variables | 1 |
 
 
 ### Gas Optimizations
 
-| |Issue|Instances|
+|ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Remove or replace unused state variables | 1 |
 | [G-1] | State variables that could be declared constant | 2 |
