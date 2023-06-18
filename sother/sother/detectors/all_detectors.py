@@ -28,3 +28,6 @@ from sother.detectors.variables.reread_state_variables import RereadStateVariabl
 from sother.detectors.variables.unused_state_variables import UnusedStateVariables
 from sother.detectors.operations.divide_by_constant import DivideByConstant
 from sother.detectors.events.superfluous_fields_event import SuperfluousFieldsEvent
+from sother.detectors.functions.cache_call_function_result import (
+    CacheCallFunctionResult,
+)
