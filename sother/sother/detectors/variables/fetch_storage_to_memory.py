@@ -21,7 +21,7 @@ from sother.detectors.detector_settings import DetectorSettings
 from sother.utils.gas_utils import GasUtils
 
 
-# todo do not detect external view and pure function
+# override by MemoryFromStorage
 class FetchStorageToMemory(AbstractDetector):
     ARGUMENT = "fetch-storage-to-memory"
     HELP = "Using `storage` instead of `memory` for structs/arrays saves gas"
@@ -30,13 +30,13 @@ class FetchStorageToMemory(AbstractDetector):
 
     WIKI = DetectorSettings.default_wiki
 
-    WIKI_TITLE = (
-        "Using `storage` instead of `memory` for structs/arrays saves gas"
-    )
+    WIKI_TITLE = "Using `storage` instead of `memory` for structs/arrays saves gas"
     WIKI_DESCRIPTION = """When fetching data from a storage location, assigning the data to a `memory` variable causes all fields of the struct/array to be read from storage, which incurs a Gcoldsload (**2100 gas**) for *each* field of the struct/array. If the fields are read from the new memory variable, they incur an additional `MLOAD` rather than a cheap stack read. Instead of declearing the variable with the `memory` keyword, declaring the variable with the `storage` keyword and caching any fields that need to be re-read in stack variables, will be much cheaper, only incuring the Gcoldsload for the fields actually read. The only time it makes sense to read the whole struct/array into a `memory` variable, is if the full struct/array is being returned by the function, is being passed to a function that requires `memory`, or if the array/struct is being read from another `memory` array/struct
     """
 
-    WIKI_RECOMMENDATION = "Fetching data from `storage` directly, don't convert `storage` to `memory`"
+    WIKI_RECOMMENDATION = (
+        "Fetching data from `storage` directly, don't convert `storage` to `memory`"
+    )
 
     def _get_array_or_structure(
         self, variables: list[LocalVariable]
@@ -70,12 +70,8 @@ class FetchStorageToMemory(AbstractDetector):
     def _detect(self) -> List[Output]:
         results = []
 
-        for function in GasUtils.get_available_functions(
-            self.compilation_unit
-        ):
-            state_variables: list[
-                StateVariable
-            ] = function.contract.state_variables
+        for function in GasUtils.get_available_functions(self.compilation_unit):
+            state_variables: list[StateVariable] = function.contract.state_variables
 
             if function.is_implemented and function.entry_point:
                 memory_variables = self._get_array_or_structure(
