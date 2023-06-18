@@ -18,7 +18,7 @@ from sother.utils.pragma_utils import PragmaUtil
 
 
 class SafeMathLib(AbstractDetector):
-    ARGUMENT = "sdafe-math-lib"
+    ARGUMENT = "safe-math-lib"
     HELP = "Don't use `SafeMath` if use solidity version `>=0.8.0`"
     IMPACT = DetectorClassification.OPTIMIZATION
     CONFIDENCE = DetectorClassification.HIGH
