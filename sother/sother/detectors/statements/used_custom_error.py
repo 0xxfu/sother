@@ -16,7 +16,7 @@ from sother.utils.gas_utils import GasUtils
 
 
 class UsedCustomError(AbstractDetector):
-    ARGUMENT = "used-custom-error"
+    ARGUMENT = "use-custom-error"
     HELP = "use custom errors instead of revert strings"
     IMPACT = DetectorClassification.OPTIMIZATION
     CONFIDENCE = DetectorClassification.HIGH
