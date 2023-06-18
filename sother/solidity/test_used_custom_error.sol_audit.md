@@ -73,4 +73,4 @@ Using custom errors replace `require` or `assert`.
 Optimization
 
 ### category:
-used-custom-error
+use-custom-error
