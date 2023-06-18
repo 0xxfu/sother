@@ -6,10 +6,16 @@
 import unittest
 from typing import List
 
+from loguru import logger
+from slither.core.cfg.node import Node
+from slither.core.declarations import FunctionContract
+from slither.core.solidity_types import ArrayType, UserDefinedType
+from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 from slither.utils.output import Output
 
 from sother.detectors.detector_settings import DetectorSettings
+from sother.utils.gas_utils import GasUtils
 
 
 class MemoryFromStorage(AbstractDetector):
@@ -31,6 +37,15 @@ More detail see [this.](https://gist.github.com/0xxfu/0ab3b64ba7b342fb88e243d82a
 Using `storage` replace `memory` in local variables.
 """
 
+    @classmethod
+    def _detect_local_memory(cls, function: FunctionContract) -> set[LocalVariable]:
+        result: set[LocalVariable] = set()
+        for variable in function.local_variables:
+            if isinstance(variable.type, (ArrayType, UserDefinedType)):
+                if not variable.is_storage:
+                    result.add(variable)
+        return result
+
     def _detect(self) -> List[Output]:
         """
         1. get all struct/mapping states
@@ -38,6 +53,20 @@ Using `storage` replace `memory` in local variables.
         3. return the node list
         """
         results = []
+
+        for function in GasUtils.get_available_functions(self.compilation_unit):
+            result_variables = self._detect_local_memory(function)
+            for variable in result_variables:
+                logger.debug(
+                    f"local memory struct/array: {type(variable.type)} {str(variable.expression)}"
+                )
+                res = self.generate_result(
+                    [
+                        variable,
+                        " should use `storage` instead of `memory` to save gas.\n",
+                    ]
+                )
+                results.append(res)
         return results
 
 

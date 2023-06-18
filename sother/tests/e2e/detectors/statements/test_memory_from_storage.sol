@@ -1,20 +1,32 @@
-pragma solidity 0.8.19;
+// pragma solidity 0.8.19;
 
 contract StorageMemory {
     struct Foo {
         uint256 x;
     }
     mapping(uint256 => Foo) data;
+    uint256 state;
+    uint256[] uintArr;
 
-    // 2564 gas
-    function bad_6eP() external view returns (uint256) {
-        Foo memory a = data[0];
-        return a.x;
+    function bad() external {
+        Foo memory f = data[0];
+        state = state + 1 + f.x;
     }
 
-    // 2534 gas
-    function good_H7A() external view returns (uint256) {
+    function badArr() external {
+        uint256[] memory arr = uintArr;
+        arr[0] = 1;
+        uintArr = arr;
+    }
+
+    function good() external {
         Foo storage f = data[0];
-        return f.x;
+        state = state + 1 + f.x;
+    }
+
+    function goodArr() external {
+        uint256[] storage arr = uintArr;
+        arr[0] = 1;
+        uintArr = arr;
     }
 }

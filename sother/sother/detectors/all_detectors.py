@@ -20,6 +20,7 @@ from sother.detectors.functions.internal_function_to_inline import (
 from sother.detectors.statements.array_length_in_loop import ArrayLengthInLoop
 from sother.detectors.statements.unchecked_in_loop import UncheckedInLoop
 from sother.detectors.statements.used_custom_error import UsedCustomError
+from sother.detectors.statements.memory_from_storage import MemoryFromStorage
 from sother.detectors.variables.smaller_uint_int import SmallerUintInt
 from sother.detectors.variables.public_to_private_constant import (
     PublicToPrivateConstant,
