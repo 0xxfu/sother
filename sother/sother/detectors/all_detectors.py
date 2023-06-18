@@ -6,7 +6,9 @@
 # from sother.detectors.example_detector import ExampleDetector
 from sother.detectors.variables.could_be_immutable import CouldBeImmutable
 from sother.detectors.variables.bool_state_variables import BoolStateVariables
-
+from sother.detectors.statements.fetch_storage_to_memory import (
+    FetchStorageToMemory,
+)
 from sother.detectors.pragma.upgrade_to_latest import UpgradeToLatest
 from sother.detectors.attributes.incorrect_solc import IncorrectSolc
 from sother.detectors.statements.assignment_left_operation import (
@@ -18,7 +20,6 @@ from sother.detectors.functions.internal_function_to_inline import (
 from sother.detectors.statements.array_length_in_loop import ArrayLengthInLoop
 from sother.detectors.statements.unchecked_in_loop import UncheckedInLoop
 from sother.detectors.statements.used_custom_error import UsedCustomError
-from sother.detectors.statements.memory_from_storage import MemoryFromStorage
 from sother.detectors.variables.smaller_uint_int import SmallerUintInt
 from sother.detectors.variables.public_to_private_constant import (
     PublicToPrivateConstant,

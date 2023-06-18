@@ -18,6 +18,7 @@ from sother.detectors.detector_settings import DetectorSettings
 from sother.utils.gas_utils import GasUtils
 
 
+# override by FetchStorageToMemory
 class MemoryFromStorage(AbstractDetector):
     ARGUMENT = "memory-from-storage"
     HELP = "Using `storage` instead of `memory` for structs/arrays saves gas"

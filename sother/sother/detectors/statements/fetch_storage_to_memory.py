@@ -21,7 +21,6 @@ from sother.detectors.detector_settings import DetectorSettings
 from sother.utils.gas_utils import GasUtils
 
 
-# override by MemoryFromStorage
 class FetchStorageToMemory(AbstractDetector):
     ARGUMENT = "fetch-storage-to-memory"
     HELP = "Using `storage` instead of `memory` for structs/arrays saves gas"
@@ -38,8 +37,9 @@ class FetchStorageToMemory(AbstractDetector):
         "Fetching data from `storage` directly, don't convert `storage` to `memory`"
     )
 
+    @classmethod
     def _get_array_or_structure(
-        self, variables: list[LocalVariable]
+        cls, variables: list[LocalVariable]
     ) -> list[LocalVariable]:
         results: list[LocalVariable] = []
         for variable in variables:
@@ -50,9 +50,9 @@ class FetchStorageToMemory(AbstractDetector):
                     results.append(variable)
         return results
 
+    @classmethod
     def _detect_memory_init_from_state(
-        self,
-        state_variables: list[StateVariable],
+        cls,
         local_variables: list[LocalVariable],
     ) -> list[(LocalVariable, StateVariable)]:
         results = []
@@ -71,15 +71,11 @@ class FetchStorageToMemory(AbstractDetector):
         results = []
 
         for function in GasUtils.get_available_functions(self.compilation_unit):
-            state_variables: list[StateVariable] = function.contract.state_variables
-
             if function.is_implemented and function.entry_point:
                 memory_variables = self._get_array_or_structure(
                     function.local_variables
                 )
-                result_variables = self._detect_memory_init_from_state(
-                    state_variables, memory_variables
-                )
+                result_variables = self._detect_memory_init_from_state(memory_variables)
 
                 for local, state in result_variables:
                     json = self.generate_result(

@@ -3,11 +3,10 @@
 @email: angerpeanut@gmail.com
 @date: 2023-06
 """
-import os
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.variables.fetch_storage_to_memory import (
+from sother.detectors.statements.fetch_storage_to_memory import (
     FetchStorageToMemory,
 )
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
