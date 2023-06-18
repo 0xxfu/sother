@@ -42,11 +42,11 @@ def _to_markdown(
         markdown += f"{detector_wiki.wiki_description}\n\n"
 
     if len(output_results) <= 1:
-        markdown += (
-            f"**There is `{len(output_results)}` instance of this issue:**\n\n"
-        )
+        markdown += f"**There is `{len(output_results)}` instance of this issue:**\n\n"
     else:
-        markdown += f"**There are `{len(output_results)}` instances of this issue:**\n\n"
+        markdown += (
+            f"**There are `{len(output_results)}` instances of this issue:**\n\n"
+        )
     for result in output_results:
         markdown += f"- {result.markdown}\n"
 
@@ -96,7 +96,7 @@ def _to_summary_markdown(
         else:
             impact_tag = "N"
             markdown += f"### Non-critical Issues\n\n"
-        markdown += f"| |Issue|Instances|\n"
+        markdown += f"|ID|Issues|Instances|\n"
         markdown += f"|---|:---|:---:|\n"
         idx = 0
         for check in impact_checks[impact]:
@@ -127,9 +127,7 @@ class Markdown(AbstractPrinter):
                 else:
                     detector_outputs[output_result.check] = [output_result]
         output_markdown = ""
-        output_markdown += _to_summary_markdown(
-            detector_wikis, detector_outputs
-        )
+        output_markdown += _to_summary_markdown(detector_wikis, detector_outputs)
         for detector_check in detector_outputs:
             print(detector_check, len(detector_outputs[detector_check]))
             wiki = (
