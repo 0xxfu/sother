@@ -12,7 +12,7 @@
 | |Issue|Instances|
 |---|:---|:---:|
 | [G-0] | Using `x >> constant(uint)` with the right shift operator is a more gas-efficient | 2 |
-| [G-1] | use custom errors instead of revert strings | 3 |
+| [G-1] | use custom errors instead of revert strings | 2 |
 
 
 
@@ -91,11 +91,9 @@ Using a custom error instance will usually be much cheaper than a string descrip
 More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d97a215) and [this](https://docs.soliditylang.org/en/latest/control-structures.html#revert).
 
 
-**There are `3` instances of this issue:**
+**There are `2` instances of this issue:**
 
 - [require(bool)(x != 0)](solidity/test_divide_by_constant.sol#L17) should use custom error to save gas.
-
-- [require(bool)(x != 0)](solidity/test_divide_by_constant.sol#L30) should use custom error to save gas.
 
 - [require(bool)(x != 0)](solidity/test_divide_by_constant.sol#L9) should use custom error to save gas.
 
@@ -107,7 +105,6 @@ Using custom errors replace `require` or `assert`.
 
 ### location:
 - solidity/test_divide_by_constant.sol#L17
-- solidity/test_divide_by_constant.sol#L30
 - solidity/test_divide_by_constant.sol#L9
 
 ### severity:
