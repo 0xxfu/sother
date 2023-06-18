@@ -370,7 +370,7 @@ Remove `SafeMath` lib.
 Optimization
 
 ### category:
-sdafe-math-lib
+safe-math-lib
 
 ## [Optimization] Remove or replace unused state variables
 
