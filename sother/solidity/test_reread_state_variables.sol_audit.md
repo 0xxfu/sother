@@ -12,6 +12,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | State variables should be cached in stack variables rather than re-reading them from storage | 2 |
+| [G-1] | Use indexed events for value types as they are less costly compared to non-indexed ones | 1 |
 
 
 
@@ -86,3 +87,35 @@ Optimization
 
 ### category:
 reread-state-variables
+
+## [Optimization] Use indexed events for value types as they are less costly compared to non-indexed ones
+
+### description:
+
+Using the `indexed` keyword for [value types](https://docs.soliditylang.org/en/v0.8.20/types.html#value-types) (`bool/int/address/string/bytes`) saves gas costs, as seen in [this example](https://gist.github.com/0xxfu/c292a65ecb61cae6fd2090366ea0877e).
+
+However, this is only the case for value types, whereas indexing [reference types](https://docs.soliditylang.org/en/v0.8.20/types.html#reference-types) (`array/struct`) are more expensive than their unindexed version.
+
+
+**There is `1` instance of this issue:**
+
+- The following variables should be indexed in [RereadStateVariablesStateEvent(uint256,uint256)](solidity/test_reread_state_variables.sol#L6):
+
+	- [a](solidity/test_reread_state_variables.sol#L6)
+
+	- [state](solidity/test_reread_state_variables.sol#L6)
+
+
+### recommendation:
+
+Using the `indexed` keyword for values types `bool/int/address/string/bytes` in event
+
+
+### location:
+- solidity/test_reread_state_variables.sol#L6
+
+### severity:
+Optimization
+
+### category:
+unindexed-event

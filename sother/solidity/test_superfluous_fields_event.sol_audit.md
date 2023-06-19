@@ -5,6 +5,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Superfluous fields in event | 2 |
+| [G-1] | Use indexed events for value types as they are less costly compared to non-indexed ones | 3 |
 
 
 
@@ -36,3 +37,43 @@ Optimization
 
 ### category:
 superfluous-fields-event
+
+## [Optimization] Use indexed events for value types as they are less costly compared to non-indexed ones
+
+### description:
+
+Using the `indexed` keyword for [value types](https://docs.soliditylang.org/en/v0.8.20/types.html#value-types) (`bool/int/address/string/bytes`) saves gas costs, as seen in [this example](https://gist.github.com/0xxfu/c292a65ecb61cae6fd2090366ea0877e).
+
+However, this is only the case for value types, whereas indexing [reference types](https://docs.soliditylang.org/en/v0.8.20/types.html#reference-types) (`array/struct`) are more expensive than their unindexed version.
+
+
+**There are `3` instances of this issue:**
+
+- The following variables should be indexed in [SuperfluousFieldsEventBlockTimestampEvent(uint256)](solidity/test_superfluous_fields_event.sol#L4):
+
+	- [blockTimestamp](solidity/test_superfluous_fields_event.sol#L4)
+
+- The following variables should be indexed in [SuperfluousFieldsEventBlockNumberEvent(uint256)](solidity/test_superfluous_fields_event.sol#L5):
+
+	- [blockNumber](solidity/test_superfluous_fields_event.sol#L5)
+
+- The following variables should be indexed in [SuperfluousFieldsEventGoodEvent(uint256)](solidity/test_superfluous_fields_event.sol#L6):
+
+	- [xyz](solidity/test_superfluous_fields_event.sol#L6)
+
+
+### recommendation:
+
+Using the `indexed` keyword for values types `bool/int/address/string/bytes` in event
+
+
+### location:
+- solidity/test_superfluous_fields_event.sol#L4
+- solidity/test_superfluous_fields_event.sol#L5
+- solidity/test_superfluous_fields_event.sol#L6
+
+### severity:
+Optimization
+
+### category:
+unindexed-event
