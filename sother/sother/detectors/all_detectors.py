@@ -35,3 +35,4 @@ from sother.detectors.source.safe_math_lib import SafeMathLib
 from sother.detectors.functions.dead_code import DeadCode
 from sother.detectors.events.unindexed_event import UnindexedEvent
 from sother.detectors.statements.operator_and_in_require import OperatorAndInRequire
+from sother.detectors.functions.memory_in_parameters import MemoryInParameters
