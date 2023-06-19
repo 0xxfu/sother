@@ -1,49 +1,13 @@
 ## Summary 
 
-### Non-critical Issues
-
-|ID|Issues|Instances|
-|---|:---|:---:|
-| [N-0] | Dead-code | 1 |
-
-
 ### Gas Optimizations
 
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Cache the `<array>.length` for the loop condition | 2 |
+| [G-1] | Dead-code: functions not used should be removed to save deployment gas | 1 |
 
 
-
-## [Informational] Dead-code
-
-### description:
-Functions that are not sued.
-
-**There is `1` instance of this issue:**
-
-- [LoopArrayLength.internalView(uint256[])](solidity/test_array_length_in_loop.sol#L39-L48) is never used and should be removed
-
-#### Exploit scenario
-
-```solidity
-contract Contract{
-    function dead_code() internal() {}
-}
-```
-`dead_code` is not used in the contract, and make the code's review more difficult.
-
-### recommendation:
-Remove unused functions.
-
-### location:
-- solidity/test_array_length_in_loop.sol#L39-L48
-
-### severity:
-Informational
-
-### category:
-dead-code
 
 ## [Optimization] Cache the `<array>.length` for the loop condition
 
@@ -91,3 +55,25 @@ Optimization
 
 ### category:
 array-length-in-loop
+
+## [Optimization] Dead-code: functions not used should be removed to save deployment gas
+
+### description:
+Functions that are not sued.
+
+**There is `1` instance of this issue:**
+
+- [LoopArrayLength.internalView(uint256[])](solidity/test_array_length_in_loop.sol#L39-L48) is never used and should be removed
+
+
+### recommendation:
+Remove unused functions.
+
+### location:
+- solidity/test_array_length_in_loop.sol#L39-L48
+
+### severity:
+Optimization
+
+### category:
+dead-code

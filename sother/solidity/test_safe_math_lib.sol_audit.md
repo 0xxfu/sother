@@ -13,20 +13,20 @@
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 1 |
 | [N-1] | Assembly usage | 1 |
-| [N-2] | Dead-code | 32 |
 
 
 ### Gas Optimizations
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Using `x >> constant(uint)` with the right shift operator is a more gas-efficient | 1 |
-| [G-1] | `internal` functions only called once can be inlined to save gas | 6 |
-| [G-2] | Don't use `SafeMath` if use solidity version `>=0.8.0` | 1 |
-| [G-3] | Remove or replace unused state variables | 1 |
-| [G-4] | Reduce gas usage by moving to Solidity 0.8.19 or later | 1 |
-| [G-5] | use custom errors instead of revert strings | 8 |
-| [G-6] | State variables that could be declared constant | 1 |
+| [G-0] | Dead-code: functions not used should be removed to save deployment gas | 32 |
+| [G-1] | Using `x >> constant(uint)` with the right shift operator is a more gas-efficient | 1 |
+| [G-2] | `internal` functions only called once can be inlined to save gas | 6 |
+| [G-3] | Don't use `SafeMath` if use solidity version `>=0.8.0` | 1 |
+| [G-4] | Remove or replace unused state variables | 1 |
+| [G-5] | Reduce gas usage by moving to Solidity 0.8.19 or later | 1 |
+| [G-6] | use custom errors instead of revert strings | 8 |
+| [G-7] | State variables that could be declared constant | 1 |
 
 
 
@@ -161,7 +161,7 @@ Informational
 ### category:
 assembly
 
-## [Informational] Dead-code
+## [Optimization] Dead-code: functions not used should be removed to save deployment gas
 
 ### description:
 Functions that are not sued.
@@ -232,14 +232,6 @@ Functions that are not sued.
 
 - [Math.min(uint256,uint256)](solidity/test_safe_math_lib.sol#L107-L109) is never used and should be removed
 
-#### Exploit scenario
-
-```solidity
-contract Contract{
-    function dead_code() internal() {}
-}
-```
-`dead_code` is not used in the contract, and make the code's review more difficult.
 
 ### recommendation:
 Remove unused functions.
@@ -279,7 +271,7 @@ Remove unused functions.
 - solidity/test_safe_math_lib.sol#L107-L109
 
 ### severity:
-Informational
+Optimization
 
 ### category:
 dead-code

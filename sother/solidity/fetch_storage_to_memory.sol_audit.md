@@ -1,21 +1,15 @@
 ## Summary 
 
-### Non-critical Issues
-
-|ID|Issues|Instances|
-|---|:---|:---:|
-| [N-0] | Dead-code | 1 |
-
-
 ### Gas Optimizations
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Using `storage` instead of `memory` for structs/arrays saves gas | 3 |
+| [G-0] | Dead-code: functions not used should be removed to save deployment gas | 1 |
+| [G-1] | Using `storage` instead of `memory` for structs/arrays saves gas | 3 |
 
 
 
-## [Informational] Dead-code
+## [Optimization] Dead-code: functions not used should be removed to save deployment gas
 
 ### description:
 Functions that are not sued.
@@ -24,14 +18,6 @@ Functions that are not sued.
 
 - [StorageMemory.internalView(uint256)](solidity/fetch_storage_to_memory.sol#L37-L40) is never used and should be removed
 
-#### Exploit scenario
-
-```solidity
-contract Contract{
-    function dead_code() internal() {}
-}
-```
-`dead_code` is not used in the contract, and make the code's review more difficult.
 
 ### recommendation:
 Remove unused functions.
@@ -40,7 +26,7 @@ Remove unused functions.
 - solidity/fetch_storage_to_memory.sol#L37-L40
 
 ### severity:
-Informational
+Optimization
 
 ### category:
 dead-code
