@@ -1416,7 +1416,7 @@ test = ["hypothesis (==5.19.0)", "pytest (>=6.2.5,<7)", "tox (>=2.9.1,<3)"]
 [[package]]
 name = "slither-analyzer"
 version = "0.9.3"
-description = ""
+description = "Slither is a Solidity static analysis framework written in Python 3."
 optional = false
 python-versions = ">=3.8"
 files = []
@@ -1442,7 +1442,7 @@ test = ["coverage[toml]", "deepdiff", "filelock", "numpy", "pytest", "pytest-cov
 type = "git"
 url = "https://github.com/0xxfu/slither.git"
 reference = "master"
-resolved_reference = "79ff12a5e290a0695826f276bf848b1165e5d57a"
+resolved_reference = "f184e4193e9704d2a012e0c669dc59cbe9c76834"
 
 [[package]]
 name = "solc-select"
