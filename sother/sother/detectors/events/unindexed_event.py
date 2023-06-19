@@ -39,8 +39,6 @@ Using the `indexed` keyword for values types `bool/int/address/string/bytes` in 
         results = []
         for contract in self.compilation_unit.contracts_derived:
             for event in contract.events:
-                if event.name != "IntsEvent":
-                    continue
                 result_variables = self._detect_unindexed_event(event)
                 if result_variables and len(result_variables) > 0:
                     logger.debug(
