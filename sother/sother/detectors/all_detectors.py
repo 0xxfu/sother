@@ -32,3 +32,4 @@ from sother.detectors.functions.cache_call_function_result import (
     CacheCallFunctionResult,
 )
 from sother.detectors.source.safe_math_lib import SafeMathLib
+from sother.detectors.functions.dead_code import DeadCode
