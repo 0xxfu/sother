@@ -18,8 +18,8 @@ The instances below point to the second+ call of the function within a single fu
 **There is `1` instance of this issue:**
 
 - `CallFunctionResult.externalPure()` called result should be cached with local variable in [CallFunctionResult.bad(uint256)](solidity/test_cache_call_function_result.sol#L5-L10), It is called more than once:
-	- [a = a + externalPure()](solidity/test_cache_call_function_result.sol#L7)
 	- [a = a + externalPure()](solidity/test_cache_call_function_result.sol#L6)
+	- [a = a + externalPure()](solidity/test_cache_call_function_result.sol#L7)
 
 
 ### recommendation:
