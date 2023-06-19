@@ -49,15 +49,15 @@ However, this is only the case for value types, whereas indexing [reference type
 
 **There are `3` instances of this issue:**
 
-- The following variables should be indexed in [SuperfluousFieldsEventBlockTimestampEvent(uint256)](solidity/test_superfluous_fields_event.sol#L4):
+- The following variables should be indexed in [SuperfluousFieldsEvent.BlockTimestampEvent(uint256)](solidity/test_superfluous_fields_event.sol#L4):
 
 	- [blockTimestamp](solidity/test_superfluous_fields_event.sol#L4)
 
-- The following variables should be indexed in [SuperfluousFieldsEventBlockNumberEvent(uint256)](solidity/test_superfluous_fields_event.sol#L5):
+- The following variables should be indexed in [SuperfluousFieldsEvent.BlockNumberEvent(uint256)](solidity/test_superfluous_fields_event.sol#L5):
 
 	- [blockNumber](solidity/test_superfluous_fields_event.sol#L5)
 
-- The following variables should be indexed in [SuperfluousFieldsEventGoodEvent(uint256)](solidity/test_superfluous_fields_event.sol#L6):
+- The following variables should be indexed in [SuperfluousFieldsEvent.GoodEvent(uint256)](solidity/test_superfluous_fields_event.sol#L6):
 
 	- [xyz](solidity/test_superfluous_fields_event.sol#L6)
 

@@ -99,7 +99,7 @@ However, this is only the case for value types, whereas indexing [reference type
 
 **There is `1` instance of this issue:**
 
-- The following variables should be indexed in [RereadStateVariablesStateEvent(uint256,uint256)](solidity/test_reread_state_variables.sol#L6):
+- The following variables should be indexed in [RereadStateVariables.StateEvent(uint256,uint256)](solidity/test_reread_state_variables.sol#L6):
 
 	- [a](solidity/test_reread_state_variables.sol#L6)
 
