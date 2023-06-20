@@ -27,17 +27,13 @@ def get_detectors_and_printers() -> (
 
 
 def guru_logger():
-    log_level = os.environ.get("LOGURU_LEVEL") or os.environ.get(
-        "loguru_level"
-    )
+    log_level = os.environ.get("LOGURU_LEVEL") or os.environ.get("loguru_level")
     if not log_level:
         logger.remove(0)
         logger.add(sys.stdout, level="INFO")
 
 
-def start() -> (
-    Tuple[List[Type[AbstractDetector]], List[Type[AbstractPrinter]]]
-):
+def start() -> Tuple[List[Type[AbstractDetector]], List[Type[AbstractPrinter]]]:
     guru_logger()
     # Codebase with complex domninators can lead to a lot of SSA recursive call
     sys.setrecursionlimit(1500)
