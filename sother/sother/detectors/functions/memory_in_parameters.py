@@ -8,6 +8,7 @@ from typing import List
 
 from loguru import logger
 from slither.core.declarations import FunctionContract
+from slither.core.solidity_types import ArrayType, UserDefinedType, MappingType
 from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 from slither.utils.output import Output
@@ -62,7 +63,11 @@ More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-s
         memory_variables: list[LocalVariable] = list()
         variables_written = function.variables_written
         for param in function.parameters:
-            if param.location == "memory" and param not in variables_written:
+            if (
+                param.location == "memory"
+                and param not in variables_written
+                and isinstance(param.type, (ArrayType, UserDefinedType, MappingType))
+            ):
                 memory_variables.append(param)
         return memory_variables
 
