@@ -57,7 +57,7 @@ def _to_markdown(
     markdown += f"\n### recommendation:\n"
     if detector_wiki.wiki_recommendation:
         markdown += f"{detector_wiki.wiki_recommendation}\n"
-    markdown += f"\n### location:\n"
+    markdown += f"\n### locations:\n"
     for result in output_results:
         markdown += f"- {result.first_markdown_element}\n"
     markdown += f"\n### severity:\n"
