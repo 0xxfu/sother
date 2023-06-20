@@ -12,6 +12,7 @@ from slither.detectors.operations.unchecked_transfer import (
 
 
 class UncheckedTransfer(SlitherUncheckedTransfer):
+    ARGUMENT = "unchecked-transfer"
     IMPACT = DetectorClassification.LOW
     CONFIDENCE = DetectorClassification.MEDIUM
     HELP = "Return values of `transfer()/transferFrom()` not checked"
