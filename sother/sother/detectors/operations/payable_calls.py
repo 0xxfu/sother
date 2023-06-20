@@ -30,14 +30,14 @@ class PayableCalls(AbstractDetector):
 
     WIKI_TITLE = "Don't use `payable.transfer()`/`payable.send()`"
     WIKI_DESCRIPTION = """
-The use of `payable.transfer()` is [heavily frowned upon](https://consensys.net/diligence/blog/2019/09/stop-using-soliditys-transfer-now/) because it can lead to the locking of funds. The `transfer()` call requires that the recipient is either an EOA account, or is a contract that has a `payable` callback. For the contract case, the `transfer()` call only provides 2300 gas for the contract to complete its operations. This means the following cases can cause the transfer to fail:
+The use of `payable.transfer()` is [heavily frowned upon](https://consensys.net/diligence/blog/2019/09/stop-using-soliditys-transfer-now/) because it can lead to the locking of funds. The `transfer()` call requires that the recipient is either an EOA account, or is a contract that has a `payable` callback. For the contract case, the `transfer()` call only provides 2300 gas for the contract to complete its operations. 
+"""
+    WIKI_EXPLOIT_SCENARIO = """
+The following cases can cause the transfer to fail:
 * The contract does not have a `payable` callback
 * The contract's `payable` callback spends more than 2300 gas (which is only enough to emit something)
 * The contract is called through a proxy which itself uses up the 2300 gas
 
-Use OpenZeppelin's `Address.sendValue()` instead
-"""
-    WIKI_EXPLOIT_SCENARIO = """
 Any smart contract that uses `transfer()` or `send()` is taking a hard dependency on gas costs by forwarding a fixed amount of gas: `2300`.
 ```
 contract Vulnerable {
