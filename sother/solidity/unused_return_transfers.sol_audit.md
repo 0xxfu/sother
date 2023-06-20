@@ -19,8 +19,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | State variables only set in the constructor should be declared immutable | 1 |
-| [G-1] | Use `calldata` instead of `memory` for function parameters | 2 |
-| [G-2] | use custom errors instead of revert strings | 4 |
+| [G-1] | use custom errors instead of revert strings | 4 |
 
 
 
@@ -48,7 +47,7 @@ contract MyConc{
 ### recommendation:
 Ensure that all the return values of the function calls are used.
 
-### location:
+### locations:
 - solidity/unused_return_transfers.sol#L60-L62
 
 ### severity:
@@ -90,7 +89,7 @@ Several tokens do not revert in case of failure and return false. If one of thes
 ### recommendation:
 Use `SafeERC20`, or ensure that the transfer/transferFrom return value is checked.
 
-### location:
+### locations:
 - solidity/unused_return_transfers.sol#L20-L22
 - solidity/unused_return_transfers.sol#L40-L42
 
@@ -117,7 +116,7 @@ While strings are not value types, and therefore cannot be immutable/constant if
 ### recommendation:
 Add the `immutable` attribute to state variables that never change or are set only in the constructor.
 
-### location:
+### locations:
 - solidity/unused_return_transfers.sol#L13
 
 ### severity:
@@ -125,43 +124,6 @@ Optimization
 
 ### category:
 immutable-states
-
-## [Optimization] Use `calldata` instead of `memory` for function parameters
-
-### description:
-
-On external functions, when using the `memory` keyword with a function argument, what's happening is a `memory` acts as an intermediate.
-
-When the function gets called externally, the array values are kept in `calldata` and copied to memory during ABI decoding (using the opcode `calldataload` and `mstore`). 
-And during the for loop, the values in the array are accessed in memory using a `mload`. That is inefficient. Reading directly from `calldata` using `calldataload` instead of going via `memory` saves the gas from the intermediate memory operations that carry the values.
-
-More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-should-i-use-calldata-and-when-should-i-use-memory)
-
-
-**There are `2` instances of this issue:**
-
-- [Token.transferFrom(address,address,uint256)](solidity/unused_return_transfers.sol#L5-L7) read-only `memory` parameters below should be changed to `calldata` :
-	- [Token.transferFrom(address,address,uint256)._from](solidity/unused_return_transfers.sol#L5)
-	- [Token.transferFrom(address,address,uint256)._to](solidity/unused_return_transfers.sol#L5)
-	- [Token.transferFrom(address,address,uint256)._value](solidity/unused_return_transfers.sol#L5)
-
-- [Token.transfer(address,uint256)](solidity/unused_return_transfers.sol#L2-L4) read-only `memory` parameters below should be changed to `calldata` :
-	- [Token.transfer(address,uint256)._to](solidity/unused_return_transfers.sol#L2)
-	- [Token.transfer(address,uint256)._value](solidity/unused_return_transfers.sol#L2)
-
-
-### recommendation:
-Use `calldata` instead of `memory` for external functions where the function argument is read-only.
-
-### location:
-- solidity/unused_return_transfers.sol#L5-L7
-- solidity/unused_return_transfers.sol#L2-L4
-
-### severity:
-Optimization
-
-### category:
-memory-in-parameters
 
 ## [Optimization] use custom errors instead of revert strings
 
@@ -188,7 +150,7 @@ More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d9
 Using custom errors replace `require` or `assert`.
 
 
-### location:
+### locations:
 - solidity/unused_return_transfers.sol#L30
 - solidity/unused_return_transfers.sol#L50
 - solidity/unused_return_transfers.sol#L47

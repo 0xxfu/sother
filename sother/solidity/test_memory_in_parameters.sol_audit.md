@@ -29,7 +29,7 @@ More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-s
 ### recommendation:
 Use `calldata` instead of `memory` for external functions where the function argument is read-only.
 
-### location:
+### locations:
 - solidity/test_memory_in_parameters.sol#L5-L12
 
 ### severity:
