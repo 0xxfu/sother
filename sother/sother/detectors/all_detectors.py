@@ -38,3 +38,4 @@ from sother.detectors.statements.operator_and_in_require import OperatorAndInReq
 from sother.detectors.functions.memory_in_parameters import MemoryInParameters
 from sother.detectors.operations.unchecked_transfer import UncheckedTransfer
 from sother.detectors.operations.payable_calls import PayableCalls
+from sother.detectors.statements.unchecked_array_length import UncheckedArrayLength
