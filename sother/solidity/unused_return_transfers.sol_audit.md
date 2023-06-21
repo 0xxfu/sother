@@ -11,7 +11,8 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [L-0] | Return values of `transfer()/transferFrom()` not checked | 2 |
+| [L-0] | `revert CustomError()` should be used instead of `assert()` | 2 |
+| [L-1] | Return values of `transfer()/transferFrom()` not checked | 2 |
 
 
 ### Gas Optimizations
@@ -55,6 +56,36 @@ Medium
 
 ### category:
 unused-return
+
+## [Low] `revert CustomError()` should be used instead of `assert()`
+
+### description:
+
+Prior to solidity version 0.8.0, hitting an assert consumes the **remainder of the transaction's available gas** rather than returning it, as `require()`/`revert()` do. `assert()` should be avoided even past solidity version 0.8.0 as its [documentation](https://docs.soliditylang.org/en/v0.8.19/control-structures.html#panic-via-assert-and-error-via-require) states that "The assert function creates an error of type Panic(uint256). ... Properly functioning code should never create a Panic, not even on invalid external input. If this happens, then there is a bug in your contract which you should fix.
+
+
+
+**There are `2` instances of this issue:**
+
+- [assert(bool)(t.transferFrom(address(this),address(0),1000000000000000000))](solidity/unused_return_transfers.sol#L50) should be replaced by `if (!condition) revert CustomError();`.
+
+- [assert(bool)(t.transfer(address(0),1000000000000000000))](solidity/unused_return_transfers.sol#L30) should be replaced by `if (!condition) revert CustomError();`.
+
+
+### recommendation:
+
+Please use `if (!condition) revert CustomError();` instead of `assert()`.
+
+
+### locations:
+- solidity/unused_return_transfers.sol#L50
+- solidity/unused_return_transfers.sol#L30
+
+### severity:
+Low
+
+### category:
+deprecated-assert
 
 ## [Low] Return values of `transfer()/transferFrom()` not checked
 
