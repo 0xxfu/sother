@@ -50,7 +50,10 @@ def _to_markdown(
     for result in output_results:
         markdown += f"- {result.markdown}\n"
 
-    if detector_wiki.wiki_exploit_scenario:
+    if (
+        detector_wiki.wiki_exploit_scenario
+        and detector_wiki.wiki_exploit_scenario != " "
+    ):
         markdown += f"#### Exploit scenario\n"
         markdown += f"{detector_wiki.wiki_exploit_scenario}\n"
 
