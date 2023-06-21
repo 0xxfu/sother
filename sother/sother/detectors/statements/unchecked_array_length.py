@@ -18,6 +18,7 @@ from slither.detectors.abstract_detector import (
     DetectorClassification,
     DETECTOR_INFO,
 )
+from slither.slithir.operations import Binary, BinaryType, Length
 from slither.utils.output import Output
 
 from sother.detectors.detector_settings import DetectorSettings
@@ -31,13 +32,13 @@ class UncheckedArrayLength(AbstractDetector):
 
     WIKI = DetectorSettings.default_wiki
 
-    WIKI_TITLE = "Missing array length check when inputting multiple arrays"
+    WIKI_TITLE = "Missing array length equality checks may lead to incorrect or undefined behavior"
     WIKI_DESCRIPTION = """
 If the length of the arrays are not required to be of the same length, user operations may not be fully executed due to a mismatch in the number of items iterated over, versus the number of items provided in the second array
 """
 
     WIKI_RECOMMENDATION = """
-At the beginning of the function, check if the length of the array is equal
+Check if the lengths of the array parameters are equal before use.
 """
     WIKI_EXPLOIT_SCENARIO = " "
 
@@ -50,58 +51,70 @@ At the beginning of the function, check if the length of the array is equal
         results = []
         for c in self.compilation_unit.contracts:
             for func in c.functions_declared:
-                variables: list[Variable] = self._detect_unchecked_array_length(func)
+                if not func.is_implemented:
+                    continue
+                # if func.name != "goodWithRevert":
+                #     continue
+                variables: set[Variable] = self._detect_unchecked_array_length(func)
                 if not variables:
                     continue
-                info: DETECTOR_INFO = ["if the array length of "]
-                for variable in variables:
-                    info.append(f"`{variable.name}`")
-                    res = self.generate_result(info)
-                    results.append(res)
+                result = [
+                    "Missing check lengths of parameters below in function ",
+                    func,
+                    ":\n",
+                ]
+                for var in variables:
+                    result += ["\t- ", var, "\n"]
+                res = self.generate_result(result)
+                results.append(res)
         return results
 
     @classmethod
     def _is_checked_array_length(
-        cls, variables: list[LocalVariable], node: Node
+        cls, variables: set[LocalVariable], node: Node
     ) -> bool:
-        # todo impl node is _is_checked_array_length
-        pass
+        # check irs in node has array length check
+        array_length: set[LocalVariable] = set()
+        for ir in node.irs:
+            if isinstance(ir, Length):
+                for item in ir.read:
+                    if item in variables:
+                        array_length.add(item)
+            if not isinstance(ir, Binary):
+                continue
+            if ir.type == BinaryType.EQUAL or ir.type == BinaryType.NOT_EQUAL:
+                if len(array_length) == len(variables):
+                    return True
+        return False
 
     @classmethod
     def _detect_unchecked_array_length(
         cls, function: FunctionContract
-    ) -> Optional[list[Variable]]:
-        arr_variables: list[LocalVariable] = [
-            param for param in function.parameters if isinstance(param.type, ArrayType)
-        ]
+    ) -> Optional[set[Variable]]:
+        arr_variables: set[LocalVariable] = set()
+        for param in function.parameters:
+            if isinstance(param.type, ArrayType):
+                arr_variables.add(param)
+
         if len(arr_variables) <= 1:
             return
-        logger.debug(
-            f"function: {function.name} arr: {[item.name for item in arr_variables]}"
-        )
+
         # detect if/require/asset statements
         for node in function.nodes:
-            logger.debug(
-                f"node: {node.expression} exp type: {type(node.expression)} => {node.type}"
-            )
             # check node is `if` BinaryOperation node or `require`/`assert` CallExpression node
-            # check irs in node has array length check
-            for call in node.internal_calls:
-                logger.debug(f"call: {call.name}")
             if (
                 isinstance(node.expression, BinaryOperation)
                 and node.type == NodeType.IF
             ):
-                logger.debug(f"binary expression: {node.expression}")
                 if cls._is_checked_array_length(arr_variables, node):
-                    return arr_variables
+                    return None
             elif isinstance(node.expression, CallExpression) and any(
                 c.name == "assert(bool)" or c.name == "require(bool,string)"
                 for c in node.internal_calls
             ):
-                logger.debug(f"call expression: {node.expression}")
                 if cls._is_checked_array_length(arr_variables, node):
-                    return arr_variables
+                    return None
+        return arr_variables
 
 
 if __name__ == "__main__":

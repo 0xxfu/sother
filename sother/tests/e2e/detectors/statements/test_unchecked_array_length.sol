@@ -1,10 +1,28 @@
-
 contract UncheckedArrayLength {
     function bad(
         uint256[] calldata arrayA,
         uint256 b,
         uint256[] calldata arrayC
     ) public pure returns (uint256) {
+        return 1;
+    }
+
+    function bad2(
+        uint256[] calldata arrayA,
+        uint256[] calldata arrayB,
+        uint256[] calldata arrayC
+    ) public pure returns (uint256) {
+        return 1;
+    }
+
+    function bad3(
+        uint256[] calldata arrayA,
+        uint256[] calldata arrayB,
+        uint256[] calldata arrayC
+    ) public pure returns (uint256) {
+        if (arrayA.length != arrayC.length) {
+            revert("Length err");
+        }
         return 1;
     }
 
@@ -21,6 +39,17 @@ contract UncheckedArrayLength {
         uint256[] calldata arrayC
     ) public pure returns (uint256) {
         if (arrayA.length != arrayC.length) {
+            revert("Length err");
+        }
+        return 1;
+    }
+
+    function goodWithRevert2(
+        uint256[] calldata arrayA,
+        uint256[] calldata arrayB,
+        uint256[] calldata arrayC
+    ) public pure returns (uint256) {
+        if (arrayA.length != arrayC.length || arrayA.length != arrayB.length) {
             revert("Length err");
         }
         return 1;
