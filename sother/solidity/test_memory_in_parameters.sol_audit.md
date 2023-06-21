@@ -24,18 +24,16 @@ If the length of the arrays are not required to be of the same length, user oper
 
 **There are `2` instances of this issue:**
 
+- Missing check lengths of parameters below in function [MemoryInParameters.good(uint256[],uint256[],uint256[])](solidity/test_memory_in_parameters.sol#L14-L21):
+	- [MemoryInParameters.good(uint256[],uint256[],uint256[]).c](solidity/test_memory_in_parameters.sol#L17)
+	- [MemoryInParameters.good(uint256[],uint256[],uint256[]).b](solidity/test_memory_in_parameters.sol#L16)
+	- [MemoryInParameters.good(uint256[],uint256[],uint256[]).a](solidity/test_memory_in_parameters.sol#L15)
+
 - Missing check lengths of parameters below in function [MemoryInParameters.bad(uint256[],uint256[],uint256[])](solidity/test_memory_in_parameters.sol#L5-L12):
 	- [MemoryInParameters.bad(uint256[],uint256[],uint256[]).c](solidity/test_memory_in_parameters.sol#L8)
 	- [MemoryInParameters.bad(uint256[],uint256[],uint256[]).b](solidity/test_memory_in_parameters.sol#L7)
 	- [MemoryInParameters.bad(uint256[],uint256[],uint256[]).a](solidity/test_memory_in_parameters.sol#L6)
 
-- Missing check lengths of parameters below in function [MemoryInParameters.good(uint256[],uint256[],uint256[])](solidity/test_memory_in_parameters.sol#L14-L21):
-	- [MemoryInParameters.good(uint256[],uint256[],uint256[]).b](solidity/test_memory_in_parameters.sol#L16)
-	- [MemoryInParameters.good(uint256[],uint256[],uint256[]).a](solidity/test_memory_in_parameters.sol#L15)
-	- [MemoryInParameters.good(uint256[],uint256[],uint256[]).c](solidity/test_memory_in_parameters.sol#L17)
-
-#### Exploit scenario
- 
 
 ### recommendation:
 
@@ -43,8 +41,8 @@ Check if the lengths of the array parameters are equal before use.
 
 
 ### locations:
-- solidity/test_memory_in_parameters.sol#L5-L12
 - solidity/test_memory_in_parameters.sol#L14-L21
+- solidity/test_memory_in_parameters.sol#L5-L12
 
 ### severity:
 Low
