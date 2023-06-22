@@ -52,18 +52,18 @@ If the length of the arrays are not required to be of the same length, user oper
 
 **There are `3` instances of this issue:**
 
+- Missing check lengths of parameters below in function [UncheckedArrayLength.bad(uint256[],uint256,uint256[])](solidity/test_unchecked_array_length.sol#L2-L8):
+	- [UncheckedArrayLength.bad(uint256[],uint256,uint256[]).arrayC](solidity/test_unchecked_array_length.sol#L5)
+	- [UncheckedArrayLength.bad(uint256[],uint256,uint256[]).arrayA](solidity/test_unchecked_array_length.sol#L3)
+
 - Missing check lengths of parameters below in function [UncheckedArrayLength.bad3(uint256[],uint256[],uint256[])](solidity/test_unchecked_array_length.sol#L18-L27):
 	- [UncheckedArrayLength.bad3(uint256[],uint256[],uint256[]).arrayB](solidity/test_unchecked_array_length.sol#L20)
 	- [UncheckedArrayLength.bad3(uint256[],uint256[],uint256[]).arrayC](solidity/test_unchecked_array_length.sol#L21)
 	- [UncheckedArrayLength.bad3(uint256[],uint256[],uint256[]).arrayA](solidity/test_unchecked_array_length.sol#L19)
 
-- Missing check lengths of parameters below in function [UncheckedArrayLength.bad(uint256[],uint256,uint256[])](solidity/test_unchecked_array_length.sol#L2-L8):
-	- [UncheckedArrayLength.bad(uint256[],uint256,uint256[]).arrayA](solidity/test_unchecked_array_length.sol#L3)
-	- [UncheckedArrayLength.bad(uint256[],uint256,uint256[]).arrayC](solidity/test_unchecked_array_length.sol#L5)
-
 - Missing check lengths of parameters below in function [UncheckedArrayLength.bad2(uint256[],uint256[],uint256[])](solidity/test_unchecked_array_length.sol#L10-L16):
-	- [UncheckedArrayLength.bad2(uint256[],uint256[],uint256[]).arrayC](solidity/test_unchecked_array_length.sol#L13)
 	- [UncheckedArrayLength.bad2(uint256[],uint256[],uint256[]).arrayB](solidity/test_unchecked_array_length.sol#L12)
+	- [UncheckedArrayLength.bad2(uint256[],uint256[],uint256[]).arrayC](solidity/test_unchecked_array_length.sol#L13)
 	- [UncheckedArrayLength.bad2(uint256[],uint256[],uint256[]).arrayA](solidity/test_unchecked_array_length.sol#L11)
 
 
@@ -73,8 +73,8 @@ Check if the lengths of the array parameters are equal before use.
 
 
 ### locations:
-- solidity/test_unchecked_array_length.sol#L18-L27
 - solidity/test_unchecked_array_length.sol#L2-L8
+- solidity/test_unchecked_array_length.sol#L18-L27
 - solidity/test_unchecked_array_length.sol#L10-L16
 
 ### severity:
