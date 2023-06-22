@@ -18,6 +18,7 @@ from slither.utils.output import Output
 from sother.detectors.detector_settings import DetectorSettings
 
 
+# todo except: onlyOwner onlyRole?
 class UnprotectedUpgradeableFrontRun(SlitherUnprotectedUpgradeable):
     ARGUMENT = "unprotected-upgrade-front-run"
     HELP = (
