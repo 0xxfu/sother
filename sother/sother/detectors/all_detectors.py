@@ -41,3 +41,6 @@ from sother.detectors.operations.payable_calls import PayableCalls
 from sother.detectors.statements.unchecked_array_length import UncheckedArrayLength
 from sother.detectors.statements.deprecated_assert import DeprecatedAssert
 from sother.detectors.operations.external_calls_in_loop import ExternalCallsInLoop
+from sother.detectors.upgradeable.unprotected_upgradeable_front_run import (
+    UnprotectedUpgradeableFrontRun,
+)
