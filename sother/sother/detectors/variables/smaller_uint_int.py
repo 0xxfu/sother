@@ -29,7 +29,9 @@ class SmallerUintInt(AbstractDetector):
 
     WIKI = DetectorSettings.default_wiki
 
-    WIKI_TITLE = "Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead"
+    WIKI_TITLE = (
+        "Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead"
+    )
     WIKI_DESCRIPTION = """
 > When using elements that are smaller than 32 bytes, your contract’s gas usage may be higher. This is because the EVM operates on 32 bytes at a time. Therefore, if the element is smaller than that, the EVM must use more operations in order to reduce the size of the element from 32 bytes to the desired size.
 
@@ -54,14 +56,12 @@ Using `uint256/int256` replace `uint128/uint64/uint32/uint16/uint8` or `int128/i
             for state in contract.state_variables:
                 if str(state.type) in small_types:
                     small_ints.append(state)
-        for function in GasUtils.get_available_functions(
-            self.compilation_unit
-        ):
+        for function in GasUtils.get_available_functions(self.compilation_unit):
             for variable in function.variables:
                 if str(variable.type) in small_types:
                     small_ints.append(variable)
         [
-            logger.debug(f"small int: {str(item.type)} {item}")
+            logger.debug(f"small int: {str(item.type)} {item if item.name else None}")
             for item in small_ints
         ]
         for small_int in small_ints:
