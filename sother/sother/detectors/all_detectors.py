@@ -50,3 +50,4 @@ from sother.detectors.upgradeable.missing_gap_state_variable import (
 from sother.detectors.upgradeable.upgradeable_uninitialized import (
     UpgradeableUninitialized,
 )
+from sother.detectors.permissions.deprecated_ownable import DeprecatedOwnable
