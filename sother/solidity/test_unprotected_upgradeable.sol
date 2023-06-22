@@ -29,6 +29,16 @@ contract Buggy is Initializable{
     }
 }
 
+contract Buggy2 is Initializable{
+    address payable owner;
+
+    function initialize() external initializer{
+        require(owner == address(0));
+        owner = payable(msg.sender);
+    }
+}
+
+
 
 
 contract Fixed is Initializable{
