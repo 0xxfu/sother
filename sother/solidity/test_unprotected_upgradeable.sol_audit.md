@@ -11,14 +11,16 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [L-0] | Use `disableInitializers` to prevent front-running on the initialize function | 1 |
+| [L-0] | Upgradeable contract is missing a `__gap` storage variable to allow for new storage variables in later versions | 3 |
+| [L-1] | Use `disableInitializers` to prevent front-running on the initialize function | 1 |
 
 
 ### Non-critical Issues
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [N-0] | Conformance to Solidity naming conventions | 2 |
+| [N-0] | Conformance to Solidity naming conventions | 5 |
+| [N-1] | Unused state variable | 3 |
 
 
 ### Gas Optimizations
@@ -71,6 +73,53 @@ High
 ### category:
 unprotected-upgrade
 
+## [Low] Upgradeable contract is missing a `__gap` storage variable to allow for new storage variables in later versions
+
+### description:
+
+See [this](https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable#storage-gaps) link for a description of this storage variable. While some contracts may not currently be sub-classed, adding the variable now protects against forgetting to add it in the future.
+
+
+
+**There are `3` instances of this issue:**
+
+- [Buggy](solidity/test_unprotected_upgradeable.sol#L19-L30) is an upgradeable contract that miss `__gap` to allow for new storage variables.
+- [Buggy2](solidity/test_unprotected_upgradeable.sol#L32-L38) is an upgradeable contract that miss `__gap` to allow for new storage variables.
+- [UpgradeableNoDestruct](solidity/test_unprotected_upgradeable.sol#L68-L79) is an upgradeable contract that miss `__gap` to allow for new storage variables.
+
+### recommendation:
+
+It is considered a best practice in upgradeable contracts to include a
+state variable named `__gap`. This `__gap` state variable will be used as a
+reserved space for future upgrades. It allows adding new state variables
+freely in the future without compromising the storage compatibility with
+existing deployments.
+The size of the __gap array is usually calculated so that the amount of
+storage used by a contract always adds up to the same number (usually 50
+storage slots).
+
+```
+contract Contract {
+    ...
+    
+    # declare `__gap` variable at the end of all states
+    uint256[50] private __gap;
+}
+```
+
+
+
+### locations:
+- solidity/test_unprotected_upgradeable.sol#L19-L30
+- solidity/test_unprotected_upgradeable.sol#L32-L38
+- solidity/test_unprotected_upgradeable.sol#L68-L79
+
+### severity:
+Low
+
+### category:
+missing-gap-state-variable
+
 ## [Low] Use `disableInitializers` to prevent front-running on the initialize function
 
 ### description:
@@ -82,7 +131,7 @@ More detail see [this OpenZeppelin docs](https://docs.openzeppelin.com/upgrades-
 
 **There is `1` instance of this issue:**
 
-- [Buggy2](solidity/test_unprotected_upgradeable.sol#L32-L39) is an upgradeable contract that does not protect its initialize functions: [Buggy2.initialize()](solidity/test_unprotected_upgradeable.sol#L35-L38)
+- [Buggy2](solidity/test_unprotected_upgradeable.sol#L32-L38) is an upgradeable contract that does not protect its initialize functions: [Buggy2.initialize()](solidity/test_unprotected_upgradeable.sol#L34-L37)
 
 ### recommendation:
 
@@ -92,7 +141,7 @@ as it would make you deploy the smart contract again if someone
 initializes it before you.
 
 ```
-    function constructor(){
+    constructor(){
         _disableInitializers();
     }
 ```
@@ -100,7 +149,7 @@ initializes it before you.
 
 
 ### locations:
-- solidity/test_unprotected_upgradeable.sol#L32-L39
+- solidity/test_unprotected_upgradeable.sol#L32-L38
 
 ### severity:
 Low
@@ -117,25 +166,62 @@ Solidity defines a [naming convention](https://solidity.readthedocs.io/en/v0.4.2
 - Allow constant variable name/symbol/decimals to be lowercase (`ERC20`).
 - Allow `_` at the beginning of the `mixed_case` match for private variables and unused parameters.
 
-**There are `2` instances of this issue:**
+**There are `5` instances of this issue:**
 
-- Contract [Not_Upgradeable](solidity/test_unprotected_upgradeable.sol#L66-L67) is not in CapWords
+- Contract [Not_Upgradeable](solidity/test_unprotected_upgradeable.sol#L65-L66) is not in CapWords
 
-- Function [Fixed.other_function()](solidity/test_unprotected_upgradeable.sol#L61-L63) is not in mixedCase
+- Function [Fixed.other_function()](solidity/test_unprotected_upgradeable.sol#L60-L62) is not in mixedCase
+
+- Variable [Fixed2.__gap](solidity/test_unprotected_upgradeable.sol#L83) is not in mixedCase
+
+- Variable [Fixed.__gap](solidity/test_unprotected_upgradeable.sol#L45) is not in mixedCase
+
+- Variable [Fixed3.__gap](solidity/test_unprotected_upgradeable.sol#L99) is not in mixedCase
 
 
 ### recommendation:
 Follow the Solidity [naming convention](https://solidity.readthedocs.io/en/v0.4.25/style-guide.html#naming-conventions).
 
 ### locations:
-- solidity/test_unprotected_upgradeable.sol#L66-L67
-- solidity/test_unprotected_upgradeable.sol#L61-L63
+- solidity/test_unprotected_upgradeable.sol#L65-L66
+- solidity/test_unprotected_upgradeable.sol#L60-L62
+- solidity/test_unprotected_upgradeable.sol#L83
+- solidity/test_unprotected_upgradeable.sol#L45
+- solidity/test_unprotected_upgradeable.sol#L99
 
 ### severity:
 Informational
 
 ### category:
 naming-convention
+
+## [Informational] Unused state variable
+
+### description:
+Unused state variable.
+
+**There are `3` instances of this issue:**
+
+- [Fixed2.__gap](solidity/test_unprotected_upgradeable.sol#L83) is never used in [Fixed2](solidity/test_unprotected_upgradeable.sol#L81-L95)
+
+- [Fixed3.__gap](solidity/test_unprotected_upgradeable.sol#L99) is never used in [Fixed3](solidity/test_unprotected_upgradeable.sol#L97-L114)
+
+- [Fixed.__gap](solidity/test_unprotected_upgradeable.sol#L45) is never used in [Fixed](solidity/test_unprotected_upgradeable.sol#L43-L63)
+
+
+### recommendation:
+Remove unused state variables.
+
+### locations:
+- solidity/test_unprotected_upgradeable.sol#L83
+- solidity/test_unprotected_upgradeable.sol#L99
+- solidity/test_unprotected_upgradeable.sol#L45
+
+### severity:
+Informational
+
+### category:
+unused-state
 
 ## [Optimization] `internal` functions only called once can be inlined to save gas
 
@@ -172,21 +258,21 @@ More detail see [this.](https://gist.github.com/0xxfu/af8f63ccbf36af9d067ed6eff9
 
 **There are `4` instances of this issue:**
 
-- [Fixed3.owner](solidity/test_unprotected_upgradeable.sol#L99) should be cached with local memory-based variable in [Fixed3.kill()](solidity/test_unprotected_upgradeable.sol#L110-L113), It is called more than once:
-	- [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L111)
-	- [selfdestruct(address)(owner)](solidity/test_unprotected_upgradeable.sol#L112)
+- [Fixed3.owner](solidity/test_unprotected_upgradeable.sol#L98) should be cached with local memory-based variable in [Fixed3.kill()](solidity/test_unprotected_upgradeable.sol#L109-L112), It is called more than once:
+	- [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L110)
+	- [selfdestruct(address)(owner)](solidity/test_unprotected_upgradeable.sol#L111)
 
-- [Fixed2.owner](solidity/test_unprotected_upgradeable.sol#L83) should be cached with local memory-based variable in [Fixed2.kill()](solidity/test_unprotected_upgradeable.sol#L92-L95), It is called more than once:
-	- [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L93)
-	- [selfdestruct(address)(owner)](solidity/test_unprotected_upgradeable.sol#L94)
-
-- [Fixed.owner](solidity/test_unprotected_upgradeable.sol#L45) should be cached with local memory-based variable in [Fixed.kill()](solidity/test_unprotected_upgradeable.sol#L56-L59), It is called more than once:
-	- [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L57)
-	- [selfdestruct(address)(owner)](solidity/test_unprotected_upgradeable.sol#L58)
+- [Fixed2.owner](solidity/test_unprotected_upgradeable.sol#L82) should be cached with local memory-based variable in [Fixed2.kill()](solidity/test_unprotected_upgradeable.sol#L91-L94), It is called more than once:
+	- [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L92)
+	- [selfdestruct(address)(owner)](solidity/test_unprotected_upgradeable.sol#L93)
 
 - [Buggy.owner](solidity/test_unprotected_upgradeable.sol#L20) should be cached with local memory-based variable in [Buggy.kill()](solidity/test_unprotected_upgradeable.sol#L26-L29), It is called more than once:
 	- [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L27)
 	- [selfdestruct(address)(owner)](solidity/test_unprotected_upgradeable.sol#L28)
+
+- [Fixed.owner](solidity/test_unprotected_upgradeable.sol#L44) should be cached with local memory-based variable in [Fixed.kill()](solidity/test_unprotected_upgradeable.sol#L55-L58), It is called more than once:
+	- [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L56)
+	- [selfdestruct(address)(owner)](solidity/test_unprotected_upgradeable.sol#L57)
 
 
 ### recommendation:
@@ -195,10 +281,10 @@ Cache storage-based state variables in local memory-based variables appropriatel
 
 
 ### locations:
-- solidity/test_unprotected_upgradeable.sol#L99
-- solidity/test_unprotected_upgradeable.sol#L83
-- solidity/test_unprotected_upgradeable.sol#L45
+- solidity/test_unprotected_upgradeable.sol#L98
+- solidity/test_unprotected_upgradeable.sol#L82
 - solidity/test_unprotected_upgradeable.sol#L20
+- solidity/test_unprotected_upgradeable.sol#L44
 
 ### severity:
 Optimization
@@ -247,27 +333,27 @@ More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d9
 
 **There are `11` instances of this issue:**
 
-- [require(bool)(owner == address(0))](solidity/test_unprotected_upgradeable.sol#L77) should use custom error to save gas.
+- [require(bool)(owner == address(0))](solidity/test_unprotected_upgradeable.sol#L76) should use custom error to save gas.
 
-- [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L111) should use custom error to save gas.
+- [require(bool)(owner == address(0))](solidity/test_unprotected_upgradeable.sol#L87) should use custom error to save gas.
 
-- [require(bool)(owner == address(0))](solidity/test_unprotected_upgradeable.sol#L52) should use custom error to save gas.
+- [require(bool)(owner == address(0))](solidity/test_unprotected_upgradeable.sol#L35) should use custom error to save gas.
+
+- [require(bool)(owner == address(0))](solidity/test_unprotected_upgradeable.sol#L51) should use custom error to save gas.
 
 - [require(bool)(owner == address(0))](solidity/test_unprotected_upgradeable.sol#L23) should use custom error to save gas.
 
-- [require(bool)(owner == address(0))](solidity/test_unprotected_upgradeable.sol#L106) should use custom error to save gas.
+- [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L92) should use custom error to save gas.
 
 - [require(bool,string)(! _initializing,Initializable: contract is initializing)](solidity/test_unprotected_upgradeable.sol#L10) should use custom error to save gas.
 
-- [require(bool)(owner == address(0))](solidity/test_unprotected_upgradeable.sol#L36) should use custom error to save gas.
-
-- [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L93) should use custom error to save gas.
+- [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L110) should use custom error to save gas.
 
 - [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L27) should use custom error to save gas.
 
-- [require(bool)(owner == address(0))](solidity/test_unprotected_upgradeable.sol#L88) should use custom error to save gas.
+- [require(bool)(owner == address(0))](solidity/test_unprotected_upgradeable.sol#L105) should use custom error to save gas.
 
-- [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L57) should use custom error to save gas.
+- [require(bool)(msg.sender == owner)](solidity/test_unprotected_upgradeable.sol#L56) should use custom error to save gas.
 
 
 ### recommendation:
@@ -276,17 +362,17 @@ Using custom errors replace `require` or `assert`.
 
 
 ### locations:
-- solidity/test_unprotected_upgradeable.sol#L77
-- solidity/test_unprotected_upgradeable.sol#L111
-- solidity/test_unprotected_upgradeable.sol#L52
+- solidity/test_unprotected_upgradeable.sol#L76
+- solidity/test_unprotected_upgradeable.sol#L87
+- solidity/test_unprotected_upgradeable.sol#L35
+- solidity/test_unprotected_upgradeable.sol#L51
 - solidity/test_unprotected_upgradeable.sol#L23
-- solidity/test_unprotected_upgradeable.sol#L106
+- solidity/test_unprotected_upgradeable.sol#L92
 - solidity/test_unprotected_upgradeable.sol#L10
-- solidity/test_unprotected_upgradeable.sol#L36
-- solidity/test_unprotected_upgradeable.sol#L93
+- solidity/test_unprotected_upgradeable.sol#L110
 - solidity/test_unprotected_upgradeable.sol#L27
-- solidity/test_unprotected_upgradeable.sol#L88
-- solidity/test_unprotected_upgradeable.sol#L57
+- solidity/test_unprotected_upgradeable.sol#L105
+- solidity/test_unprotected_upgradeable.sol#L56
 
 ### severity:
 Optimization

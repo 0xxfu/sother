@@ -31,7 +31,6 @@ contract Buggy is Initializable{
 
 contract Buggy2 is Initializable{
     address payable owner;
-
     function initialize() external initializer{
         require(owner == address(0));
         owner = payable(msg.sender);
@@ -43,7 +42,7 @@ contract Buggy2 is Initializable{
 
 contract Fixed is Initializable{
     address payable owner;
-
+    uint256[50] private __gap;
     constructor() {
         owner = payable(msg.sender);
     }
@@ -81,7 +80,7 @@ contract UpgradeableNoDestruct is Initializable{
 
 contract Fixed2 is Initializable {
     address payable owner;
-
+    uint256[50] private __gap;
     constructor() initializer {}
 
     function initialize() external initializer {
@@ -97,7 +96,7 @@ contract Fixed2 is Initializable {
 
 contract Fixed3 is Initializable {
     address payable owner;
-
+    uint256[50] private __gap;
     constructor() {
         _disableInitializers();
     }
