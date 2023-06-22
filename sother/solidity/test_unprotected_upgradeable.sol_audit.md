@@ -13,7 +13,7 @@
 |---|:---|:---:|
 | [L-0] | Upgradeable contract is missing a `__gap` storage variable to allow for new storage variables in later versions | 4 |
 | [L-1] | Use `disableInitializers` to prevent front-running on the initialize function | 1 |
-| [L-2] | Upgradeable contract not initialized | 1 |
+| [L-2] | Upgradeable contracts are not initialized | 1 |
 
 
 ### Non-critical Issues
@@ -161,7 +161,7 @@ Low
 ### category:
 unprotected-upgrade-front-run
 
-## [Low] Upgradeable contract not initialized
+## [Low] Upgradeable contracts are not initialized
 
 ### description:
 
