@@ -47,3 +47,6 @@ from sother.detectors.upgradeable.unprotected_upgradeable_front_run import (
 from sother.detectors.upgradeable.missing_gap_state_variable import (
     MissingGapStateVariable,
 )
+from sother.detectors.upgradeable.upgradeable_uninitialized import (
+    UpgradeableUninitialized,
+)

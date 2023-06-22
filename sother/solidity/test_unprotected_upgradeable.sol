@@ -64,6 +64,14 @@ contract Fixed is Initializable{
 
 contract Not_Upgradeable{
 }
+contract UpgradeableNoInitialized is Initializable{
+    address payable owner;
+
+    constructor() {
+        owner = payable(msg.sender);
+    }
+
+}
 
 contract UpgradeableNoDestruct is Initializable{
     address payable owner;
