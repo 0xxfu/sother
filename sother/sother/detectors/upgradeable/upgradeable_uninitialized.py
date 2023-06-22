@@ -18,13 +18,13 @@ from sother.detectors.detector_settings import DetectorSettings
 
 class UpgradeableUninitialized(AbstractDetector):
     ARGUMENT = "upgradeable-uninitialized"
-    HELP = "Upgradeable contract not initialized"
+    HELP = "Upgradeable contracts are not initialized"
     IMPACT = DetectorClassification.LOW
     CONFIDENCE = DetectorClassification.HIGH
 
     WIKI = DetectorSettings.default_wiki
 
-    WIKI_TITLE = "Upgradeable contract not initialized"
+    WIKI_TITLE = "Upgradeable contracts are not initialized"
     WIKI_DESCRIPTION = """
 Upgradeable contracts are initialized via an initializer function rather than by a constructor. 
 Leaving such a contract uninitialized may lead to it being taken over by a malicious user
