@@ -51,3 +51,4 @@ from sother.detectors.upgradeable.upgradeable_uninitialized import (
     UpgradeableUninitialized,
 )
 from sother.detectors.permissions.deprecated_ownable import DeprecatedOwnable
+from sother.detectors.operations.deprecated_safe_approve import DeprecatedSafeApprove
