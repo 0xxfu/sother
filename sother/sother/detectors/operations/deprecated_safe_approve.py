@@ -68,8 +68,7 @@ replace `safeApprove()` with `safeIncreaseAllowance()` or `safeDecreaseAllowance
                             result_nodes.add(n)
 
         for node in result_nodes:
-            info: DETECTOR_INFO = ["`", node, "` is deprecated."]
-            res = self.generate_result(info)
+            res = self.generate_result([node, " is deprecated."])
             results.append(res)
         return results
 
