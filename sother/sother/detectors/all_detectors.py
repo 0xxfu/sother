@@ -44,3 +44,6 @@ from sother.detectors.operations.external_calls_in_loop import ExternalCallsInLo
 from sother.detectors.upgradeable.unprotected_upgradeable_front_run import (
     UnprotectedUpgradeableFrontRun,
 )
+from sother.detectors.upgradeable.missing_gap_state_variable import (
+    MissingGapStateVariable,
+)
