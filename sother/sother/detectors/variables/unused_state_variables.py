@@ -44,13 +44,16 @@ Remove or replace the unused state variables
 
     @classmethod
     def _detect_unused_state(cls, contract) -> list[StateVariable]:
+        except_states: list[str] = ["__gap"]
         state_variables = contract.state_variables_declared
         written_variables = UninitializedStateVarsDetection._written_variables(contract)
         read_variables = UninitializedStateVarsDetection._read_variables(contract)
         return [
             state
             for state in state_variables
-            if state not in read_variables and state not in written_variables
+            if state not in read_variables
+            and state not in written_variables
+            and state.name not in except_states
         ]
 
 
