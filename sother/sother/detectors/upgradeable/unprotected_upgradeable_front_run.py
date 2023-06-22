@@ -46,7 +46,7 @@ as it would make you deploy the smart contract again if someone
 initializes it before you.
 
 ```
-    function constructor(){
+    constructor(){
         _disableInitializers();
     }
 ```
