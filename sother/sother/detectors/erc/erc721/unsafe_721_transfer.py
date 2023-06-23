@@ -16,10 +16,13 @@ from slither.detectors.abstract_detector import (
 from slither.slithir.operations import Operation, HighLevelCall
 from slither.utils.output import Output
 
+from sother.detectors.abstracts.abstarct_detect_function_called import (
+    AbstractDetectHasInstance,
+)
 from sother.detectors.detector_settings import DetectorSettings
 
 
-class UnsafeTransferErc721(AbstractDetector):
+class UnsafeTransferErc721(AbstractDetectHasInstance):
     ARGUMENT = "unsafe-721-transfer"
 
     IMPACT = DetectorClassification.MEDIUM
@@ -64,7 +67,7 @@ reentrancy risk and gas costs.
             for f in c.functions + c.modifiers:
                 if f.contract_declarer != c:
                     continue
-                erc721_transfers = self.detect_erc721_transfer(f)
+                erc721_transfers = self.detect_has_instance(f)
                 if erc721_transfers:
                     for node in erc721_transfers:
                         info: DETECTOR_INFO = [
@@ -77,15 +80,6 @@ reentrancy risk and gas costs.
 
                         results.append(res)
         return results
-
-    @classmethod
-    def detect_erc721_transfer(cls, function: Function) -> list[Node]:
-        result_nodes: list[Node] = list()
-        for node in function.nodes:
-            for ir in node.irs:
-                if cls._is_instance(ir):
-                    result_nodes.append(node)
-        return result_nodes
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
