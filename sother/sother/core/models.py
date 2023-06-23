@@ -43,10 +43,16 @@ class OutputResult(BaseModel):
     description: str
     markdown: str
     first_markdown_element: str
+    first_element_line: Optional[int]
     id: str
     check: str
     impact: str
     confidence: str
+
+    def __init__(self, **data: Any) -> None:
+        super().__init__(**data)
+        if len(self.elements) > 0 and len(self.elements[0].source_mapping.lines) > 0:
+            self.first_element_line = self.elements[0].source_mapping.lines[0]
 
 
 class DetectorWiki(BaseModel):

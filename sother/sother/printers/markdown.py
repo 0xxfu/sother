@@ -8,6 +8,7 @@ import unittest
 from collections import OrderedDict
 from typing import Tuple, Type
 
+from loguru import logger
 from slither.detectors.abstract_detector import (
     classification_txt,
     DetectorClassification,
@@ -34,6 +35,9 @@ def _to_markdown(
     """
     if len(output_results) <= 0:
         return "", ""
+    # sort by first element line
+    output_results.sort(key=lambda x: x.first_element_line)
+
     detector_impact = f"{classification_txt[detector_wiki.impact]}"
     markdown = f"\n## [{detector_impact}] {detector_wiki.wiki_title}\n"
     if detector_wiki.wiki_description or detector_wiki.wiki_exploit_scenario:
