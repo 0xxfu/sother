@@ -10,7 +10,7 @@ from typing import List
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function
 from slither.detectors.abstract_detector import AbstractDetector, DETECTOR_INFO
-from slither.slithir.operations import Operation
+from slither.slithir.operations import Operation, HighLevelCall
 from slither.utils.output import Output
 
 
@@ -48,6 +48,23 @@ class AbstractDetectHasInstance(AbstractDetector, ABC):
                 if cls._is_instance(ir):
                     result_nodes.add(node)
         return result_nodes
+
+
+class AbstractTransferInstance(AbstractDetectHasInstance, ABC):
+    transfer_signature: list[str] = [
+        "transfer(address,uint256)",
+        "transferFrom(address,address,uint256)",
+        "safeTransfer(address,address,uint256)",
+        "safeTransferFrom(address,address,address,uint256)",
+    ]
+
+    @classmethod
+    def _is_transfer_instance(cls, ir: Operation) -> bool:
+        return (
+            isinstance(ir, HighLevelCall)
+            and isinstance(ir.function, Function)
+            and ir.function.solidity_signature in cls.transfer_signature
+        )
 
 
 if __name__ == "__main__":

@@ -15,11 +15,12 @@ from slither.slithir.operations import Operation, HighLevelCall, LibraryCall
 
 from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
+    AbstractTransferInstance,
 )
 from sother.detectors.detector_settings import DetectorSettings
 
 
-class FeeOnTransfer(AbstractDetectHasInstance):
+class FeeOnTransfer(AbstractTransferInstance):
     ARGUMENT = "fee-on-transfer"
     HELP = "Incompatibility with transfer-on-fee or deflationary tokens"
     IMPACT = DetectorClassification.MEDIUM
@@ -52,20 +53,9 @@ i.e. Fee-on-transfer scenario:
 2. Alternatively, disallow tokens with fee-on-transfer mechanics to be added as tokens.
 """
 
-    transfer_signature: list[str] = [
-        "transfer(address,uint256)",
-        "transferFrom(address,address,uint256)",
-        "safeTransfer(address,address,uint256)",
-        "safeTransferFrom(address,address,address,uint256)",
-    ]
-
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
-        if not (
-            isinstance(ir, HighLevelCall)
-            and isinstance(ir.function, Function)
-            and ir.function.solidity_signature in cls.transfer_signature
-        ):
+        if not cls._is_transfer_instance(ir):
             return False
 
         transfer_to: Optional[Variable] = None
