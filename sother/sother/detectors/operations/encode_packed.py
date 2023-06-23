@@ -12,6 +12,7 @@ from slither.detectors.operations.encode_packed import (
 
 
 class EncodePackedCollision(SlitherEncodePackedCollision):
+    ARGUMENT = "encode-packed-collision"
     IMPACT = DetectorClassification.LOW
     WIKI_TITLE = (
         "`abi.encodePacked()` should not be used with dynamic types when passing "
