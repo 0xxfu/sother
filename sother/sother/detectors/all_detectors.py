@@ -54,3 +54,4 @@ from sother.detectors.permissions.deprecated_ownable import DeprecatedOwnable
 from sother.detectors.operations.deprecated_safe_approve import DeprecatedSafeApprove
 from sother.detectors.erc.erc721.unsafe_721_transfer import UnsafeTransferErc721
 from sother.detectors.erc.erc721.unsafe_721_mint import Unsafe721Mint
+from sother.detectors.operations.encode_packed import EncodePackedCollision
