@@ -35,6 +35,7 @@ in porting and testing replacement contracts.
 
 - [erc20.safeApprove(recipient,1)](solidity/test_deprecated_safe_approve.sol#L51) is deprecated.
 
+
 ### recommendation:
 
 As suggested by the [OpenZeppelin comment](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/bfff03c0d2a59bcd8e2ead1da9aed9edf0080d05/contracts/token/ERC20/utils/SafeERC20.sol#L38-L45),

@@ -12,8 +12,9 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [M-0] | Return values of `transfer()/transferFrom()` not checked | 2 |
-| [M-1] | Using `ERC721.transferFrom()` may cause the user's NFT to be frozen in a contract that does not support ERC721 | 1 |
+| [M-0] | Incompatibility with transfer-on-fee or deflationary tokens | 13 |
+| [M-1] | Return values of `transfer()/transferFrom()` not checked | 2 |
+| [M-2] | Using `ERC721.transferFrom()` may cause the user's NFT to be frozen in a contract that does not support ERC721 | 1 |
 
 
 ### Low Risk Issues
@@ -117,6 +118,85 @@ High
 
 ### category:
 uninitialized-state
+
+## [Medium] Incompatibility with transfer-on-fee or deflationary tokens
+
+### description:
+
+Some ERC20 tokens make modifications to the standard implementations of
+their ERC20’s `transfer` or `balanceOf` functions.
+One type of such token is deflationary tokens that charge a fee on every
+`transfer()` and `transferFrom()`.
+The protocol does not have incompatibility with fee-on-transfer tokens.
+
+Note that there has been a real-world exploit related to this with 
+[Balancer pool and STA deflationary tokens](https://medium.com/1inch-network/balancer-hack-2020-a8f7131c980e).
+
+
+**There are `13` instances of this issue:**
+
+- [t.transferFrom(from,to,tokenId)](solidity/test_unsafe_transfer.sol#L35) with fee on transfer are not supported.
+
+- [t.transfer(address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L52) with fee on transfer are not supported.
+
+- [a = t.transfer(address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L56) with fee on transfer are not supported.
+
+- [require(bool,string)(t.transfer(address(0),1000000000000000000),failed)](solidity/test_unsafe_transfer.sol#L60) with fee on transfer are not supported.
+
+- [assert(bool)(t.transfer(address(0),1000000000000000000))](solidity/test_unsafe_transfer.sol#L64) with fee on transfer are not supported.
+
+- [t.transfer(address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L68) with fee on transfer are not supported.
+
+- [ret = t.transfer(address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L72) with fee on transfer are not supported.
+
+- [t.transferFrom(address(this),address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L77) with fee on transfer are not supported.
+
+- [a = t.transferFrom(address(this),address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L81) with fee on transfer are not supported.
+
+- [require(bool,string)(t.transferFrom(address(this),address(0),1000000000000000000),failed)](solidity/test_unsafe_transfer.sol#L85) with fee on transfer are not supported.
+
+- [assert(bool)(t.transferFrom(address(this),address(0),1000000000000000000))](solidity/test_unsafe_transfer.sol#L89) with fee on transfer are not supported.
+
+- [t.transferFrom(address(this),address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L93) with fee on transfer are not supported.
+
+- [ret = t.transferFrom(address(this),address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L97) with fee on transfer are not supported.
+
+#### Exploit scenario
+
+i.e. Fee-on-transfer scenario:
+1. Contract calls transfer from contractA 100 tokens to current contract
+2. Current contract thinks it received 100 tokens
+3. It updates balances to increase +100 tokens
+4. While actually contract received only 90 tokens
+5. That breaks whole math for given token
+
+
+### recommendation:
+
+1. Consider comparing before and after balance to get the actual transferred amount.
+2. Alternatively, disallow tokens with fee-on-transfer mechanics to be added as tokens.
+
+
+### locations:
+- solidity/test_unsafe_transfer.sol#L35
+- solidity/test_unsafe_transfer.sol#L52
+- solidity/test_unsafe_transfer.sol#L56
+- solidity/test_unsafe_transfer.sol#L60
+- solidity/test_unsafe_transfer.sol#L64
+- solidity/test_unsafe_transfer.sol#L68
+- solidity/test_unsafe_transfer.sol#L72
+- solidity/test_unsafe_transfer.sol#L77
+- solidity/test_unsafe_transfer.sol#L81
+- solidity/test_unsafe_transfer.sol#L85
+- solidity/test_unsafe_transfer.sol#L89
+- solidity/test_unsafe_transfer.sol#L93
+- solidity/test_unsafe_transfer.sol#L97
+
+### severity:
+Medium
+
+### category:
+fee-on-transfer
 
 ## [Medium] Return values of `transfer()/transferFrom()` not checked
 
