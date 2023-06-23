@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
 
 interface IERC20 {
     function totalSupply() external view returns (uint256);
@@ -49,5 +48,11 @@ contract DeprecatedSafeApprove {
 
     function approveERC20(IERC20 erc20, address recipient) external {
         erc20.safeApprove(recipient, 1);
+    }
+}
+
+contract DeprecatedApprove {
+    function approveERC20(IERC20 erc20, address recipient) external {
+        erc20.approve(recipient, 1);
     }
 }

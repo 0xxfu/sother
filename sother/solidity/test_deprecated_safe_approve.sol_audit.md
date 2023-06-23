@@ -1,5 +1,13 @@
 ## Summary 
 
+### Medium Risk Issues
+
+|ID|Issues|Instances|
+|---|:---|:---:|
+| [M-0] | Did not Approve to zero first | 1 |
+| [M-1] | Unused return | 1 |
+
+
 ### Low Risk Issues
 
 |ID|Issues|Instances|
@@ -11,11 +19,87 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Use `calldata` instead of `memory` for function parameters | 2 |
+| [G-0] | Use `calldata` instead of `memory` for function parameters | 3 |
 | [G-1] | Use indexed events for value types as they are less costly compared to non-indexed ones | 2 |
 | [G-2] | use custom errors instead of revert strings | 1 |
 
 
+
+## [Medium] Did not Approve to zero first
+
+### description:
+
+Calling `approve()` without first calling `approve(0)` if the current approval is non-zero 
+will revert with some tokens, such as Tether (USDT). While Tether is known to do this, 
+it applies to other tokens as well, which are trying to protect against 
+[this attack vector](https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/edit). 
+`safeApprove()` itself also implements this protection.
+Always reset the approval to zero before changing it to a new value, 
+or use `safeIncreaseAllowance()`/`safeDecreaseAllowance()`
+
+
+
+**There is `1` instance of this issue:**
+
+- [erc20.approve(recipient,1)](solidity/test_deprecated_safe_approve.sol#L56) should be used `safeIncreaseAllowance()` or `safeDecreaseAllowance()` instead.
+
+#### Exploit scenario
+
+Some ERC20 tokens like `USDT` require resetting the approval to 0 first before being 
+able to reset it to another value.
+
+Unsafe ERC20 approve that do not handle non-standard erc20 behavior.
+1. Some token contracts do not return any value.
+2. Some token contracts revert the transaction when the allowance is not zero.
+
+
+### recommendation:
+
+As suggested by the [OpenZeppelin comment](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/bfff03c0d2a59bcd8e2ead1da9aed9edf0080d05/contracts/token/ERC20/utils/SafeERC20.sol#L38-L45),
+replace `approve()/safeApprove()` with `safeIncreaseAllowance()` or `safeDecreaseAllowance()` instead.
+
+
+### locations:
+- solidity/test_deprecated_safe_approve.sol#L56
+
+### severity:
+Medium
+
+### category:
+deprecated-approve
+
+## [Medium] Unused return
+
+### description:
+The return value of an external call is not stored in a local or state variable.
+
+**There is `1` instance of this issue:**
+
+- [DeprecatedApprove.approveERC20(IERC20,address)](solidity/test_deprecated_safe_approve.sol#L55-L57) ignores return value by [erc20.approve(recipient,1)](solidity/test_deprecated_safe_approve.sol#L56)
+
+#### Exploit scenario
+
+```solidity
+contract MyConc{
+    using SafeMath for uint;   
+    function my_func(uint a, uint b) public{
+        a.add(b);
+    }
+}
+```
+`MyConc` calls `add` of `SafeMath`, but does not store the result in `a`. As a result, the computation has no effect.
+
+### recommendation:
+Ensure that all the return values of the function calls are used.
+
+### locations:
+- solidity/test_deprecated_safe_approve.sol#L55-L57
+
+### severity:
+Medium
+
+### category:
+unused-return
 
 ## [Low] `safeApprove()` is deprecated
 
@@ -33,7 +117,7 @@ in porting and testing replacement contracts.
 
 **There is `1` instance of this issue:**
 
-- [erc20.safeApprove(recipient,1)](solidity/test_deprecated_safe_approve.sol#L51) is deprecated.
+- [erc20.safeApprove(recipient,1)](solidity/test_deprecated_safe_approve.sol#L50) is deprecated.
 
 
 ### recommendation:
@@ -43,7 +127,7 @@ replace `safeApprove()` with `safeIncreaseAllowance()` or `safeDecreaseAllowance
 
 
 ### locations:
-- solidity/test_deprecated_safe_approve.sol#L51
+- solidity/test_deprecated_safe_approve.sol#L50
 
 ### severity:
 Low
@@ -63,21 +147,25 @@ And during the for loop, the values in the array are accessed in memory using a 
 More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-should-i-use-calldata-and-when-should-i-use-memory)
 
 
-**There are `2` instances of this issue:**
+**There are `3` instances of this issue:**
 
-- [SafeERC20.safeApprove(IERC20,address,uint256)](solidity/test_deprecated_safe_approve.sol#L34-L44) read-only `memory` parameters below should be changed to `calldata` :
-	- [SafeERC20.safeApprove(IERC20,address,uint256).token](solidity/test_deprecated_safe_approve.sol#L35)
+- [SafeERC20.safeApprove(IERC20,address,uint256)](solidity/test_deprecated_safe_approve.sol#L33-L43) read-only `memory` parameters below should be changed to `calldata` :
+	- [SafeERC20.safeApprove(IERC20,address,uint256).token](solidity/test_deprecated_safe_approve.sol#L34)
 
-- [DeprecatedSafeApprove.approveERC20(IERC20,address)](solidity/test_deprecated_safe_approve.sol#L50-L52) read-only `memory` parameters below should be changed to `calldata` :
-	- [DeprecatedSafeApprove.approveERC20(IERC20,address).erc20](solidity/test_deprecated_safe_approve.sol#L50)
+- [DeprecatedSafeApprove.approveERC20(IERC20,address)](solidity/test_deprecated_safe_approve.sol#L49-L51) read-only `memory` parameters below should be changed to `calldata` :
+	- [DeprecatedSafeApprove.approveERC20(IERC20,address).erc20](solidity/test_deprecated_safe_approve.sol#L49)
+
+- [DeprecatedApprove.approveERC20(IERC20,address)](solidity/test_deprecated_safe_approve.sol#L55-L57) read-only `memory` parameters below should be changed to `calldata` :
+	- [DeprecatedApprove.approveERC20(IERC20,address).erc20](solidity/test_deprecated_safe_approve.sol#L55)
 
 
 ### recommendation:
 Use `calldata` instead of `memory` for external functions where the function argument is read-only.
 
 ### locations:
-- solidity/test_deprecated_safe_approve.sol#L34-L44
-- solidity/test_deprecated_safe_approve.sol#L50-L52
+- solidity/test_deprecated_safe_approve.sol#L33-L43
+- solidity/test_deprecated_safe_approve.sol#L49-L51
+- solidity/test_deprecated_safe_approve.sol#L55-L57
 
 ### severity:
 Optimization
@@ -96,13 +184,13 @@ However, this is only the case for value types, whereas indexing [reference type
 
 **There are `2` instances of this issue:**
 
-- The following variables should be indexed in [IERC20.Transfer(address,address,uint256)](solidity/test_deprecated_safe_approve.sol#L24):
+- The following variables should be indexed in [IERC20.Transfer(address,address,uint256)](solidity/test_deprecated_safe_approve.sol#L23):
 
-	- [value](solidity/test_deprecated_safe_approve.sol#L24)
+	- [value](solidity/test_deprecated_safe_approve.sol#L23)
 
-- The following variables should be indexed in [IERC20.Approval(address,address,uint256)](solidity/test_deprecated_safe_approve.sol#L26-L30):
+- The following variables should be indexed in [IERC20.Approval(address,address,uint256)](solidity/test_deprecated_safe_approve.sol#L25-L29):
 
-	- [value](solidity/test_deprecated_safe_approve.sol#L29)
+	- [value](solidity/test_deprecated_safe_approve.sol#L28)
 
 
 ### recommendation:
@@ -111,8 +199,8 @@ Using the `indexed` keyword for values types `bool/int/address/string/bytes` in 
 
 
 ### locations:
-- solidity/test_deprecated_safe_approve.sol#L24
-- solidity/test_deprecated_safe_approve.sol#L26-L30
+- solidity/test_deprecated_safe_approve.sol#L23
+- solidity/test_deprecated_safe_approve.sol#L25-L29
 
 ### severity:
 Optimization
@@ -131,7 +219,7 @@ More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d9
 
 **There is `1` instance of this issue:**
 
-- [require(bool,string)((value == 0) || (token.allowance(address(this),spender) == 0),SafeERC20: approve from non-zero to non-zero allowance)](solidity/test_deprecated_safe_approve.sol#L39-L42) should use custom error to save gas.
+- [require(bool,string)((value == 0) || (token.allowance(address(this),spender) == 0),SafeERC20: approve from non-zero to non-zero allowance)](solidity/test_deprecated_safe_approve.sol#L38-L41) should use custom error to save gas.
 
 
 ### recommendation:
@@ -140,7 +228,7 @@ Using custom errors replace `require` or `assert`.
 
 
 ### locations:
-- solidity/test_deprecated_safe_approve.sol#L39-L42
+- solidity/test_deprecated_safe_approve.sol#L38-L41
 
 ### severity:
 Optimization
