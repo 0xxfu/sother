@@ -52,4 +52,4 @@ from sother.detectors.upgradeable.upgradeable_uninitialized import (
 )
 from sother.detectors.permissions.deprecated_ownable import DeprecatedOwnable
 from sother.detectors.operations.deprecated_safe_approve import DeprecatedSafeApprove
-from sother.detectors.operations.unsafe_transfer import UnsafeTransferErc721
+from sother.detectors.erc.erc721.unsafe_721_transfer import UnsafeTransferErc721
