@@ -95,13 +95,13 @@ However, this is only the case for value types, whereas indexing [reference type
 
 **There are `2` instances of this issue:**
 
-- The following variables should be indexed in [IERC20.Approval(address,address,uint256)](solidity/test_deprecated_safe_approve.sol#L26-L30):
-
-	- [value](solidity/test_deprecated_safe_approve.sol#L29)
-
 - The following variables should be indexed in [IERC20.Transfer(address,address,uint256)](solidity/test_deprecated_safe_approve.sol#L24):
 
 	- [value](solidity/test_deprecated_safe_approve.sol#L24)
+
+- The following variables should be indexed in [IERC20.Approval(address,address,uint256)](solidity/test_deprecated_safe_approve.sol#L26-L30):
+
+	- [value](solidity/test_deprecated_safe_approve.sol#L29)
 
 
 ### recommendation:
@@ -110,8 +110,8 @@ Using the `indexed` keyword for values types `bool/int/address/string/bytes` in 
 
 
 ### locations:
-- solidity/test_deprecated_safe_approve.sol#L26-L30
 - solidity/test_deprecated_safe_approve.sol#L24
+- solidity/test_deprecated_safe_approve.sol#L26-L30
 
 ### severity:
 Optimization

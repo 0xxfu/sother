@@ -40,9 +40,9 @@ account, losing the access to all functions with the `onlyOwner` modifier.
 
 **There are `3` instances of this issue:**
 
-- [DeprecatedTransferOwnerShip](solidity/test_deprecated_ownable.sol#L13-L41) does not implement a `2-Step-Process` for transferring ownership.
 - [DeprecatedOwnable](solidity/test_deprecated_ownable.sol#L9) does not implement a `2-Step-Process` for transferring ownership.
 - [DeprecatedOwnableUpgradeable](solidity/test_deprecated_ownable.sol#L11) does not implement a `2-Step-Process` for transferring ownership.
+- [DeprecatedTransferOwnerShip](solidity/test_deprecated_ownable.sol#L13-L41) does not implement a `2-Step-Process` for transferring ownership.
 
 ### recommendation:
 
@@ -80,9 +80,9 @@ abstract contract Ownable2Step is Ownable {
 
 
 ### locations:
-- solidity/test_deprecated_ownable.sol#L13-L41
 - solidity/test_deprecated_ownable.sol#L9
 - solidity/test_deprecated_ownable.sol#L11
+- solidity/test_deprecated_ownable.sol#L13-L41
 
 ### severity:
 Low
@@ -100,8 +100,8 @@ See [this](https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeabl
 
 **There are `2` instances of this issue:**
 
-- [DeprecatedOwnableUpgradeable](solidity/test_deprecated_ownable.sol#L11) is an upgradeable contract that miss `__gap` to allow for new storage variables.
 - [OwnableUpgradeable](solidity/test_deprecated_ownable.sol#L7) is an upgradeable contract that miss `__gap` to allow for new storage variables.
+- [DeprecatedOwnableUpgradeable](solidity/test_deprecated_ownable.sol#L11) is an upgradeable contract that miss `__gap` to allow for new storage variables.
 
 ### recommendation:
 
@@ -126,8 +126,8 @@ contract Contract {
 
 
 ### locations:
-- solidity/test_deprecated_ownable.sol#L11
 - solidity/test_deprecated_ownable.sol#L7
+- solidity/test_deprecated_ownable.sol#L11
 
 ### severity:
 Low
@@ -226,11 +226,11 @@ More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d9
 
 **There are `3` instances of this issue:**
 
-- [require(bool,string)(_pendingOwner == sender,Ownable2Step: caller is not the new owner)](solidity/test_deprecated_ownable.sol#L62-L65) should use custom error to save gas.
+- [require(bool,string)(_owner == msg.sender,Ownable: caller is not the owner)](solidity/test_deprecated_ownable.sol#L25) should use custom error to save gas.
 
 - [require(bool,string)(newOwner != address(0),Ownable: new owner is the zero address)](solidity/test_deprecated_ownable.sol#L29-L32) should use custom error to save gas.
 
-- [require(bool,string)(_owner == msg.sender,Ownable: caller is not the owner)](solidity/test_deprecated_ownable.sol#L25) should use custom error to save gas.
+- [require(bool,string)(_pendingOwner == sender,Ownable2Step: caller is not the new owner)](solidity/test_deprecated_ownable.sol#L62-L65) should use custom error to save gas.
 
 
 ### recommendation:
@@ -239,9 +239,9 @@ Using custom errors replace `require` or `assert`.
 
 
 ### locations:
-- solidity/test_deprecated_ownable.sol#L62-L65
-- solidity/test_deprecated_ownable.sol#L29-L32
 - solidity/test_deprecated_ownable.sol#L25
+- solidity/test_deprecated_ownable.sol#L29-L32
+- solidity/test_deprecated_ownable.sol#L62-L65
 
 ### severity:
 Optimization
