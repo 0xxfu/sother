@@ -17,10 +17,13 @@ from slither.detectors.abstract_detector import (
 from slither.slithir.operations import Operation, HighLevelCall
 from slither.utils.output import Output
 
+from sother.detectors.abstracts.abstract_detect_has_instance import (
+    AbstractDetectHasInstance,
+)
 from sother.detectors.detector_settings import DetectorSettings
 
 
-class DeprecatedSafeApprove(AbstractDetector):
+class DeprecatedSafeApprove(AbstractDetectHasInstance):
     ARGUMENT = "deprecated-safe-approve"
     HELP = "`safeApprove()` is deprecated"
     IMPACT = DetectorClassification.LOW
@@ -47,7 +50,7 @@ replace `safeApprove()` with `safeIncreaseAllowance()` or `safeDecreaseAllowance
     WIKI_EXPLOIT_SCENARIO = " "
 
     @classmethod
-    def _is_deprecated_instance(cls, ir: Operation) -> bool:
+    def _is_instance(cls, ir: Operation) -> bool:
         return (
             isinstance(ir, HighLevelCall)
             and isinstance(ir.function, Function)
@@ -55,22 +58,9 @@ replace `safeApprove()` with `safeIncreaseAllowance()` or `safeDecreaseAllowance
             in ["safeApprove(address,address,uint256)"]
         )
 
-    def _detect(self) -> List[Output]:
-        results = []
-        result_nodes: set[Node] = set()
-        for c in self.compilation_unit.contracts:
-            for f in c.functions + c.modifiers:
-                if f.contract_declarer != c:
-                    continue
-                for n in f.nodes:
-                    for ir in n.irs:
-                        if self._is_deprecated_instance(ir):
-                            result_nodes.add(n)
-
-        for node in result_nodes:
-            res = self.generate_result([node, " is deprecated."])
-            results.append(res)
-        return results
+    @classmethod
+    def _detect_node_info(cls) -> str:
+        return "is deprecated."
 
 
 if __name__ == "__main__":

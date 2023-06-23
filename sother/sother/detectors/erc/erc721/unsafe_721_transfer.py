@@ -16,7 +16,7 @@ from slither.detectors.abstract_detector import (
 from slither.slithir.operations import Operation, HighLevelCall
 from slither.utils.output import Output
 
-from sother.detectors.abstracts.abstarct_detect_function_called import (
+from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
 )
 from sother.detectors.detector_settings import DetectorSettings
