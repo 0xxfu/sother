@@ -5,10 +5,11 @@
 """
 import unittest
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function
+from slither.core.variables import Variable
 from slither.detectors.abstract_detector import AbstractDetector, DETECTOR_INFO
 from slither.slithir.operations import Operation, HighLevelCall
 from slither.utils.output import Output
@@ -59,12 +60,25 @@ class AbstractTransferInstance(AbstractDetectHasInstance, ABC):
     ]
 
     @classmethod
-    def _is_transfer_instance(cls, ir: Operation) -> bool:
+    def is_transfer_instance(cls, ir: Operation) -> bool:
         return (
             isinstance(ir, HighLevelCall)
             and isinstance(ir.function, Function)
             and ir.function.solidity_signature in cls.transfer_signature
         )
+
+    @classmethod
+    def get_transfer_to(cls, ir: HighLevelCall) -> Optional[Variable]:
+        transfer_to: Optional[Variable] = None
+        if ir.function.solidity_signature == cls.transfer_signature[0]:
+            transfer_to = ir.arguments[0]
+        elif ir.function.solidity_signature == cls.transfer_signature[1]:
+            transfer_to = ir.arguments[1]
+        elif ir.function.solidity_signature == cls.transfer_signature[2]:
+            transfer_to = ir.arguments[1]
+        elif ir.function.solidity_signature == cls.transfer_signature[3]:
+            transfer_to = ir.arguments[2]
+        return transfer_to
 
 
 if __name__ == "__main__":

@@ -55,19 +55,12 @@ i.e. Fee-on-transfer scenario:
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
-        if not cls._is_transfer_instance(ir):
+        if not cls.is_transfer_instance(ir):
             return False
 
-        transfer_to: Optional[Variable] = None
-        if ir.function.solidity_signature == cls.transfer_signature[0]:
-            transfer_to = ir.arguments[0]
-        elif ir.function.solidity_signature == cls.transfer_signature[1]:
-            transfer_to = ir.arguments[1]
-        elif ir.function.solidity_signature == cls.transfer_signature[2]:
-            transfer_to = ir.arguments[1]
-        elif ir.function.solidity_signature == cls.transfer_signature[3]:
-            transfer_to = ir.arguments[2]
-        return not cls._is_check_balance_in_function(ir.node.function, transfer_to)
+        return not cls._is_check_balance_in_function(
+            ir.node.function, cls.get_transfer_to(ir)
+        )
 
     @classmethod
     def _is_check_balance_in_function(
