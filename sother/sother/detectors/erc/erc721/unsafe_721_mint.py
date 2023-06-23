@@ -7,8 +7,13 @@ import unittest
 from typing import List
 
 from loguru import logger
+from slither.core.cfg.node import Node
 from slither.core.declarations import Function
-from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.detectors.abstract_detector import (
+    AbstractDetector,
+    DetectorClassification,
+    DETECTOR_INFO,
+)
 from slither.slithir.operations import Operation, HighLevelCall, InternalCall
 from slither.utils.output import Output
 
@@ -73,8 +78,12 @@ Ref: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contract
 """
 
     @classmethod
-    def _detect_node_info(cls) -> str:
-        return " should be replaced by `_safeMint()`."
+    def _detect_node_info(cls, node: Node) -> DETECTOR_INFO:
+        return [
+            node,
+            " should be replaced by `_safeMint()`.",
+            "\n",
+        ]
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:

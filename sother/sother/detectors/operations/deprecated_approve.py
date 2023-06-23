@@ -5,8 +5,9 @@
 """
 import unittest
 
+from slither.core.cfg.node import Node
 from slither.core.declarations import Function
-from slither.detectors.abstract_detector import DetectorClassification
+from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.slithir.operations import Operation, HighLevelCall
 
 from sother.detectors.abstracts.abstract_detect_has_instance import (
@@ -57,8 +58,12 @@ replace `approve()/safeApprove()` with `safeIncreaseAllowance()` or `safeDecreas
         )
 
     @classmethod
-    def _detect_node_info(cls) -> str:
-        return " should be used `safeIncreaseAllowance()` or `safeDecreaseAllowance()` instead."
+    def _detect_node_info(cls, node: Node) -> DETECTOR_INFO:
+        return [
+            node,
+            " should be used `safeIncreaseAllowance()` or `safeDecreaseAllowance()` instead.",
+            "\n",
+        ]
 
 
 if __name__ == "__main__":

@@ -22,7 +22,7 @@ class AbstractDetectHasInstance(AbstractDetector, ABC):
 
     @classmethod
     @abstractmethod
-    def _detect_node_info(cls) -> str:
+    def _detect_node_info(cls, node: Node) -> DETECTOR_INFO:
         pass
 
     def _detect(self) -> List[Output]:
@@ -34,11 +34,7 @@ class AbstractDetectHasInstance(AbstractDetector, ABC):
                 instance_nodes = self.detect_has_instance(f)
                 if instance_nodes:
                     for node in instance_nodes:
-                        info: DETECTOR_INFO = [
-                            node,
-                            self._detect_node_info(),
-                            "\n",
-                        ]
+                        info: DETECTOR_INFO = self._detect_node_info(node)
                         res = self.generate_result(info)
 
                         results.append(res)

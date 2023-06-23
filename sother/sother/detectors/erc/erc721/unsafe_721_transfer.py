@@ -62,8 +62,12 @@ reentrancy risk and gas costs.
 """
 
     @classmethod
-    def _detect_node_info(cls) -> str:
-        return " should be replaced by `safeTransferFrom()`."
+    def _detect_node_info(cls, node: Node) -> DETECTOR_INFO:
+        return [
+            node,
+            " should be replaced by `safeTransferFrom()`.",
+            "\n",
+        ]
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:

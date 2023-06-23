@@ -7,9 +7,10 @@ import unittest
 from typing import Optional
 
 from loguru import logger
+from slither.core.cfg.node import Node
 from slither.core.declarations import Function
 from slither.core.variables import Variable
-from slither.detectors.abstract_detector import DetectorClassification
+from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.slithir.operations import Operation, HighLevelCall, LibraryCall
 
 from sother.detectors.abstracts.abstract_detect_has_instance import (
@@ -99,8 +100,12 @@ i.e. Fee-on-transfer scenario:
         return get_balance_count >= 2
 
     @classmethod
-    def _detect_node_info(cls) -> str:
-        return " with fee on transfer are not supported."
+    def _detect_node_info(cls, node: Node) -> DETECTOR_INFO:
+        return [
+            node,
+            " with fee on transfer are not supported.",
+            "\n",
+        ]
 
 
 if __name__ == "__main__":
