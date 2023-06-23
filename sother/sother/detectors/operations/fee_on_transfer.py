@@ -58,12 +58,12 @@ i.e. Fee-on-transfer scenario:
         if not cls.is_transfer_instance(ir):
             return False
 
-        return not cls._is_check_balance_in_function(
+        return not cls.is_check_balance_in_function(
             ir.node.function, cls.get_transfer_to(ir)
         )
 
     @classmethod
-    def _is_check_balance_in_function(
+    def is_check_balance_in_function(
         cls, function: Function, transfer_to: Optional[Variable]
     ) -> bool:
         if not transfer_to:
