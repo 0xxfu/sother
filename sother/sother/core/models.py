@@ -48,11 +48,6 @@ class OutputResult(BaseModel):
     impact: str
     confidence: str
 
-    def get_first_element_file(self) -> str:
-        if len(self.elements) > 0:
-            return self.elements[0].source_mapping.filename_relative
-        return "unknow"
-
 
 class DetectorWiki(BaseModel):
     argument: str
