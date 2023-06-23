@@ -61,25 +61,9 @@ Evaluate using ERC721 `safeTransferFrom()` to avoid NFTs getting stuck vis-a-vis
 reentrancy risk and gas costs.
 """
 
-    def _detect(self) -> List[Output]:
-        results = []
-        for c in self.compilation_unit.contracts:
-            for f in c.functions + c.modifiers:
-                if f.contract_declarer != c:
-                    continue
-                erc721_transfers = self.detect_has_instance(f)
-                if erc721_transfers:
-                    for node in erc721_transfers:
-                        info: DETECTOR_INFO = [
-                            node,
-                            " should be replaced by `safeTransferFrom()`.",
-                            "\n",
-                        ]
-
-                        res = self.generate_result(info)
-
-                        results.append(res)
-        return results
+    @classmethod
+    def _detect_node_info(cls) -> str:
+        return " should be replaced by `safeTransferFrom()`."
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
