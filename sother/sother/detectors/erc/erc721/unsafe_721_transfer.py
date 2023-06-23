@@ -20,7 +20,7 @@ from sother.detectors.detector_settings import DetectorSettings
 
 
 class UnsafeTransferErc721(AbstractDetector):
-    ARGUMENT = "unsafe-transfer-erc721"
+    ARGUMENT = "unsafe-721-transfer"
 
     IMPACT = DetectorClassification.MEDIUM
     CONFIDENCE = DetectorClassification.MEDIUM
