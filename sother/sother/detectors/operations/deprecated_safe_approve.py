@@ -60,7 +60,7 @@ replace `safeApprove()` with `safeIncreaseAllowance()` or `safeDecreaseAllowance
 
     @classmethod
     def _detect_node_info(cls) -> str:
-        return "is deprecated."
+        return " is deprecated."
 
 
 if __name__ == "__main__":
