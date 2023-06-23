@@ -201,7 +201,7 @@ reentrancy risk and gas costs.
 Medium
 
 ### category:
-unsafe-transfer-erc721
+unsafe-721-transfer
 
 ## [Low] `revert CustomError()` should be used instead of `assert()`
 
