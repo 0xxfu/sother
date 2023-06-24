@@ -4,7 +4,7 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [L-0] | Upgradeable contract is missing a `__gap` storage variable to allow for new storage variables in later versions | 2 |
+| [L-0] | Upgradeable contract is missing a `__gap` storage variable to allow for new storage variables in later versions | 1 |
 | [L-1] | Upgradeable contracts are not initialized | 2 |
 
 
@@ -25,10 +25,9 @@ See [this](https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeabl
 
 
 
-**There are `2` instances of this issue:**
+**There is `1` instance of this issue:**
 
 - [Buggy](solidity/test_missing_gap_state_variable.sol#L7-L9) is an upgradeable contract that miss `__gap` to allow for new storage variables.
-- [Good](solidity/test_missing_gap_state_variable.sol#L15-L18) is an upgradeable contract that miss `__gap` to allow for new storage variables.
 
 ### recommendation:
 
@@ -54,7 +53,6 @@ contract Contract {
 
 ### locations:
 - solidity/test_missing_gap_state_variable.sol#L7-L9
-- solidity/test_missing_gap_state_variable.sol#L15-L18
 
 ### severity:
 Low

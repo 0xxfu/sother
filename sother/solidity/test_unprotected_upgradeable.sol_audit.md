@@ -337,7 +337,8 @@ more detail see [this](https://docs.soliditylang.org/en/v0.8.20/internals/optimi
 
 **There is `1` instance of this issue:**
 
-- [Initializable._disableInitializers()](solidity/test_unprotected_upgradeable.sol#L9-L14) could be inlined to save gas
+- [Initializable._disableInitializers()](solidity/test_unprotected_upgradeable.sol#L9-L14) could be inlined to save gas.
+
 
 ### recommendation:
 Using inlining replace `internal` function which only called once

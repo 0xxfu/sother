@@ -4,8 +4,8 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [H-0] | Arbitrary `from` in transferFrom | 1 |
-| [H-1] | Uninitialized state variables | 2 |
+| [H-0] | Uninitialized state variables | 1 |
+| [H-1] | Arbitrary `from` in transferFrom | 1 |
 
 
 ### Medium Risk Issues
@@ -41,48 +41,12 @@
 
 
 
-## [High] Arbitrary `from` in transferFrom
-
-### description:
-Detect when `msg.sender` is not used as `from` in transferFrom.
-
-**There is `1` instance of this issue:**
-
-- [UnsafeErc721Transfer.bad0(address,address,uint256)](solidity/test_unsafe_transfer.sol#L30-L36) uses arbitrary from in transferFrom: [t.transferFrom(from,to,tokenId)](solidity/test_unsafe_transfer.sol#L35)
-
-#### Exploit scenario
-
-```solidity
-    function a(address from, address to, uint256 amount) public {
-        erc20.transferFrom(from, to, am);
-    }
-```
-Alice approves this contract to spend her ERC20 tokens. Bob can call `a` and specify Alice's address as the `from` parameter in `transferFrom`, allowing him to transfer Alice's tokens to himself.
-
-### recommendation:
-
-Use `msg.sender` as `from` in transferFrom.
-
-
-### locations:
-- solidity/test_unsafe_transfer.sol#L30-L36
-
-### severity:
-High
-
-### category:
-arbitrary-send-erc20
-
 ## [High] Uninitialized state variables
 
 ### description:
 Uninitialized state variables.
 
-**There are `2` instances of this issue:**
-
-- [UnsafeErc721Transfer.t](solidity/test_unsafe_transfer.sol#L28) is never initialized. It is used in:
-	- [UnsafeErc721Transfer.bad0(address,address,uint256)](solidity/test_unsafe_transfer.sol#L30-L36)
-	- [UnsafeErc721Transfer.good0(address,address,uint256)](solidity/test_unsafe_transfer.sol#L38-L44)
+**There is `1` instance of this issue:**
 
 - [UnsafeErc20Transfer.t](solidity/test_unsafe_transfer.sol#L48) is never initialized. It is used in:
 	- [UnsafeErc20Transfer.bad0()](solidity/test_unsafe_transfer.sol#L51-L53)
@@ -118,7 +82,6 @@ Initialize all the variables. If a variable is meant to be initialized to zero, 
 
 
 ### locations:
-- solidity/test_unsafe_transfer.sol#L28
 - solidity/test_unsafe_transfer.sol#L48
 
 ### severity:
@@ -126,6 +89,38 @@ High
 
 ### category:
 uninitialized-state
+
+## [High] Arbitrary `from` in transferFrom
+
+### description:
+Detect when `msg.sender` is not used as `from` in transferFrom.
+
+**There is `1` instance of this issue:**
+
+- [UnsafeErc721Transfer.bad0(address,address,uint256)](solidity/test_unsafe_transfer.sol#L30-L36) uses arbitrary from in transferFrom: [t.transferFrom(from,to,tokenId)](solidity/test_unsafe_transfer.sol#L35)
+
+#### Exploit scenario
+
+```solidity
+    function a(address from, address to, uint256 amount) public {
+        erc20.transferFrom(from, to, am);
+    }
+```
+Alice approves this contract to spend her ERC20 tokens. Bob can call `a` and specify Alice's address as the `from` parameter in `transferFrom`, allowing him to transfer Alice's tokens to himself.
+
+### recommendation:
+
+Use `msg.sender` as `from` in transferFrom.
+
+
+### locations:
+- solidity/test_unsafe_transfer.sol#L30-L36
+
+### severity:
+High
+
+### category:
+arbitrary-send-erc20
 
 ## [Medium] Incompatibility with transfer-on-fee or deflationary tokens
 
@@ -295,7 +290,13 @@ unsafe-721-transfer
 
 ### description:
 
-Prior to solidity version 0.8.0, hitting an assert consumes the **remainder of the transaction's available gas** rather than returning it, as `require()`/`revert()` do. `assert()` should be avoided even past solidity version 0.8.0 as its [documentation](https://docs.soliditylang.org/en/v0.8.19/control-structures.html#panic-via-assert-and-error-via-require) states that "The assert function creates an error of type Panic(uint256). ... Properly functioning code should never create a Panic, not even on invalid external input. If this happens, then there is a bug in your contract which you should fix.
+Prior to solidity version 0.8.0, hitting an assert consumes the **remainder of the 
+transaction's available gas** rather than returning it, as `require()`/`revert()` do. 
+`assert()` should be avoided even past solidity version 0.8.0 as its 
+[documentation](https://docs.soliditylang.org/en/latest/control-structures.html#panic-via-assert-and-error-via-require) 
+states that "The assert function creates an error of type Panic(uint256). ... 
+Properly functioning code should never create a Panic, not even on invalid external 
+input. If this happens, then there is a bug in your contract which you should fix.
 
 
 

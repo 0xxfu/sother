@@ -1,12 +1,5 @@
 ## Summary 
 
-### High Risk Issues
-
-|ID|Issues|Instances|
-|---|:---|:---:|
-| [H-0] | Uninitialized state variables | 3 |
-
-
 ### Low Risk Issues
 
 |ID|Issues|Instances|
@@ -32,54 +25,6 @@
 | [G-1] | State variables that could be declared constant | 4 |
 
 
-
-## [High] Uninitialized state variables
-
-### description:
-Uninitialized state variables.
-
-**There are `3` instances of this issue:**
-
-- [ABIencodePacked.a](solidity/encode_packed_collision.sol#L3) is never initialized. It is used in:
-	- [ABIencodePacked.bad4(bytes,bytes)](solidity/encode_packed_collision.sol#L34-L36)
-	- [ABIencodePacked.good3()](solidity/encode_packed_collision.sol#L54-L56)
-	- [ABIencodePacked.good5()](solidity/encode_packed_collision.sol#L64-L66)
-
-- [ABIencodePacked.arr](solidity/encode_packed_collision.sol#L7) is never initialized. It is used in:
-	- [ABIencodePacked.good2()](solidity/encode_packed_collision.sol#L49-L51)
-
-- [ABIencodePacked.arr2](solidity/encode_packed_collision.sol#L8) is never initialized. It is used in:
-	- [ABIencodePacked.good6()](solidity/encode_packed_collision.sol#L69-L71)
-
-#### Exploit scenario
-
-```solidity
-contract Uninitialized{
-    address destination;
-
-    function transfer() payable public{
-        destination.transfer(msg.value);
-    }
-}
-```
-Bob calls `transfer`. As a result, the Ether are sent to the address `0x0` and are lost.
-
-
-### recommendation:
-
-Initialize all the variables. If a variable is meant to be initialized to zero, explicitly set it to zero to improve code readability.
-
-
-### locations:
-- solidity/encode_packed_collision.sol#L3
-- solidity/encode_packed_collision.sol#L7
-- solidity/encode_packed_collision.sol#L8
-
-### severity:
-High
-
-### category:
-uninitialized-state
 
 ## [Low] `abi.encodePacked()` should not be used with dynamic types when passing the result to a hash function such as `keccak256()`
 
