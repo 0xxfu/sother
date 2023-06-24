@@ -32,9 +32,7 @@ class InternalFunctionToInline(AbstractDetector):
 
     WIKI = DetectorSettings.default_wiki
 
-    WIKI_TITLE = (
-        "`internal` functions only called once can be inlined to save gas"
-    )
+    WIKI_TITLE = "`internal` functions only called once can be inlined to save gas"
     WIKI_DESCRIPTION = """
 Not inlining costs **20 to 40 gas** because of two extra `JUMP` instructions and additional stack operations needed for function calls.
 more detail see [this](https://docs.soliditylang.org/en/v0.8.20/internals/optimizer.html#function-inlining) and [this](https://blog.soliditylang.org/2021/03/02/saving-gas-with-simple-inliner/)
@@ -64,9 +62,7 @@ more detail see [this](https://docs.soliditylang.org/en/v0.8.20/internals/optimi
 
         if not isinstance(call_exp, CallExpression):
             return
-        return cls._get_called_from_call_operation(
-            internal_func_names, call_exp
-        )
+        return cls._get_called_from_call_operation(internal_func_names, call_exp)
 
     @classmethod
     def _get_called_internal_functions(
@@ -78,22 +74,16 @@ more detail see [this](https://docs.soliditylang.org/en/v0.8.20/internals/optimi
             return
 
         if isinstance(expression, CallExpression):
-            return cls._get_called_from_call_operation(
-                internal_func_names, expression
-            )
+            return cls._get_called_from_call_operation(internal_func_names, expression)
 
         if not isinstance(expression, AssignmentOperation):
             return
 
         exp_right = expression.expression_right
         if isinstance(exp_right, CallExpression):
-            return cls._get_called_from_call_operation(
-                internal_func_names, exp_right
-            )
+            return cls._get_called_from_call_operation(internal_func_names, exp_right)
         if isinstance(exp_right, BinaryOperation):
-            return cls._get_called_from_binary_operation(
-                internal_func_names, exp_right
-            )
+            return cls._get_called_from_binary_operation(internal_func_names, exp_right)
 
     def _detect(self) -> List[Output]:
         results = []
@@ -128,7 +118,7 @@ more detail see [this](https://docs.soliditylang.org/en/v0.8.20/internals/optimi
             json = self.generate_result(
                 [
                     internal_functions[func_name],
-                    " could be inlined to save gas",
+                    " could be inlined to save gas.\n",
                 ]
             )
             results.append(json)
