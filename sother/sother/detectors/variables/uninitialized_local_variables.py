@@ -9,7 +9,7 @@ from typing import List
 from loguru import logger
 from slither.core.cfg.node import Node
 from slither.core.declarations import FunctionContract
-from slither.core.solidity_types import ElementaryType
+from slither.core.solidity_types import ElementaryType, UserDefinedType
 from slither.core.variables.local_variable import LocalVariable
 
 from slither.detectors.variables.uninitialized_local_variables import (
@@ -27,8 +27,8 @@ class UninitializedLocalVars(SlitherUninitializedLocalVars):
             func, local_var = result
             if not (
                 isinstance(local_var, LocalVariable)
-                and isinstance(local_var.type, ElementaryType)
-                and str(local_var.type) == "address"
+                and isinstance(local_var.type, (ElementaryType, UserDefinedType))
+                and str(local_var.type) in ["address", "IERC20"]
             ):
                 self.results.remove(result)
 
