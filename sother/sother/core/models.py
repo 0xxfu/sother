@@ -43,7 +43,7 @@ class OutputResult(BaseModel):
     description: str
     markdown: str
     first_markdown_element: str
-    first_element_line: Optional[int]
+    first_element_line: Optional[int] = 1000000
     id: str
     check: str
     impact: str
