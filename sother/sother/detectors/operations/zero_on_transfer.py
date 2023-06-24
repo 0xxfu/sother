@@ -21,13 +21,13 @@ from sother.detectors.detector_settings import DetectorSettings
 
 class ZeroCheckWithTransfer(AbstractTransferInstance):
     ARGUMENT = "zero-check-with-transfer"
-    HELP = "Amounts should be checked for 0 before calling a transfer"
+    HELP = "Amounts should be checked for `0` before calling a `transfer`"
     IMPACT = DetectorClassification.OPTIMIZATION
     CONFIDENCE = DetectorClassification.HIGH
 
     WIKI = DetectorSettings.default_wiki
 
-    WIKI_TITLE = "Amounts should be checked for 0 before calling a transfer"
+    WIKI_TITLE = "Amounts should be checked for `0` before calling a `transfer`"
     WIKI_DESCRIPTION = """
 According to the fact that EIP-20 [states](https://github.com/ethereum/EIPs/blob/46b9b698815abbfa628cd1097311deee77dd45c5/EIPS/eip-20.md?plain=1#L116) that zero-valued transfers must be accepted.
 
