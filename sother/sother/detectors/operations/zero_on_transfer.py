@@ -58,7 +58,7 @@ Consider adding a non-zero-value check at the beginning of function.
         )
 
     @classmethod
-    def is_check_zero_in_function(cls, function: Function, amount: Variable):
+    def is_check_zero_in_function(cls, function: Function, amount: Variable) -> bool:
         if not amount:
             return False
         for node in function.nodes:
@@ -69,6 +69,7 @@ Consider adding a non-zero-value check at the beginning of function.
                     ir.variable_left in [0, 1] and ir.variable_right == amount
                 ):
                     return True
+        return False
 
 
 # todo impl
