@@ -58,9 +58,8 @@ contract Contract {
         for contract in self.compilation_unit.contracts:
             if not contract.is_upgradeable:
                 continue
-            if not any(
-                "__gap" == state.name for state in contract.state_variables_declared
-            ):
+            # All state variables
+            if not any("__gap" == state.name for state in contract.state_variables):
                 info: DETECTOR_INFO = [
                     contract,
                     " is an upgradeable contract that miss `__gap` to allow for new storage variables.",
