@@ -29,7 +29,8 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | use custom errors instead of revert strings | 4 |
-| [G-1] | State variables that could be declared constant | 2 |
+| [G-1] | Amounts should be checked for 0 before calling a transfer | 13 |
+| [G-2] | State variables that could be declared constant | 2 |
 
 
 
@@ -349,6 +350,71 @@ Optimization
 
 ### category:
 use-custom-error
+
+## [Optimization] Amounts should be checked for 0 before calling a transfer
+
+### description:
+
+According to the fact that EIP-20 [states](https://github.com/ethereum/EIPs/blob/46b9b698815abbfa628cd1097311deee77dd45c5/EIPS/eip-20.md?plain=1#L116) that zero-valued transfers must be accepted.
+
+Checking non-zero transfer values can avoid an expensive external call and save gas.
+While this is done at some places, it’s not consistently done in the solution.
+
+
+**There are `13` instances of this issue:**
+
+- Adding a non-zero-value check for [t.transferFrom(from,to,tokenId)](solidity/test_unsafe_transfer.sol#L35) at the beginning of [UnsafeErc721Transfer.bad0(address,address,uint256)](solidity/test_unsafe_transfer.sol#L30-L36)
+
+- Adding a non-zero-value check for [t.transfer(address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L52) at the beginning of [UnsafeErc20Transfer.bad0()](solidity/test_unsafe_transfer.sol#L51-L53)
+
+- Adding a non-zero-value check for [a = t.transfer(address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L56) at the beginning of [UnsafeErc20Transfer.good0()](solidity/test_unsafe_transfer.sol#L55-L57)
+
+- Adding a non-zero-value check for [require(bool,string)(t.transfer(address(0),1000000000000000000),failed)](solidity/test_unsafe_transfer.sol#L60) at the beginning of [UnsafeErc20Transfer.good1()](solidity/test_unsafe_transfer.sol#L59-L61)
+
+- Adding a non-zero-value check for [assert(bool)(t.transfer(address(0),1000000000000000000))](solidity/test_unsafe_transfer.sol#L64) at the beginning of [UnsafeErc20Transfer.good2()](solidity/test_unsafe_transfer.sol#L63-L65)
+
+- Adding a non-zero-value check for [t.transfer(address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L68) at the beginning of [UnsafeErc20Transfer.good3()](solidity/test_unsafe_transfer.sol#L67-L69)
+
+- Adding a non-zero-value check for [ret = t.transfer(address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L72) at the beginning of [UnsafeErc20Transfer.good4()](solidity/test_unsafe_transfer.sol#L71-L73)
+
+- Adding a non-zero-value check for [t.transferFrom(address(this),address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L77) at the beginning of [UnsafeErc20Transfer.bad1()](solidity/test_unsafe_transfer.sol#L76-L78)
+
+- Adding a non-zero-value check for [a = t.transferFrom(address(this),address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L81) at the beginning of [UnsafeErc20Transfer.good5()](solidity/test_unsafe_transfer.sol#L80-L82)
+
+- Adding a non-zero-value check for [require(bool,string)(t.transferFrom(address(this),address(0),1000000000000000000),failed)](solidity/test_unsafe_transfer.sol#L85) at the beginning of [UnsafeErc20Transfer.good6()](solidity/test_unsafe_transfer.sol#L84-L86)
+
+- Adding a non-zero-value check for [assert(bool)(t.transferFrom(address(this),address(0),1000000000000000000))](solidity/test_unsafe_transfer.sol#L89) at the beginning of [UnsafeErc20Transfer.good7()](solidity/test_unsafe_transfer.sol#L88-L90)
+
+- Adding a non-zero-value check for [t.transferFrom(address(this),address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L93) at the beginning of [UnsafeErc20Transfer.good8()](solidity/test_unsafe_transfer.sol#L92-L94)
+
+- Adding a non-zero-value check for [ret = t.transferFrom(address(this),address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L97) at the beginning of [UnsafeErc20Transfer.good9()](solidity/test_unsafe_transfer.sol#L96-L98)
+
+
+### recommendation:
+
+Consider adding a non-zero-value check at the beginning of function.
+
+
+### locations:
+- solidity/test_unsafe_transfer.sol#L35
+- solidity/test_unsafe_transfer.sol#L52
+- solidity/test_unsafe_transfer.sol#L56
+- solidity/test_unsafe_transfer.sol#L60
+- solidity/test_unsafe_transfer.sol#L64
+- solidity/test_unsafe_transfer.sol#L68
+- solidity/test_unsafe_transfer.sol#L72
+- solidity/test_unsafe_transfer.sol#L77
+- solidity/test_unsafe_transfer.sol#L81
+- solidity/test_unsafe_transfer.sol#L85
+- solidity/test_unsafe_transfer.sol#L89
+- solidity/test_unsafe_transfer.sol#L93
+- solidity/test_unsafe_transfer.sol#L97
+
+### severity:
+Optimization
+
+### category:
+zero-check-with-transfer
 
 ## [Optimization] State variables that could be declared constant
 

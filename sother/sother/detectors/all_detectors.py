@@ -57,3 +57,4 @@ from sother.detectors.erc.erc721.unsafe_721_transfer import UnsafeTransferErc721
 from sother.detectors.erc.erc721.unsafe_721_mint import Unsafe721Mint
 from sother.detectors.operations.encode_packed import EncodePackedCollision
 from sother.detectors.operations.fee_on_transfer import FeeOnTransfer
+from sother.detectors.operations.zero_on_transfer import ZeroCheckWithTransfer

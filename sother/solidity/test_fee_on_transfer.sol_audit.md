@@ -21,7 +21,8 @@
 |---|:---|:---:|
 | [G-0] | Use `calldata` instead of `memory` for function parameters | 3 |
 | [G-1] | State variables should be cached in stack variables rather than re-reading them from storage | 4 |
-| [G-2] | State variables that could be declared constant | 1 |
+| [G-2] | Amounts should be checked for 0 before calling a transfer | 8 |
+| [G-3] | State variables that could be declared constant | 1 |
 
 
 
@@ -253,6 +254,56 @@ Optimization
 
 ### category:
 reread-state-variables
+
+## [Optimization] Amounts should be checked for 0 before calling a transfer
+
+### description:
+
+According to the fact that EIP-20 [states](https://github.com/ethereum/EIPs/blob/46b9b698815abbfa628cd1097311deee77dd45c5/EIPS/eip-20.md?plain=1#L116) that zero-valued transfers must be accepted.
+
+Checking non-zero transfer values can avoid an expensive external call and save gas.
+While this is done at some places, it’s not consistently done in the solution.
+
+
+**There are `8` instances of this issue:**
+
+- Adding a non-zero-value check for [token.transfer(to,amount)](solidity/test_fee_on_transfer.sol#L47) at the beginning of [FeeOnTransfer.bad0(address,uint256)](solidity/test_fee_on_transfer.sol#L46-L49)
+
+- Adding a non-zero-value check for [token.transferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L48) at the beginning of [FeeOnTransfer.bad0(address,uint256)](solidity/test_fee_on_transfer.sol#L46-L49)
+
+- Adding a non-zero-value check for [token.safeTransfer(to,amount)](solidity/test_fee_on_transfer.sol#L52) at the beginning of [FeeOnTransfer.bad1(address,uint256)](solidity/test_fee_on_transfer.sol#L51-L54)
+
+- Adding a non-zero-value check for [token.safeTransferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L53) at the beginning of [FeeOnTransfer.bad1(address,uint256)](solidity/test_fee_on_transfer.sol#L51-L54)
+
+- Adding a non-zero-value check for [token.transfer(to,amount)](solidity/test_fee_on_transfer.sol#L58) at the beginning of [FeeOnTransfer.good0(address,uint256)](solidity/test_fee_on_transfer.sol#L56-L61)
+
+- Adding a non-zero-value check for [token.transferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L59) at the beginning of [FeeOnTransfer.good0(address,uint256)](solidity/test_fee_on_transfer.sol#L56-L61)
+
+- Adding a non-zero-value check for [token.safeTransfer(to,amount)](solidity/test_fee_on_transfer.sol#L65) at the beginning of [FeeOnTransfer.good1(address,uint256)](solidity/test_fee_on_transfer.sol#L63-L68)
+
+- Adding a non-zero-value check for [token.safeTransferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L66) at the beginning of [FeeOnTransfer.good1(address,uint256)](solidity/test_fee_on_transfer.sol#L63-L68)
+
+
+### recommendation:
+
+Consider adding a non-zero-value check at the beginning of function.
+
+
+### locations:
+- solidity/test_fee_on_transfer.sol#L47
+- solidity/test_fee_on_transfer.sol#L48
+- solidity/test_fee_on_transfer.sol#L52
+- solidity/test_fee_on_transfer.sol#L53
+- solidity/test_fee_on_transfer.sol#L58
+- solidity/test_fee_on_transfer.sol#L59
+- solidity/test_fee_on_transfer.sol#L65
+- solidity/test_fee_on_transfer.sol#L66
+
+### severity:
+Optimization
+
+### category:
+zero-check-with-transfer
 
 ## [Optimization] State variables that could be declared constant
 

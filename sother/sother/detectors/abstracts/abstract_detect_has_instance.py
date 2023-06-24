@@ -80,6 +80,19 @@ class AbstractTransferInstance(AbstractDetectHasInstance, ABC):
             transfer_to = ir.arguments[2]
         return transfer_to
 
+    @classmethod
+    def get_transfer_amount(cls, ir: HighLevelCall) -> Optional[Variable]:
+        transfer_amount: Optional[Variable] = None
+        if ir.function.solidity_signature == cls.transfer_signature[0]:
+            transfer_amount = ir.arguments[1]
+        elif ir.function.solidity_signature == cls.transfer_signature[1]:
+            transfer_amount = ir.arguments[2]
+        elif ir.function.solidity_signature == cls.transfer_signature[2]:
+            transfer_amount = ir.arguments[2]
+        elif ir.function.solidity_signature == cls.transfer_signature[3]:
+            transfer_amount = ir.arguments[3]
+        return transfer_amount
+
 
 if __name__ == "__main__":
     unittest.main()
