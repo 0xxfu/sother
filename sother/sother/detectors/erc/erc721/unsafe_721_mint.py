@@ -87,6 +87,7 @@ Ref: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contract
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
+        # todo only erc721 valid
         return (
             isinstance(ir, InternalCall)
             and isinstance(ir.function, Function)
