@@ -71,7 +71,9 @@ Consider adding a non-zero-value check at the beginning of function.
                     return True
 
 
-class ZeroRevertWithTransfer(ZeroCheckWithTransfer):
+# todo impl
+# cause transactions that involve other tokens (such as batch operations) to fully revert
+class RevertWithZeroTransfer(ZeroCheckWithTransfer):
     pass
 
 
