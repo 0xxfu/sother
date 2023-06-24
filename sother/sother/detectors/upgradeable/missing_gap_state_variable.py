@@ -59,7 +59,9 @@ contract Contract {
             if not contract.is_upgradeable:
                 continue
             # All state variables
-            if not any("__gap" == state.name for state in contract.state_variables):
+            if not any(
+                "__gap" == state.name for state in contract.state_variables_ordered
+            ):
                 info: DETECTOR_INFO = [
                     contract,
                     " is an upgradeable contract that miss `__gap` to allow for new storage variables.",
