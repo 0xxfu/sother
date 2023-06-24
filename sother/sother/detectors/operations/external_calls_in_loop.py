@@ -16,6 +16,7 @@ from sother.detectors.detector_settings import DetectorSettings
 
 
 # todo only detect: state change and balance change
+# MultipleCallsInLoop
 class ExternalCallsInLoop(AbstractDetectInLoop):
     ARGUMENT = "external-calls-in-loop"
     HELP = "External calls in an un-bounded `for-`loop may result in a DOS"
