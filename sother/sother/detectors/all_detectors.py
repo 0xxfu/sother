@@ -61,3 +61,6 @@ from sother.detectors.operations.zero_on_transfer import ZeroCheckWithTransfer
 from sother.detectors.variables.uninitialized_local_variables import (
     UninitializedLocalVars,
 )
+from sother.detectors.variables.uninitialized_state_variables import (
+    UninitializedStateVarsDetection,
+)
