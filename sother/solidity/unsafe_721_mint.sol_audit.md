@@ -7,11 +7,19 @@
 | [M-0] | Use `_safeMint` instead of `_mint` for ERC721 | 1 |
 
 
+### Non-critical Issues
+
+|ID|Issues|Instances|
+|---|:---|:---:|
+| [N-0] | Incorrect versions of Solidity | 2 |
+
+
 ### Gas Optimizations
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | use custom errors instead of revert strings | 1 |
+| [G-0] | Reduce gas usage by moving to Solidity 0.8.20 or later | 1 |
+| [G-1] | use custom errors instead of revert strings | 1 |
 
 
 
@@ -77,6 +85,65 @@ Medium
 
 ### category:
 unsafe-721-mint
+
+## [Informational] Incorrect versions of Solidity
+
+### description:
+
+`solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
+We also recommend avoiding complex `pragma` statement.
+
+**There are `2` instances of this issue:**
+
+- Pragma version[0.8.19](solidity/unsafe_721_mint.sol#L2) allows old versions
+
+- solc-0.8.19 is not recommended for deployment
+
+
+### recommendation:
+
+Deploy with any of the following Solidity versions:
+- 0.8.20
+
+The recommendations take into account:
+- Risks related to recent releases
+- Risks of complex code generation changes
+- Risks of new language features
+- Risks of known bugs
+
+Use a simple pragma version that allows any of these versions.
+Consider using the latest version of Solidity for testing.
+
+### locations:
+- solidity/unsafe_721_mint.sol#L2
+- 
+
+### severity:
+Informational
+
+### category:
+solc-version
+
+## [Optimization] Reduce gas usage by moving to Solidity 0.8.20 or later
+
+### description:
+See this [link](https://blog.soliditylang.org/2023/02/22/solidity-0.8.19-release-announcement/#preventing-dead-code-in-runtime-bytecode) for the full details
+
+**There is `1` instance of this issue:**
+
+- pragma solidity version [0.8.19](solidity/unsafe_721_mint.sol#L2) should upgrade to the latest version: 0.8.20
+
+### recommendation:
+Upgrade solidity version to the latest version: 0.8.20
+
+### locations:
+- solidity/unsafe_721_mint.sol#L2
+
+### severity:
+Optimization
+
+### category:
+upgrade-to-latest
 
 ## [Optimization] use custom errors instead of revert strings
 

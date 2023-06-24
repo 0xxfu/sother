@@ -15,6 +15,13 @@
 | [M-1] | Return values of `transfer()/transferFrom()` not checked | 4 |
 
 
+### Non-critical Issues
+
+|ID|Issues|Instances|
+|---|:---|:---:|
+| [N-0] | Incorrect versions of Solidity | 1 |
+
+
 ### Gas Optimizations
 
 |ID|Issues|Instances|
@@ -22,7 +29,7 @@
 | [G-0] | Use `calldata` instead of `memory` for function parameters | 3 |
 | [G-1] | State variables should be cached in stack variables rather than re-reading them from storage | 6 |
 | [G-2] | use custom errors instead of revert strings | 2 |
-| [G-3] | Amounts should be checked for 0 before calling a transfer | 4 |
+| [G-3] | Amounts should be checked for `0` before calling a `transfer` | 4 |
 | [G-4] | State variables that could be declared constant | 1 |
 
 
@@ -171,6 +178,41 @@ Medium
 ### category:
 unchecked-transfer
 
+## [Informational] Incorrect versions of Solidity
+
+### description:
+
+`solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
+We also recommend avoiding complex `pragma` statement.
+
+**There is `1` instance of this issue:**
+
+- solc-0.8.19 is not recommended for deployment
+
+
+### recommendation:
+
+Deploy with any of the following Solidity versions:
+- 0.8.20
+
+The recommendations take into account:
+- Risks related to recent releases
+- Risks of complex code generation changes
+- Risks of new language features
+- Risks of known bugs
+
+Use a simple pragma version that allows any of these versions.
+Consider using the latest version of Solidity for testing.
+
+### locations:
+- 
+
+### severity:
+Informational
+
+### category:
+solc-version
+
 ## [Optimization] Use `calldata` instead of `memory` for function parameters
 
 ### description:
@@ -303,7 +345,7 @@ Optimization
 ### category:
 use-custom-error
 
-## [Optimization] Amounts should be checked for 0 before calling a transfer
+## [Optimization] Amounts should be checked for `0` before calling a `transfer`
 
 ### description:
 
