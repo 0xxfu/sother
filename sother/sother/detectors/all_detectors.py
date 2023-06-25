@@ -64,3 +64,4 @@ from sother.detectors.variables.uninitialized_local_variables import (
 from sother.detectors.variables.uninitialized_state_variables import (
     UninitializedStateVarsDetection,
 )
+from sother.detectors.operations.unused_return_values import UnusedReturnValues
