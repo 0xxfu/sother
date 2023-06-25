@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
 
 interface IERC721 {
     function safeTransferFrom(
@@ -30,6 +28,10 @@ contract ERC721 {
 
     function _mint(address to, uint256 tokenId) internal virtual {
         require(to != address(0), "ERC721: mint to the zero address");
+    }
+
+    function ownerOf(uint256 tokenId) public view virtual returns (address) {
+        return address(0);
     }
 }
 

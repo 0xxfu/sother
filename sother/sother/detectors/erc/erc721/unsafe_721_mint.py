@@ -85,9 +85,26 @@ Ref: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contract
             "\n",
         ]
 
+    def _detect(self) -> List[Output]:
+        results = []
+        for c in self.compilation_unit.contracts:
+            # only detect erc721
+            if not c.is_possible_erc721():
+                continue
+            for f in c.functions + c.modifiers:
+                if f.contract_declarer != c:
+                    continue
+                instance_nodes = self.detect_has_instance(f)
+                if instance_nodes:
+                    for node in instance_nodes:
+                        info: DETECTOR_INFO = self._detect_node_info(node)
+                        res = self.generate_result(info)
+
+                        results.append(res)
+        return results
+
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
-        # todo only erc721 valid
         return (
             isinstance(ir, InternalCall)
             and isinstance(ir.function, Function)
