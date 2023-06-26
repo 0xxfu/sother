@@ -10,3 +10,8 @@ make local
 ```shell
 sother ./solidity --print markdown
 ```
+
+Update slither
+```shell
+poetry update slither-analyzer
+```
