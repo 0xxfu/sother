@@ -17,6 +17,7 @@ from sother.detectors.detector_settings import DetectorSettings
 from sother.utils.gas_utils import GasUtils
 
 
+# todo only detect in entrypoint function
 class MemoryInParameters(AbstractDetector):
     ARGUMENT = "memory-in-parameters"
     HELP = "Use `calldata` instead of `memory` for function parameters"
@@ -39,20 +40,21 @@ More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-s
 
     def _detect(self) -> List[Output]:
         results = []
-        for function in GasUtils.get_available_functions(self.compilation_unit):
-            result_variables = self._detect_memory_variables(function)
-            if result_variables and len(result_variables) > 0:
-                logger.debug(
-                    f"memory variables: {[item.name for item in result_variables]}"
-                )
-                result = [
-                    function,
-                    " read-only `memory` parameters below should be changed to `calldata` :\n",
-                ]
-                for item in result_variables:
-                    result += ["\t- ", item, "\n"]
-                res = self.generate_result(result)
-                results.append(res)
+        for contract in self.compilation_unit.contracts_derived:
+            for function in contract.functions_entry_points:
+                result_variables = self._detect_memory_variables(function)
+                if result_variables and len(result_variables) > 0:
+                    logger.debug(
+                        f"memory variables: {[item.name for item in result_variables]}"
+                    )
+                    result = [
+                        function,
+                        " read-only `memory` parameters below should be changed to `calldata` :\n",
+                    ]
+                    for item in result_variables:
+                        result += ["\t- ", item, "\n"]
+                    res = self.generate_result(result)
+                    results.append(res)
 
         return results
 
