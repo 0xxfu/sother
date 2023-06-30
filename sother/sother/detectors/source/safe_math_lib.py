@@ -17,6 +17,7 @@ from sother.detectors.detector_settings import DetectorSettings
 from sother.utils.pragma_utils import PragmaUtil
 
 
+# todo detect contains `SignedSafeMath`
 class SafeMathLib(AbstractDetector):
     ARGUMENT = "safe-math-lib"
     HELP = "Don't use `SafeMath` if use solidity version `>=0.8.0`"

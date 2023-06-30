@@ -17,13 +17,13 @@ from sother.utils.gas_utils import GasUtils
 
 class UsedCustomError(AbstractDetector):
     ARGUMENT = "use-custom-error"
-    HELP = "use custom errors instead of revert strings"
+    HELP = "Using custom errors replace `require` or `assert`"
     IMPACT = DetectorClassification.OPTIMIZATION
     CONFIDENCE = DetectorClassification.HIGH
 
     WIKI = DetectorSettings.default_wiki
 
-    WIKI_TITLE = "use custom errors instead of revert strings"
+    WIKI_TITLE = "Using custom errors replace `require` or `assert`"
     WIKI_DESCRIPTION = """
 Using a custom error instance will usually be much cheaper than a string description, because you can use the name of the error to describe it, which is encoded in only four bytes. A longer description can be supplied via NatSpec which does not incur any costs.
 
