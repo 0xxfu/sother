@@ -18,14 +18,14 @@ from sother.detectors.detector_settings import DetectorSettings
 
 def detect_reread_state(
     contract: Contract,
-) -> dict[FunctionContract, dict[StateVariable, list[Node]]]:
-    state_variable_reads: list[StateVariable] = contract.state_variables
-
-    result_nodes: dict[FunctionContract, dict[StateVariable, list[Node]]] = dict()
+) -> dict[FunctionContract, dict[StateVariable, set[Node]]]:
+    result_nodes: dict[FunctionContract, dict[StateVariable, set[Node]]] = dict()
     for function in contract.functions:
         if function.visibility == "external" and (function.view or function.pure):
             continue
-        func_state_reads: [StateVariable, list[Node]] = dict()
+        state_variable_reads = function.state_variables_read
+        func_state_reads: [StateVariable, set[Node]] = dict()
+
         for node in function.nodes:
             node_state_reads = node.state_variables_read
             node_state_written = node.state_variables_written
@@ -34,9 +34,8 @@ def detect_reread_state(
                     if state_read not in state_variable_reads:
                         continue
                     if state_read not in func_state_reads:
-                        func_state_reads[state_read] = []
-                    func_state_reads[state_read].append(node)
-
+                        func_state_reads[state_read] = set()
+                    func_state_reads[state_read].add(node)
             else:
                 for state_written in node_state_written:
                     if state_written not in state_variable_reads:
@@ -45,7 +44,7 @@ def detect_reread_state(
                         state_written in func_state_reads
                         and len(func_state_reads[state_written]) <= 1
                     ):
-                        func_state_reads[state_written] = []
+                        func_state_reads[state_written] = set()
 
         for state_read in func_state_reads:
             if len(func_state_reads[state_read]) > 1:
@@ -55,6 +54,7 @@ def detect_reread_state(
     return result_nodes
 
 
+# todo except `if()else` recount
 class RereadStateVariables(AbstractDetector):
     ARGUMENT = "reread-state-variables"
     HELP = "State variables should be cached in stack variables rather than re-reading them from storage"
