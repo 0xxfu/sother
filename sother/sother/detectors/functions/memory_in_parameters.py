@@ -7,7 +7,7 @@ import unittest
 from typing import List
 
 from loguru import logger
-from slither.core.declarations import FunctionContract
+from slither.core.declarations import FunctionContract, Structure
 from slither.core.solidity_types import ArrayType, UserDefinedType, MappingType
 from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
@@ -41,6 +41,8 @@ More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-s
     def _detect(self) -> List[Output]:
         results = []
         for contract in self.compilation_unit.contracts_derived:
+            if contract.is_interface:
+                continue
             for function in contract.functions_entry_points:
                 result_variables = self._detect_memory_variables(function)
                 if result_variables and len(result_variables) > 0:
@@ -68,7 +70,13 @@ More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-s
             if (
                 param.location == "memory"
                 and param not in variables_written
-                and isinstance(param.type, (ArrayType, UserDefinedType, MappingType))
+                and (
+                    isinstance(param.type, (ArrayType, MappingType))
+                    or (
+                        isinstance(param.type, UserDefinedType)
+                        and isinstance(param.type.type, Structure)
+                    )
+                )
             ):
                 memory_variables.append(param)
         return memory_variables
