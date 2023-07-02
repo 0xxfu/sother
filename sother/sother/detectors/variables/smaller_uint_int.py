@@ -41,17 +41,23 @@ Each operation involving a `uint8` costs an extra [**22-28 gas**](https://gist.g
 """
 
     WIKI_RECOMMENDATION = """
-Using `uint256/int256` replace `uint128/uint64/uint32/uint16/uint8` or `int128/int64/int32/int16/int8`
+Using `uint32/int32` replace `uint8/uint16/uint24` or `int8/int16/int24`;
+
 """
 
     def _detect(self) -> List[Output]:
         results = []
         small_ints: list[Variable] = []
         small_types: list[str] = Int + Uint
-        remove_types = ["uint256", "int256"]
+        remove_types: set = {"uint", "int"}
+        for i in range(1, 9):
+            remove_types.add(f"uint{i*32}")
+            remove_types.add(f"int{i*32}")
+
         for remove_type in remove_types:
             if remove_type in small_types:
                 small_types.remove(remove_type)
+
         for contract in self.compilation_unit.contracts:
             for state in contract.state_variables:
                 if str(state.type) in small_types:
@@ -60,15 +66,13 @@ Using `uint256/int256` replace `uint128/uint64/uint32/uint16/uint8` or `int128/i
             for variable in function.variables:
                 if str(variable.type) in small_types:
                     small_ints.append(variable)
-        [
-            logger.debug(f"small int: {str(item.type)} {item if item.name else None}")
-            for item in small_ints
-        ]
+
         for small_int in small_ints:
             res = self.generate_result(
                 [
+                    f"`{str(small_int.type)} `",
                     small_int,
-                    " should be used `uint256/int256`.\n",
+                    " should be used `uint32/int32`.\n",
                 ]
             )
             results.append(res)
