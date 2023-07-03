@@ -41,18 +41,14 @@ Each operation involving a `uint8` costs an extra [**22-28 gas**](https://gist.g
 """
 
     WIKI_RECOMMENDATION = """
-Using `uint32/int32` replace `uint8/uint16/uint24` or `int8/int16/int24`;
-
+Using `uint256/int256` replace `uint128/uint64/uint32/uint16/uint8` or `int128/int64/int32/int16/int8`
 """
 
     def _detect(self) -> List[Output]:
         results = []
         small_ints: list[Variable] = []
         small_types: list[str] = Int + Uint
-        remove_types: set = {"uint", "int"}
-        for i in range(1, 9):
-            remove_types.add(f"uint{i*32}")
-            remove_types.add(f"int{i*32}")
+        remove_types = ["uint256", "int256"]
 
         for remove_type in remove_types:
             if remove_type in small_types:
@@ -72,7 +68,7 @@ Using `uint32/int32` replace `uint8/uint16/uint24` or `int8/int16/int24`;
                 [
                     f"`{str(small_int.type)} `",
                     small_int,
-                    " should be used `uint32/int32`.\n",
+                    " should be used `uint256/int256`.\n",
                 ]
             )
             results.append(res)
