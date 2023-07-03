@@ -21,14 +21,17 @@ from sother.utils.pragma_utils import PragmaUtil
 
 class UpgradeToLatest(AbstractDetector):
     ARGUMENT = "upgrade-to-latest"
-    HELP = f"Reduce gas usage by moving to Solidity {DetectorSettings.latest_version} or later"
+    HELP = f"Should use latest solidity version"
     IMPACT = DetectorClassification.OPTIMIZATION
     CONFIDENCE = DetectorClassification.HIGH
 
     WIKI = DetectorSettings.default_wiki
 
-    WIKI_TITLE = f"Reduce gas usage by moving to Solidity {DetectorSettings.latest_version} or later"
-    WIKI_DESCRIPTION = "See this [link](https://blog.soliditylang.org/2023/02/22/solidity-0.8.19-release-announcement/#preventing-dead-code-in-runtime-bytecode) for the full details"
+    WIKI_TITLE = f"Should use latest solidity version `{DetectorSettings.latest_version}` for gas reduction and improved security."
+    WIKI_DESCRIPTION = """
+[Solidity v0.8.20](https://blog.soliditylang.org/2023/05/10/solidity-0.8.20-release-announcement/) has many optimization with compiler and bugfixes, 
+please upgrade Solidity to the latest version(0.8.20) for gas reduction and improved security.
+"""
     WIKI_RECOMMENDATION = f"Upgrade solidity version to the latest version: {DetectorSettings.latest_version}"
 
     def _detect(self) -> List[Output]:
