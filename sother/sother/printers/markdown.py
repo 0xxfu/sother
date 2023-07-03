@@ -52,7 +52,7 @@ def _to_markdown(
             f"**There are `{len(output_results)}` instances of this issue:**\n\n"
         )
     for result in output_results:
-        markdown += f"- {result.markdown}\n"
+        markdown += f"- {result.markdown_code}\n"
 
     if (
         detector_wiki.wiki_exploit_scenario

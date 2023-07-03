@@ -12,6 +12,12 @@ from slither.core.source_mapping.source_mapping import Source
 from slither.detectors.abstract_detector import DetectorClassification
 
 
+def _convert_to_markdown_code(md: str) -> str:
+    if "[" not in md or "]" not in md:
+        return md
+    return md.replace("[", "`").replace("]", "` ")
+
+
 class OutputSourceMapping(BaseModel):
     start: int
     length: int
@@ -42,6 +48,7 @@ class OutputResult(BaseModel):
     elements: list[OutputElement]
     description: str
     markdown: str
+    markdown_code: Optional[str]
     first_markdown_element: str
     first_element_line: Optional[int] = 1000000
     id: str
@@ -53,6 +60,8 @@ class OutputResult(BaseModel):
         super().__init__(**data)
         if len(self.elements) > 0 and len(self.elements[0].source_mapping.lines) > 0:
             self.first_element_line = self.elements[0].source_mapping.lines[0]
+        if self.markdown:
+            self.markdown_code = _convert_to_markdown_code(self.markdown)
 
 
 class DetectorWiki(BaseModel):
