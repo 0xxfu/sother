@@ -30,7 +30,7 @@ class SafeMathLib(AbstractDetector):
     WIKI_DESCRIPTION = """
 Version `>=0.8.0` introduces internal overflow checks, using `SafeMath` function calls will be more expensive than just built in arithmetic, so using SafeMath is redundant and adds overhead.
 
-More detail see [Solidity 0.8.0 Release Announcement][https://blog.soliditylang.org/2020/12/16/solidity-v0.8.0-release-announcement/#:~:text=the%20full%20list!-,Checked%20Arithmetic,-The%20%E2%80%9CChecked%20Arithmetic] and [OpenZeppelin discussion](https://github.com/OpenZeppelin/openzeppelin-contracts/issues/2465)
+More detail see [Solidity 0.8.0 Release Announcement](https://blog.soliditylang.org/2020/12/16/solidity-v0.8.0-release-announcement/#:~:text=the%20full%20list!-,Checked%20Arithmetic,-The%20%E2%80%9CChecked%20Arithmetic) and [OpenZeppelin discussion](https://github.com/OpenZeppelin/openzeppelin-contracts/issues/2465)
 """
 
     WIKI_RECOMMENDATION = """
