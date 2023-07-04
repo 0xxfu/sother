@@ -73,3 +73,4 @@ from sother.detectors.functions.payable_functions import (
     PayableFunction,
 )
 from sother.detectors.operations.pre_plusplus import PrePlusPlus
+from sother.detectors.operations.unsigned_int_compare_zero import UnsignedIntCompareZero
