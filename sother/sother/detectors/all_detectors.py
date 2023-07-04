@@ -68,3 +68,4 @@ from sother.detectors.operations.unused_return_values import UnusedReturnValues
 from sother.detectors.operations.zero_address_optimization import (
     ZeroAddressOptimization,
 )
+from sother.detectors.functions.payable_constructor import PayableConstructor
