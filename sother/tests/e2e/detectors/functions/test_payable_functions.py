@@ -10,17 +10,28 @@ from sother.detectors.functions.internal_function_to_inline import (
     InternalFunctionToInline,
 )
 from sother.detectors.functions.memory_in_parameters import MemoryInParameters
-from sother.detectors.functions.payable_constructor import PayableConstructor
+from sother.detectors.functions.payable_functions import (
+    PayableConstructor,
+    PayableFunction,
+)
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 
-class TestPayableConstructor(DetectorTestCase):
-    def test_detect(self):
+class TestPayableFunctions(DetectorTestCase):
+    def test_payable_constructor(self):
         results: list[OutputResult] = self.detect(
             f"{self.get_test_solidity_filename(__file__)}.sol",
             PayableConstructor,
         )
         wiki = PayableConstructor.WIKI_TITLE
+        self.check_detect_results(wiki, results)
+
+    def test_payable_function(self):
+        results: list[OutputResult] = self.detect(
+            f"{self.get_test_solidity_filename(__file__)}.sol",
+            PayableFunction,
+        )
+        wiki = PayableFunction.WIKI_TITLE
         self.check_detect_results(wiki, results)
 
 
