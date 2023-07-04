@@ -72,3 +72,4 @@ from sother.detectors.functions.payable_functions import (
     PayableConstructor,
     PayableFunction,
 )
+from sother.detectors.operations.pre_plusplus import PrePlusPlus
