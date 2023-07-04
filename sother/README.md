@@ -15,3 +15,7 @@ Update slither
 ```shell
 poetry update slither-analyzer
 ```
+
+```shell
+sother file.sol --print slithir
+```
