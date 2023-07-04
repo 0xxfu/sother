@@ -6,7 +6,7 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.statements.assignment_left_operation import (
+from sother.detectors.operations.assignment_left_operation import (
     AssignmentLeftOperation,
 )
 from tests.e2e.detectors.detector_testcase import DetectorTestCase

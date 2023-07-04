@@ -6,9 +6,6 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.statements.assignment_left_operation import (
-    AssignmentLeftOperation,
-)
 from sother.detectors.statements.deprecated_assert import DeprecatedAssert
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
