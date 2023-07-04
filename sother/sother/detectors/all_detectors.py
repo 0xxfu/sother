@@ -65,3 +65,6 @@ from sother.detectors.variables.uninitialized_state_variables import (
     UninitializedStateVarsDetection,
 )
 from sother.detectors.operations.unused_return_values import UnusedReturnValues
+from sother.detectors.operations.zero_address_optimization import (
+    ZeroAddressOptimization,
+)
