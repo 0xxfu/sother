@@ -94,13 +94,15 @@ Use `!= 0` instead of `> 0` for unsigned integer comparison.
                 node.contains_if()
                 and isinstance(node.expression, BinaryOperation)
                 and node.expression.type == BinaryOperationType.GREATER
-            ):  # if (x>0)
+            ):
+                # statement: if (x>0)
                 if cls._is_uint_compare_zero(node.expression):
                     result_nodes.add(node)
             elif any(
                 c.name in ["require(bool)", "require(bool,string)"]
                 for c in node.internal_calls
-            ):  # require (x>0)
+            ):
+                # statement: require (x>0)
                 node_exp = node.expression
                 if not isinstance(node_exp, CallExpression):
                     continue
