@@ -83,3 +83,4 @@ from sother.detectors.variables.constants_optimization import (
     KeccakConstants,
 )
 from sother.detectors.statements.revert_long_strings import RevertLongStrings
+from sother.detectors.variables.address_optimization import AssemblyUpdateAddress
