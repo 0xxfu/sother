@@ -77,4 +77,7 @@ from sother.detectors.operations.unsigned_int_compare_zero import UnsignedIntCom
 from sother.detectors.variables.zero_initialized_state_variable import (
     ZeroInitializedStateVariable,
 )
-from sother.detectors.variables.string_constants import StringConstants
+from sother.detectors.variables.constants_optimization import (
+    StringConstants,
+    CalculateConstants,
+)

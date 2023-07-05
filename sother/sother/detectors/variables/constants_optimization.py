@@ -7,6 +7,7 @@ import unittest
 from typing import List
 
 from loguru import logger
+from slither.core.expressions import BinaryOperation
 from slither.core.variables import StateVariable
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 from slither.utils.output import Output
@@ -60,6 +61,43 @@ Replace `string` constant with `bytes(1..32)` constant.
                     )
                     results.append(json)
         return results
+
+
+class CalculateConstants(AbstractDetector):
+    ARGUMENT = "calculate-constants"
+    HELP = "Do not calculate constants"
+    IMPACT = DetectorClassification.OPTIMIZATION
+    CONFIDENCE = DetectorClassification.HIGH
+
+    WIKI = DetectorSettings.default_wiki
+
+    WIKI_TITLE = "Do not calculate constants"
+
+    WIKI_DESCRIPTION = """
+Due to how constant variables are implemented (replacements at compile-time), 
+an expression assigned to a constant variable is recomputed each time that the variable is used, 
+which wastes some gas.
+"""
+    WIKI_RECOMMENDATION = """
+Pre-calculate the results(hardcode) instead of runtime calculation.
+"""
+
+    def _detect(self) -> List[Output]:
+        results = []
+        for contract in self.compilation_unit.contracts_derived:
+            for state in contract.state_variables_declared:
+                if self._is_calculate_constant(state):
+                    json = self.generate_result(
+                        [state, " should use hardcode instead of calculation.\n"]
+                    )
+                    results.append(json)
+        return results
+
+    @classmethod
+    def _is_calculate_constant(cls, state: StateVariable) -> bool:
+        if state.is_constant and isinstance(state.expression, BinaryOperation):
+            return True
+        return False
 
 
 if __name__ == "__main__":
