@@ -74,3 +74,6 @@ from sother.detectors.functions.payable_functions import (
 )
 from sother.detectors.operations.pre_plusplus import PrePlusPlus
 from sother.detectors.operations.unsigned_int_compare_zero import UnsignedIntCompareZero
+from sother.detectors.variables.zero_initialized_state_variable import (
+    ZeroInitializedStateVariable,
+)
