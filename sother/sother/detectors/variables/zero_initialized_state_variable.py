@@ -38,7 +38,8 @@ More detail see [this.](https://gist.github.com/0xxfu/b111e822aa4ee2e0f6bbaf2658
 Do not initialize state variables to zero.
 """
 
-    def _is_initialized_to_zero(self, state: StateVariable) -> bool:
+    @classmethod
+    def _is_initialized_to_zero(cls, state: StateVariable) -> bool:
         if str(state.type) in Uint + Int:
             if (
                 isinstance(state._initial_expression, Literal)
