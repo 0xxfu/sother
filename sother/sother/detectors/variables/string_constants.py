@@ -14,8 +14,8 @@ from slither.utils.output import Output
 from sother.detectors.detector_settings import DetectorSettings
 
 
-class BytesConstants(AbstractDetector):
-    ARGUMENT = "bytes-constants"
+class StringConstants(AbstractDetector):
+    ARGUMENT = "string-constants"
     HELP = "`Bytes` constants are more efficient than `string` constants"
     IMPACT = DetectorClassification.OPTIMIZATION
     CONFIDENCE = DetectorClassification.HIGH
