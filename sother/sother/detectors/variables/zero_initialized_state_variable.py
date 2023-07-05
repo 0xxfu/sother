@@ -55,8 +55,6 @@ Do not initialize state variables to zero.
         results = []
         for contract in self.compilation_unit.contracts_derived:
             for state in contract.state_variables_declared:
-                # if state.name not in ["bad", "bad3"]:
-                #     continue
                 if self._is_initialized_to_zero(state):
                     json = self.generate_result(
                         [state, " should not overwrite the default.\n"]
