@@ -12,6 +12,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | `++i` costs less gas than `i++`, especially when it's used in for-loops (`--i/i--` too) | 8 |
+| [G-1] | The increment `++i/i++` in `for-loop`/`while-loop` post condition can be made `unchecked{++i}/unchecked{i++}` | 1 |
 
 
 
@@ -111,3 +112,32 @@ Optimization
 
 ### category:
 pre-plus-plus
+
+## [Optimization] The increment `++i/i++` in `for-loop`/`while-loop` post condition can be made `unchecked{++i}/unchecked{i++}`
+
+### description:
+
+The unchecked keyword is new in solidity version 0.8.0, so this only applies to that version or higher, which these instances are. 
+Gas savings: roughly speaking this can save 30-40 gas per loop iteration. For lengthy loops, this can be significant!
+
+More detail see [this.](https://gist.github.com/0xxfu/67eb8e3d8fe0b8d35370c1263e606d38)
+
+
+**There is `1` instance of this issue:**
+
+- `i ++` (solidity/test_pre_plusplus.sol#L19) should be used `unchecked{++i}/unchecked{i++}`.
+
+
+### recommendation:
+
+Using `unchecked{++i}/unchecked{i++}` replace `++i/i++` in loop.
+
+
+### locations:
+- solidity/test_pre_plusplus.sol#L19
+
+### severity:
+Optimization
+
+### category:
+unchecked-in-loop

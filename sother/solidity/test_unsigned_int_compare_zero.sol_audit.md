@@ -11,7 +11,9 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | `++i` costs less gas than `i++`, especially when it's used in for-loops (`--i/i--` too) | 3 |
+| [G-0] | Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead | 1 |
+| [G-1] | `++i` costs less gas than `i++`, especially when it's used in for-loops (`--i/i--` too) | 3 |
+| [G-2] | Using custom errors replace `require` or `assert` | 3 |
 
 
 
@@ -49,6 +51,36 @@ Informational
 
 ### category:
 solc-version
+
+## [Optimization] Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead
+
+### description:
+
+> When using elements that are smaller than 32 bytes, your contract’s gas usage may be higher. This is because the EVM operates on 32 bytes at a time. Therefore, if the element is smaller than that, the EVM must use more operations in order to reduce the size of the element from 32 bytes to the desired size.
+
+More detail see [this.](https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html)
+
+Each operation involving a `uint8` costs an extra [**22-28 gas**](https://gist.github.com/0xxfu/3672fec07eb3031cd5da14ac015e04a1) (depending on whether the other operand is also a variable of type `uint8`) as compared to ones involving `uint256`, due to the compiler having to clear the higher bits of the memory word before operating on the `uint8`, as well as the associated stack operations of doing so. Use a larger size then downcast where needed
+
+
+**There is `1` instance of this issue:**
+
+- `uint32 ``UnsignedIntCompareZero.bad3(uint32).a` (solidity/test_unsigned_int_compare_zero.sol#L12) should be used `uint256/int256`.
+
+
+### recommendation:
+
+Using `uint256/int256` replace `uint128/uint64/uint32/uint16/uint8` or `int128/int64/int32/int16/int8`
+
+
+### locations:
+- solidity/test_unsigned_int_compare_zero.sol#L12
+
+### severity:
+Optimization
+
+### category:
+smaller-uint-int
 
 ## [Optimization] `++i` costs less gas than `i++`, especially when it's used in for-loops (`--i/i--` too)
 
@@ -88,3 +120,37 @@ Optimization
 
 ### category:
 unsigned-int-compare-zero
+
+## [Optimization] Using custom errors replace `require` or `assert`
+
+### description:
+
+Using a custom error instance will usually be much cheaper than a string description, because you can use the name of the error to describe it, which is encoded in only four bytes. A longer description can be supplied via NatSpec which does not incur any costs.
+
+More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d97a215) and [this](https://docs.soliditylang.org/en/latest/control-structures.html#revert).
+
+
+**There are `3` instances of this issue:**
+
+- `require(bool,string)(a > 0,err)` (solidity/test_unsigned_int_compare_zero.sol#L9) should use custom error to save gas.
+
+- `require(bool,string)(a > 0,err)` (solidity/test_unsigned_int_compare_zero.sol#L13) should use custom error to save gas.
+
+- `require(bool,string)(a != 0,err)` (solidity/test_unsigned_int_compare_zero.sol#L23) should use custom error to save gas.
+
+
+### recommendation:
+
+Using custom errors replace `require` or `assert`.
+
+
+### locations:
+- solidity/test_unsigned_int_compare_zero.sol#L9
+- solidity/test_unsigned_int_compare_zero.sol#L13
+- solidity/test_unsigned_int_compare_zero.sol#L23
+
+### severity:
+Optimization
+
+### category:
+use-custom-error

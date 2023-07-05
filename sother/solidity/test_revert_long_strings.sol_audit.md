@@ -12,6 +12,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Shortening revert strings to fit in 32 `bytes` | 2 |
+| [G-1] | Using custom errors replace `require` or `assert` | 3 |
 
 
 
@@ -83,3 +84,37 @@ Optimization
 
 ### category:
 revert-long-strings
+
+## [Optimization] Using custom errors replace `require` or `assert`
+
+### description:
+
+Using a custom error instance will usually be much cheaper than a string description, because you can use the name of the error to describe it, which is encoded in only four bytes. A longer description can be supplied via NatSpec which does not incur any costs.
+
+More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d97a215) and [this](https://docs.soliditylang.org/en/latest/control-structures.html#revert).
+
+
+**There are `3` instances of this issue:**
+
+- `require(bool,string)(a != 0,long long long long long)` (solidity/test_revert_long_strings.sol#L11) should use custom error to save gas.
+
+- `require(bool,string)(a != 0,long long)` (solidity/test_revert_long_strings.sol#L21) should use custom error to save gas.
+
+- `require(bool)(a != 0)` (solidity/test_revert_long_strings.sol#L31) should use custom error to save gas.
+
+
+### recommendation:
+
+Using custom errors replace `require` or `assert`.
+
+
+### locations:
+- solidity/test_revert_long_strings.sol#L11
+- solidity/test_revert_long_strings.sol#L21
+- solidity/test_revert_long_strings.sol#L31
+
+### severity:
+Optimization
+
+### category:
+use-custom-error
