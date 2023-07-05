@@ -82,3 +82,4 @@ from sother.detectors.variables.constants_optimization import (
     CalculateConstants,
     KeccakConstants,
 )
+from sother.detectors.statements.revert_long_strings import RevertLongStrings
