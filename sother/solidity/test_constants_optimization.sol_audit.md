@@ -5,7 +5,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 1 |
-| [N-1] | Conformance to Solidity naming conventions | 6 |
+| [N-1] | Conformance to Solidity naming conventions | 7 |
 
 
 ### Gas Optimizations
@@ -13,8 +13,9 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Do not calculate constants | 4 |
-| [G-1] | Using `private` rather than `public` for constants, saves gas | 2 |
-| [G-2] | `Bytes` constants are more efficient than `string` constants | 1 |
+| [G-1] | Instead of calculating a state variable with `keccak256()`/`abi.encode**()` every time the contract is made pre calculate them before and only give the result to a constant | 2 |
+| [G-2] | Using `private` rather than `public` for constants, saves gas | 2 |
+| [G-3] | `Bytes` constants are more efficient than `string` constants | 1 |
 
 
 
@@ -62,7 +63,7 @@ Solidity defines a [naming convention](https://solidity.readthedocs.io/en/v0.4.2
 - Allow constant variable name/symbol/decimals to be lowercase (`ERC20`).
 - Allow `_` at the beginning of the `mixed_case` match for private variables and unused parameters.
 
-**There are `6` instances of this issue:**
+**There are `7` instances of this issue:**
 
 - Constant `CalculateConstants.bad` (solidity/test_constants_optimization.sol#L7) is not in UPPER_CASE_WITH_UNDERSCORES
 
@@ -72,9 +73,11 @@ Solidity defines a [naming convention](https://solidity.readthedocs.io/en/v0.4.2
 
 - Constant `CalculateConstants.bad4` (solidity/test_constants_optimization.sol#L10) is not in UPPER_CASE_WITH_UNDERSCORES
 
-- Constant `CalculateConstants.notBad` (solidity/test_constants_optimization.sol#L11) is not in UPPER_CASE_WITH_UNDERSCORES
+- Constant `CalculateConstants.badKeccak` (solidity/test_constants_optimization.sol#L11) is not in UPPER_CASE_WITH_UNDERSCORES
 
-- Constant `CalculateConstants.notBad2` (solidity/test_constants_optimization.sol#L12) is not in UPPER_CASE_WITH_UNDERSCORES
+- Constant `CalculateConstants.badEncode` (solidity/test_constants_optimization.sol#L12) is not in UPPER_CASE_WITH_UNDERSCORES
+
+- Constant `CalculateConstants.notBad2` (solidity/test_constants_optimization.sol#L13) is not in UPPER_CASE_WITH_UNDERSCORES
 
 
 ### recommendation:
@@ -87,6 +90,7 @@ Follow the Solidity [naming convention](https://solidity.readthedocs.io/en/v0.4.
 - solidity/test_constants_optimization.sol#L10
 - solidity/test_constants_optimization.sol#L11
 - solidity/test_constants_optimization.sol#L12
+- solidity/test_constants_optimization.sol#L13
 
 ### severity:
 Informational
@@ -116,7 +120,7 @@ which wastes some gas.
 
 ### recommendation:
 
-Pre-calculate the results(hardcode) instead of runtime calculation.
+Pre-calculate the results(hardcode) instead of calculation runtime.
 
 
 ### locations:
@@ -130,6 +134,38 @@ Optimization
 
 ### category:
 calculate-constants
+
+## [Optimization] Instead of calculating a state variable with `keccak256()`/`abi.encode**()` every time the contract is made pre calculate them before and only give the result to a constant
+
+### description:
+
+Due to how constant variables are implemented (replacements at compile-time), 
+an expression assigned to a constant variable is recomputed each time that the variable is used, 
+which wastes some gas.
+
+
+
+**There are `2` instances of this issue:**
+
+- `CalculateConstants.badKeccak` (solidity/test_constants_optimization.sol#L11) should use pre-calculate results instead of calculation in runtime.
+
+- `CalculateConstants.badEncode` (solidity/test_constants_optimization.sol#L12) should use pre-calculate results instead of calculation in runtime.
+
+
+### recommendation:
+
+Pre-calculate the results(hardcode) instead of calculate `keccak256`/`abi.encode**` in runtime.
+
+
+### locations:
+- solidity/test_constants_optimization.sol#L11
+- solidity/test_constants_optimization.sol#L12
+
+### severity:
+Optimization
+
+### category:
+keccak-constants
 
 ## [Optimization] Using `private` rather than `public` for constants, saves gas
 

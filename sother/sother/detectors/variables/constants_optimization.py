@@ -4,10 +4,10 @@
 @date: 2023-07
 """
 import unittest
-from typing import List
+from typing import List, Any
 
 from loguru import logger
-from slither.core.expressions import BinaryOperation
+from slither.core.expressions import BinaryOperation, CallExpression
 from slither.core.variables import StateVariable
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 from slither.utils.output import Output
@@ -79,7 +79,7 @@ an expression assigned to a constant variable is recomputed each time that the v
 which wastes some gas.
 """
     WIKI_RECOMMENDATION = """
-Pre-calculate the results(hardcode) instead of runtime calculation.
+Pre-calculate the results(hardcode) instead of calculation runtime.
 """
 
     def _detect(self) -> List[Output]:
@@ -96,6 +96,56 @@ Pre-calculate the results(hardcode) instead of runtime calculation.
     @classmethod
     def _is_calculate_constant(cls, state: StateVariable) -> bool:
         if state.is_constant and isinstance(state.expression, BinaryOperation):
+            return True
+        return False
+
+
+class KeccakConstants(AbstractDetector):
+    ARGUMENT = "keccak-constants"
+    HELP = "Instead of calculating a state variable with `keccak256()`/`abi.encode**()` every time the contract is made pre calculate them before and only give the result to a constant"
+    IMPACT = DetectorClassification.OPTIMIZATION
+    CONFIDENCE = DetectorClassification.HIGH
+
+    WIKI = DetectorSettings.default_wiki
+
+    WIKI_TITLE = "Instead of calculating a state variable with `keccak256()`/`abi.encode**()` every time the contract is made pre calculate them before and only give the result to a constant"
+
+    WIKI_DESCRIPTION = """
+Due to how constant variables are implemented (replacements at compile-time), 
+an expression assigned to a constant variable is recomputed each time that the variable is used, 
+which wastes some gas.
+
+"""
+    WIKI_RECOMMENDATION = """
+Pre-calculate the results(hardcode) instead of calculate `keccak256`/`abi.encode**` in runtime.
+"""
+
+    def _detect(self) -> List[Output]:
+        results = []
+        for contract in self.compilation_unit.contracts_derived:
+            for state in contract.state_variables_declared:
+                if self._is_keccak_constant(state):
+                    json = self.generate_result(
+                        [
+                            state,
+                            " should use pre-calculate results instead of calculation in runtime.\n",
+                        ]
+                    )
+                    results.append(json)
+        return results
+
+    @classmethod
+    def _is_keccak_constant(cls, state: StateVariable) -> bool:
+        if (
+            state.is_constant
+            and isinstance(state.expression, CallExpression)
+            and any(
+                [
+                    "keccak256" in str(state.expression),
+                    "abi.encode" in str(state.expression),
+                ]
+            )
+        ):
             return True
         return False
 

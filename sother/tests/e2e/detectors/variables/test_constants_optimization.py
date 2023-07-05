@@ -10,6 +10,7 @@ from sother.detectors.variables.bool_state_variables import BoolStateVariables
 from sother.detectors.variables.constants_optimization import (
     StringConstants,
     CalculateConstants,
+    KeccakConstants,
 )
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
@@ -28,6 +29,13 @@ class TestConstantsOptimization(DetectorTestCase):
             CalculateConstants,
         )
         self.check_detect_results(CalculateConstants.WIKI_TITLE, results)
+
+    def test_keccak_constants(self):
+        results: list[OutputResult] = self.detect(
+            f"{self.get_test_solidity_filename(__file__)}.sol",
+            KeccakConstants,
+        )
+        self.check_detect_results(KeccakConstants.WIKI_TITLE, results)
 
 
 if __name__ == "__main__":

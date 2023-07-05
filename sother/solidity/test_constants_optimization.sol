@@ -8,6 +8,7 @@ contract CalculateConstants {
     uint256 constant bad2 = 10**18;
     uint256 constant bad3 = 1 + 2;
     uint256 constant bad4 = 2 - 1;
-    bytes32 constant notBad = keccak256("a");
+    bytes32 constant badKeccak = keccak256("a");
+    bytes constant badEncode = abi.encode("a");
     uint256 constant notBad2 = 1;
 }

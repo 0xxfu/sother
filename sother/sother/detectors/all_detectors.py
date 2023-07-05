@@ -80,4 +80,5 @@ from sother.detectors.variables.zero_initialized_state_variable import (
 from sother.detectors.variables.constants_optimization import (
     StringConstants,
     CalculateConstants,
+    KeccakConstants,
 )
