@@ -77,9 +77,15 @@ class CalculateConstants(AbstractDetector):
 Due to how constant variables are implemented (replacements at compile-time), 
 an expression assigned to a constant variable is recomputed each time that the variable is used, 
 which wastes some gas.
+
+See: [ethereum/solidity#9232](https://github.com/ethereum/solidity/issues/9232):
+> each usage of a "constant" costs ~100gas more on each access (it is still a little better than storing the result in storage, but not much..)
+
+> since these are not real constants, they can't be referenced from a real constant environment (e.g. from assembly, or from another library )
+
 """
     WIKI_RECOMMENDATION = """
-Pre-calculate the results(hardcode) instead of calculation runtime.
+Pre-calculate the results(hardcode) instead of calculation in runtime.
 """
 
     def _detect(self) -> List[Output]:
@@ -114,6 +120,11 @@ class KeccakConstants(AbstractDetector):
 Due to how constant variables are implemented (replacements at compile-time), 
 an expression assigned to a constant variable is recomputed each time that the variable is used, 
 which wastes some gas.
+
+See: [ethereum/solidity#9232](https://github.com/ethereum/solidity/issues/9232):
+> each usage of a "constant" costs ~100gas more on each access (it is still a little better than storing the result in storage, but not much..)
+
+> since these are not real constants, they can't be referenced from a real constant environment (e.g. from assembly, or from another library )
 
 """
     WIKI_RECOMMENDATION = """
