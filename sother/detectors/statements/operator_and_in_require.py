@@ -48,8 +48,6 @@ require(result <= b);
         results = []
         result_nodes: set[Node] = set()
         for function in GasUtils.get_available_functions(self.compilation_unit):
-            if function.name != "requireAnd":
-                continue
             for node in function.nodes:
                 if not node.contains_require_or_assert():
                     continue
