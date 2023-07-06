@@ -14,7 +14,7 @@
 |---|:---|:---:|
 | [G-0] | Dead-code: functions not used should be removed to save deployment gas | 1 |
 | [G-1] | Public function that could be declared external | 4 |
-| [G-2] | Use `calldata` instead of `memory` for function parameters | 2 |
+| [G-2] | Use `calldata` instead of `memory` for function parameters | 4 |
 
 
 
@@ -159,7 +159,10 @@ And during the for loop, the values in the array are accessed in memory using a 
 More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-should-i-use-calldata-and-when-should-i-use-memory)
 
 
-**There are `2` instances of this issue:**
+**There are `4` instances of this issue:**
+
+- `Test.bad(bytes)` (solidity/test_external_function.sol#L15) read-only `memory` parameters below should be changed to `calldata` :
+	- `Test.bad(bytes).x` (solidity/test_external_function.sol#L15)
 
 - `Test.bad2(uint256[] )` (solidity/test_external_function.sol#L16) read-only `memory` parameters below should be changed to `calldata` :
 	- `Test.bad2(uint256[] ).x` (solidity/test_external_function.sol#L16)
@@ -167,13 +170,18 @@ More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-s
 - `Test.bad3(Test.testStruct)` (solidity/test_external_function.sol#L17) read-only `memory` parameters below should be changed to `calldata` :
 	- `Test.bad3(Test.testStruct).x` (solidity/test_external_function.sol#L17)
 
+- `Test.bad4(string)` (solidity/test_external_function.sol#L18) read-only `memory` parameters below should be changed to `calldata` :
+	- `Test.bad4(string).x` (solidity/test_external_function.sol#L18)
+
 
 ### recommendation:
 Use `calldata` instead of `memory` for external functions where the function argument is read-only.
 
 ### locations:
+- solidity/test_external_function.sol#L15
 - solidity/test_external_function.sol#L16
 - solidity/test_external_function.sol#L17
+- solidity/test_external_function.sol#L18
 
 ### severity:
 Optimization

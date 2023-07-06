@@ -11,6 +11,7 @@ from sother.detectors.variables.constants_optimization import (
     StringConstants,
     CalculateConstants,
     KeccakConstants,
+    KeccakConstantInFunctions,
 )
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
@@ -36,6 +37,13 @@ class TestConstantsOptimization(DetectorTestCase):
             KeccakConstants,
         )
         self.check_detect_results(KeccakConstants.WIKI_TITLE, results)
+
+    def test_keccak_constant_in_functions(self):
+        results: list[OutputResult] = self.detect(
+            f"{self.get_test_solidity_filename(__file__)}.sol",
+            KeccakConstantInFunctions,
+        )
+        self.check_detect_results(KeccakConstantInFunctions.WIKI_TITLE, results)
 
 
 if __name__ == "__main__":

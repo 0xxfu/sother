@@ -7,12 +7,18 @@ import unittest
 from typing import List, Any
 
 from loguru import logger
+from slither.core.cfg.node import Node
+from slither.core.declarations import SolidityFunction
 from slither.core.expressions import BinaryOperation, CallExpression
 from slither.core.variables import StateVariable
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import SolidityCall
+from slither.slithir.variables import Constant
 from slither.utils.output import Output
+from slither.utils.type_helpers import InternalCallType
 
 from sother.detectors.detector_settings import DetectorSettings
+from sother.utils.gas_utils import GasUtils
 
 
 class StringConstants(AbstractDetector):
@@ -158,6 +164,61 @@ Pre-calculate the results(hardcode) instead of calculate `keccak256`/`abi.encode
             )
         ):
             return True
+        return False
+
+
+class KeccakConstantInFunctions(AbstractDetector):
+    ARGUMENT = "keccak-constant-in-function"
+    HELP = """
+Pre-calculate the results into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime.
+"""
+    IMPACT = DetectorClassification.OPTIMIZATION
+    CONFIDENCE = DetectorClassification.HIGH
+
+    WIKI = DetectorSettings.default_wiki
+
+    WIKI_TITLE = """Pre-calculate the results into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime.
+"""
+    WIKI_DESCRIPTION = """
+It should be saved to an `constant` variable, and the `constant` used instead. 
+If the hash is being used as a part of a function selector, 
+the cast to bytes4 should only be Pre-calculated
+"""
+    WIKI_RECOMMENDATION = """
+Pre-calculate the results(hardcode) into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime.
+"""
+
+    def _detect(self) -> List[Output]:
+        results = []
+        for function in GasUtils.get_available_functions(self.compilation_unit):
+            if not function.is_implemented:
+                continue
+            for node in function.nodes:
+                if self._is_constant_in_keccak(node):
+                    json = self.generate_result(
+                        [
+                            node,
+                            " should use pre-calculate results instead of calculation in runtime.\n",
+                        ]
+                    )
+                    results.append(json)
+        return results
+
+    @classmethod
+    def _is_constant_in_keccak(cls, node: Node) -> bool:
+        for ir in node.irs:
+            if (
+                isinstance(ir, SolidityCall)
+                and any(
+                    [
+                        "keccak256" in str(ir.expression),
+                        "abi.encode" in str(ir.expression),
+                    ]
+                )
+                and all(isinstance(arg, Constant) for arg in ir.arguments)
+            ):
+                return True
+
         return False
 
 
