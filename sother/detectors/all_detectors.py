@@ -88,3 +88,4 @@ from sother.detectors.variables.address_optimization import AssemblyUpdateAddres
 from sother.detectors.functions.external_function import ExternalFunction
 from sother.detectors.statements.boolean_constant_equality import BooleanEquality
 from sother.detectors.statements.empty_block import EmptyBlock
+from sother.detectors.variables.multiple_address_mappings import MultipleAddressMappings
