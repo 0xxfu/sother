@@ -13,8 +13,9 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Dead-code: functions not used should be removed to save deployment gas | 1 |
-| [G-1] | Public function that could be declared external | 4 |
-| [G-2] | Use `calldata` instead of `memory` for function parameters | 4 |
+| [G-1] | Empty blocks should be removed or emit something | 12 |
+| [G-2] | Public function that could be declared external | 4 |
+| [G-3] | Use `calldata` instead of `memory` for function parameters | 4 |
 
 
 
@@ -103,6 +104,70 @@ Optimization
 
 ### category:
 dead-code
+
+## [Optimization] Empty blocks should be removed or emit something
+
+### description:
+
+The code should be refactored such that they no longer exist, or the block should do 
+something useful, such as emitting an event or reverting. 
+If the contract is meant to be extended, the contract should be `abstract` and the function 
+signatures be added without any default implementation.
+
+
+**There are `12` instances of this issue:**
+
+- `Test.good(bytes)` (solidity/test_external_function.sol#L10) should removed or do something
+
+- `Test.good2()` (solidity/test_external_function.sol#L11) should removed or do something
+
+- `Test.good3(uint256,uint256)` (solidity/test_external_function.sol#L12) should removed or do something
+
+- `Test.good4(uint256[] ,string)` (solidity/test_external_function.sol#L13) should removed or do something
+
+- `Test.good5(Test.testStruct)` (solidity/test_external_function.sol#L14) should removed or do something
+
+- `Test.bad(bytes)` (solidity/test_external_function.sol#L15) should removed or do something
+
+- `Test.bad2(uint256[] )` (solidity/test_external_function.sol#L16) should removed or do something
+
+- `Test.bad3(Test.testStruct)` (solidity/test_external_function.sol#L17) should removed or do something
+
+- `Test.bad4(string)` (solidity/test_external_function.sol#L18) should removed or do something
+
+- `ContractWithFunctionNotCalled.funcNotCalled3()` (solidity/test_external_function.sol#L23-L25) should removed or do something
+
+- `ContractWithFunctionNotCalled.funcNotCalled2()` (solidity/test_external_function.sol#L27-L29) should removed or do something
+
+- `ContractWithFunctionNotCalled.funcNotCalled()` (solidity/test_external_function.sol#L31-L33) should removed or do something
+
+
+### recommendation:
+
+Empty blocks should emit an event, or revert. 
+If not, they can simply be removed to save gas upon deployment. 
+This is valid for `receive()` functions, but also `constructors()`
+
+
+### locations:
+- solidity/test_external_function.sol#L10
+- solidity/test_external_function.sol#L11
+- solidity/test_external_function.sol#L12
+- solidity/test_external_function.sol#L13
+- solidity/test_external_function.sol#L14
+- solidity/test_external_function.sol#L15
+- solidity/test_external_function.sol#L16
+- solidity/test_external_function.sol#L17
+- solidity/test_external_function.sol#L18
+- solidity/test_external_function.sol#L23-L25
+- solidity/test_external_function.sol#L27-L29
+- solidity/test_external_function.sol#L31-L33
+
+### severity:
+Optimization
+
+### category:
+empty-block
 
 ## [Optimization] Public function that could be declared external
 

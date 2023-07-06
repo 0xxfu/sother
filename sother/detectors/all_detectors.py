@@ -87,3 +87,4 @@ from sother.detectors.statements.revert_long_strings import RevertLongStrings
 from sother.detectors.variables.address_optimization import AssemblyUpdateAddress
 from sother.detectors.functions.external_function import ExternalFunction
 from sother.detectors.statements.boolean_constant_equality import BooleanEquality
+from sother.detectors.statements.empty_block import EmptyBlock
