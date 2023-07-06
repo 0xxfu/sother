@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "sother"
+version = "0.1.0"
+description = ""
+authors = ["xfu <angerpeanut@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+#slither-analyzer = "^0.9.3"
+# updated: May 17, 2023
+slither-analyzer = { git = "https://github.com/0xxfu/slither.git",  branch = "master"}
+pydantic = "^1.10.9"
+loguru = "^0.7.0"
+
+[tool.poetry.scripts]
+sother = "sother.main:start"
+
+[tool.poetry.group.dev.dependencies]
+setuptools = "^68.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
