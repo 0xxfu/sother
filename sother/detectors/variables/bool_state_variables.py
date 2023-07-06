@@ -18,14 +18,14 @@ from sother.detectors.detector_settings import DetectorSettings
 
 class BoolStateVariables(AbstractDetector):
     ARGUMENT = "bool-state-variables"
-    HELP = "Using `bool` replace `uint256(1)` and `uint256(2)` for true/false"
+    HELP = "Use `uint256(1)/uint256(2)` instead for `true` and `false` boolean states"
     IMPACT = DetectorClassification.OPTIMIZATION
     CONFIDENCE = DetectorClassification.HIGH
 
     WIKI = DetectorSettings.default_wiki
 
     WIKI_TITLE = (
-        "Using `bool` replace `uint256(1)` and `uint256(2)` for true/false"
+        "Use `uint256(1)/uint256(2)` instead for `true` and `false` boolean states"
     )
     WIKI_DESCRIPTION = """
 ```solidity
