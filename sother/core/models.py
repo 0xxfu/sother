@@ -13,9 +13,11 @@ from slither.detectors.abstract_detector import DetectorClassification
 
 
 def _convert_to_markdown_code(md: str) -> str:
-    if "[" not in md or "]" not in md:
+    if "[" not in md or "](" not in md:
         return md
-    return md.replace("[", "`").replace("]", "` ")
+    # replace []() to `` ()
+    # if [] is array, recover
+    return md.replace("[", "`").replace("]", "` ").replace("``", "[]")
 
 
 class OutputSourceMapping(BaseModel):

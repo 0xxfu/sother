@@ -116,8 +116,8 @@ dead-code
 Moreover, the following function parameters should change its data location:
 x location should be calldata
 
-- bad2(uint256`` ) should be declared external:
-	- `Test.bad2(uint256`` )` (solidity/test_external_function.sol#L16)
+- bad2(uint256[] ) should be declared external:
+	- `Test.bad2(uint256[] )` (solidity/test_external_function.sol#L16)
 Moreover, the following function parameters should change its data location:
 x location should be calldata
 
@@ -161,8 +161,8 @@ More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-s
 
 **There are `2` instances of this issue:**
 
-- `Test.bad2(uint256`` )` (solidity/test_external_function.sol#L16) read-only `memory` parameters below should be changed to `calldata` :
-	- `Test.bad2(uint256`` ).x` (solidity/test_external_function.sol#L16)
+- `Test.bad2(uint256[] )` (solidity/test_external_function.sol#L16) read-only `memory` parameters below should be changed to `calldata` :
+	- `Test.bad2(uint256[] ).x` (solidity/test_external_function.sol#L16)
 
 - `Test.bad3(Test.testStruct)` (solidity/test_external_function.sol#L17) read-only `memory` parameters below should be changed to `calldata` :
 	- `Test.bad3(Test.testStruct).x` (solidity/test_external_function.sol#L17)
