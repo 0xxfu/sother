@@ -17,7 +17,7 @@ from sother.detectors.detector_settings import DetectorSettings
 from sother.utils.gas_utils import GasUtils
 
 
-# todo only detect in entrypoint function
+# only detect in entrypoint function
 class MemoryInParameters(AbstractDetector):
     ARGUMENT = "memory-in-parameters"
     HELP = "Use `calldata` instead of `memory` for function parameters"
@@ -46,9 +46,6 @@ More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-s
             for function in contract.functions_entry_points:
                 result_variables = self._detect_memory_variables(function)
                 if result_variables and len(result_variables) > 0:
-                    logger.debug(
-                        f"memory variables: {[item.name for item in result_variables]}"
-                    )
                     result = [
                         function,
                         " read-only `memory` parameters below should be changed to `calldata` :\n",
@@ -76,6 +73,7 @@ More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-s
                         isinstance(param.type, UserDefinedType)
                         and isinstance(param.type.type, Structure)
                     )
+                    or param.type.is_dynamic
                 )
             ):
                 memory_variables.append(param)
