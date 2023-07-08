@@ -3,9 +3,12 @@
 @email: angerpeanut@gmail.com
 @date: 2023-06
 """
+import argparse
 import json
 import unittest
 from collections import OrderedDict
+from enum import Enum
+from logging import Logger
 from typing import Tuple, Type
 
 from loguru import logger
@@ -26,8 +29,16 @@ from sother.core.models import (
 from sother.detectors import get_all_detector_wikis
 
 
+class PrintTarget(Enum):
+    default = 0
+    secure3 = 1
+    code4rena = 2
+
+
 def _to_markdown(
-    detector_wiki: DetectorWiki, output_results: list[OutputResult]
+    detector_wiki: DetectorWiki,
+    output_results: list[OutputResult],
+    target: PrintTarget = PrintTarget.default,
 ) -> Tuple[str, str]:
     """
     @return markdown: markdown string
@@ -52,7 +63,10 @@ def _to_markdown(
             f"**There are `{len(output_results)}` instances of this issue:**\n\n"
         )
     for result in output_results:
-        markdown += f"- {result.markdown_code}\n"
+        if target == PrintTarget.secure3:
+            markdown += f"- {result.markdown_code}\n"
+        else:
+            markdown += f"- {result.markdown}\n"
 
     if (
         detector_wiki.wiki_exploit_scenario
@@ -120,6 +134,16 @@ class Markdown(AbstractPrinter):
     HELP = "Print results to markdown file"  # help information
     WIKI = "https://github.com/crytic/slither"
 
+    def __init__(
+        self,
+        slither: "Slither",
+        logger: Logger,
+        print_target: PrintTarget = PrintTarget.default,
+    ) -> None:
+        super().__init__(slither, logger)
+        self._print_target = print_target
+        logger.info(f"print target => {self._print_target}")
+
     def output(self, filename: str) -> output.Output:
         info = ""
         detector_results: list[list[dict]] = self.slither.run_detectors()
@@ -145,7 +169,7 @@ class Markdown(AbstractPrinter):
             (
                 markdown_str,
                 file_path,
-            ) = _to_markdown(wiki, detector_outputs[detector_check])
+            ) = _to_markdown(wiki, detector_outputs[detector_check], self._print_target)
             output_markdown += markdown_str
 
         res = self.generate_output(info)
@@ -159,6 +183,15 @@ class Markdown(AbstractPrinter):
         res.add_file(file_path, output_markdown)
 
         return res
+
+
+class MarkdownSecure3(Markdown):
+    ARGUMENT = "secure3"  # run the printer with slither.py --ARGUMENT
+    HELP = "Print results to markdown file (Secure3)"  # help information
+    WIKI = "https://github.com/crytic/slither"
+
+    def __init__(self, slither: "Slither", logger: Logger) -> None:
+        super().__init__(slither, logger, PrintTarget.secure3)
 
 
 if __name__ == "__main__":
