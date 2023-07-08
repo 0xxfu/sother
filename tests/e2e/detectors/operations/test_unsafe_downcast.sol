@@ -24,8 +24,12 @@ contract UnsafeDowncast {
         return uint32(a);
     }
 
-    function bad3(uint256 a) external {
-        i256 =int256(a);
+    function notBad(uint256 a) external {
+        ui128 = toUint128(a);
+    }
+
+    function notBad2(uint256 a) external {
+        i256 = int256(a);
     }
 
     function toUint128(uint256 value) internal pure returns (uint128) {

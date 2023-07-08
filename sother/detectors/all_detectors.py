@@ -89,3 +89,4 @@ from sother.detectors.functions.external_function import ExternalFunction
 from sother.detectors.statements.boolean_constant_equality import BooleanEquality
 from sother.detectors.statements.empty_block import EmptyBlock
 from sother.detectors.variables.multiple_address_mappings import MultipleAddressMappings
+from sother.detectors.operations.unsafe_downcast import UnsafeDowncast

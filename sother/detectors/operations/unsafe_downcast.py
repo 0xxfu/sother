@@ -8,16 +8,29 @@ import unittest
 from loguru import logger
 from slither.core.cfg.node import Node
 from slither.core.declarations import FunctionContract
-from slither.core.expressions import AssignmentOperation
+from slither.core.expressions import (
+    AssignmentOperation,
+    BinaryOperation,
+    BinaryOperationType,
+    Identifier,
+    TypeConversion,
+)
+from slither.core.expressions.expression import Expression
 from slither.core.solidity_types.elementary_type import Uint, Int
+from slither.core.variables import Variable
+from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from slither.slithir.operations import Assignment
+from slither.slithir.operations import (
+    Assignment,
+    TypeConversion as IrTypeConversion,
+    Binary,
+    BinaryType,
+)
 from slither.utils.output import Output
 
 from sother.detectors.detector_settings import DetectorSettings
 
 
-# todo implement
 class UnsafeDowncast(AbstractDetector):
     ARGUMENT = "unsafe-downcast"
     HELP = "Unsafe downcasting arithmetic operation"
@@ -43,8 +56,8 @@ Just use `uint256/int256`, or use [OpenZeppelin SafeCast lib](https://github.com
         results = []
         for contract in self.compilation_unit.contracts_derived:
             for function in contract.functions:
-                if function.name not in ["bad"]:
-                    continue
+                # if function.name not in ["toInt8"]:
+                #     continue
                 result_nodes: set[Node] = self._detect_unsafe_downcast(function)
                 for node in result_nodes:
                     res = self.generate_result(
@@ -57,16 +70,94 @@ Just use `uint256/int256`, or use [OpenZeppelin SafeCast lib](https://github.com
         return results
 
     @classmethod
-    def _detect_unsafe_downcast(cls, function: FunctionContract) -> set[Node]:
-        result_nodes: set[Node] = set()
+    def _is_type_max_expression(cls, expression: Expression) -> bool:
+        # type()(uint128).max
+        if "type()" in str(expression) and ".max" in str(expression):
+            return True
+        return False
+
+    @classmethod
+    def _detect_var_compare_max(cls, function: FunctionContract) -> set[Variable]:
+        result_vars: set[Variable] = set()
+        for node in function.nodes:
+            node_exp = node.expression
+            if (
+                node.contains_if()
+                and isinstance(node_exp, BinaryOperation)
+                and node_exp.type
+                in [
+                    BinaryOperationType.LESS,
+                    BinaryOperationType.GREATER,
+                    BinaryOperationType.LESS_EQUAL,
+                    BinaryOperationType.GREATER_EQUAL,
+                ]
+            ):
+                if cls._is_type_max_expression(node_exp.expression_right):
+                    if isinstance(node_exp.expression_left, Identifier) and isinstance(
+                        node_exp.expression_left.value, Variable
+                    ):
+                        result_vars.add(node_exp.expression_left.value)
+                elif cls._is_type_max_expression(node_exp.expression_left):
+                    if isinstance(node_exp.expression_right, Identifier) and isinstance(
+                        node_exp.expression_right.value, Variable
+                    ):
+                        result_vars.add(node_exp.expression_right.value)
+        return result_vars
+
+    @classmethod
+    def _detect_compare(
+        cls, function: FunctionContract
+    ) -> set[tuple[Variable, Variable]]:
+        """
+        detect "if (downcasted != value)" in funciton
+        and packing compare variable into tuple
+        """
+        result_variables: set[tuple[Variable, Variable]] = set()
         for node in function.nodes:
             for ir in node.irs:
-                if isinstance(ir, Assignment) and str(ir.rvalue.type) in Uint + Int:
-                    right_var = ir.rvalue
-                    logger.debug(
-                        f"node: {node.expression}"
-                        f"\nright: {right_var}  right t: {type(right_var.type)} type: {right_var.type}"
+                if isinstance(ir, Binary) and ir.type == BinaryType.NOT_EQUAL:
+                    result_variables.add((ir.variable_left, ir.variable_right))
+                    result_variables.add((ir.variable_right, ir.variable_left))
+        return result_variables
+
+    @classmethod
+    def _detect_unsafe_downcast(cls, function: FunctionContract) -> set[Node]:
+        result_nodes: set[Node] = set()
+        all_int = Uint + Int
+
+        var_has_compare_max: set[Variable] = cls._detect_var_compare_max(function)
+        compare_variables: set[tuple[Variable, Variable]] = cls._detect_compare(
+            function
+        )
+        for node in function.nodes:
+            for ir in node.irs:
+                ir_exp = ir.expression
+                if (
+                    isinstance(ir, IrTypeConversion)
+                    and all(
+                        [
+                            str(ir.lvalue.type) in all_int,
+                            str(ir.variable.type) in all_int,
+                        ]
                     )
+                    and ir.variable.type.size > ir.lvalue.type.size
+                    and ir.variable not in var_has_compare_max
+                ):
+                    result_nodes.add(node)
+                elif (
+                    isinstance(ir, Assignment)
+                    and isinstance(ir_exp, AssignmentOperation)
+                    and isinstance(ir_exp.expression_right, TypeConversion)
+                    and isinstance(ir_exp.expression_right.expression, Identifier)
+                    and isinstance(ir_exp.expression_left, Identifier)
+                ):
+                    # "if (downcasted != value)" statement in compare
+                    # remove node
+                    if (
+                        ir_exp.expression_left.value,
+                        ir_exp.expression_right.expression.value,
+                    ) in compare_variables:
+                        result_nodes.remove(node)
         return result_nodes
 
 
