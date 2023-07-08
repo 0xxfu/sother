@@ -40,10 +40,10 @@ Without any other checks, this wrapping will lead to unexpected behavior and bug
 
 **There are `4` instances of this issue:**
 
-- `ui128 = uint128(a)` (solidity/test_unsafe_downcast.sol#L16) should use `uint256/int256` or `OpenZeppelin SafeCast lib`.
-- `ui32 = uint32(block.timestamp)` (solidity/test_unsafe_downcast.sol#L18) should use `uint256/int256` or `OpenZeppelin SafeCast lib`.
-- `Transmitted(uint32(uint256(a >> 8)))` (solidity/test_unsafe_downcast.sol#L20) should use `uint256/int256` or `OpenZeppelin SafeCast lib`.
-- `uint32(a)` (solidity/test_unsafe_downcast.sol#L24) should use `uint256/int256` or `OpenZeppelin SafeCast lib`.
+- [ui128 = uint128(a)](solidity/test_unsafe_downcast.sol#L16) should use `uint256/int256` or `OpenZeppelin SafeCast lib`.
+- [ui32 = uint32(block.timestamp)](solidity/test_unsafe_downcast.sol#L18) should use `uint256/int256` or `OpenZeppelin SafeCast lib`.
+- [Transmitted(uint32(uint256(a >> 8)))](solidity/test_unsafe_downcast.sol#L20) should use `uint256/int256` or `OpenZeppelin SafeCast lib`.
+- [uint32(a)](solidity/test_unsafe_downcast.sol#L24) should use `uint256/int256` or `OpenZeppelin SafeCast lib`.
 
 ### recommendation:
 
@@ -104,9 +104,9 @@ Unused state variable.
 
 **There are `2` instances of this issue:**
 
-- `UnsafeDowncast.ui256` (solidity/test_unsafe_downcast.sol#L2) is never used in `UnsafeDowncast` (solidity/test_unsafe_downcast.sol#L1-L69)
+- [UnsafeDowncast.ui256](solidity/test_unsafe_downcast.sol#L2) is never used in [UnsafeDowncast](solidity/test_unsafe_downcast.sol#L1-L69)
 
-- `UnsafeDowncast.i8` (solidity/test_unsafe_downcast.sol#L7) is never used in `UnsafeDowncast` (solidity/test_unsafe_downcast.sol#L1-L69)
+- [UnsafeDowncast.i8](solidity/test_unsafe_downcast.sol#L7) is never used in [UnsafeDowncast](solidity/test_unsafe_downcast.sol#L1-L69)
 
 
 ### recommendation:
@@ -129,13 +129,13 @@ Functions that are not sued.
 
 **There are `4` instances of this issue:**
 
-- `UnsafeDowncast.toUint8(uint256)` (solidity/test_unsafe_downcast.sol#L42-L47) is never used and should be removed
+- [UnsafeDowncast.toUint8(uint256)](solidity/test_unsafe_downcast.sol#L42-L47) is never used and should be removed
 
-- `UnsafeDowncast.toUint256(int256)` (solidity/test_unsafe_downcast.sol#L49-L54) is never used and should be removed
+- [UnsafeDowncast.toUint256(int256)](solidity/test_unsafe_downcast.sol#L49-L54) is never used and should be removed
 
-- `UnsafeDowncast.toInt8(int256)` (solidity/test_unsafe_downcast.sol#L56-L61) is never used and should be removed
+- [UnsafeDowncast.toInt8(int256)](solidity/test_unsafe_downcast.sol#L56-L61) is never used and should be removed
 
-- `UnsafeDowncast.toInt256(uint256)` (solidity/test_unsafe_downcast.sol#L63-L68) is never used and should be removed
+- [UnsafeDowncast.toInt256(uint256)](solidity/test_unsafe_downcast.sol#L63-L68) is never used and should be removed
 
 
 ### recommendation:
@@ -163,7 +163,7 @@ more detail see [this](https://docs.soliditylang.org/en/v0.8.20/internals/optimi
 
 **There is `1` instance of this issue:**
 
-- `UnsafeDowncast.toUint128(uint256)` (solidity/test_unsafe_downcast.sol#L35-L40) could be inlined to save gas.
+- [UnsafeDowncast.toUint128(uint256)](solidity/test_unsafe_downcast.sol#L35-L40) could be inlined to save gas.
 
 
 ### recommendation:
@@ -191,21 +191,21 @@ Each operation involving a `uint8` costs an extra [**22-28 gas**](https://gist.g
 
 **There are `8` instances of this issue:**
 
-- `uint128 []UnsafeDowncast.ui128` (solidity/test_unsafe_downcast.sol#L3) should be used `uint256/int256`.
+- `uint128 `[UnsafeDowncast.ui128](solidity/test_unsafe_downcast.sol#L3) should be used `uint256/int256`.
 
-- `uint32 []UnsafeDowncast.ui32` (solidity/test_unsafe_downcast.sol#L4) should be used `uint256/int256`.
+- `uint32 `[UnsafeDowncast.ui32](solidity/test_unsafe_downcast.sol#L4) should be used `uint256/int256`.
 
-- `int8 []UnsafeDowncast.i8` (solidity/test_unsafe_downcast.sol#L7) should be used `uint256/int256`.
+- `int8 `[UnsafeDowncast.i8](solidity/test_unsafe_downcast.sol#L7) should be used `uint256/int256`.
 
-- `uint32 []UnsafeDowncast.bad2(uint128).` (solidity/test_unsafe_downcast.sol#L23) should be used `uint256/int256`.
+- `uint32 `[UnsafeDowncast.bad2(uint128).](solidity/test_unsafe_downcast.sol#L23) should be used `uint256/int256`.
 
-- `uint128 []UnsafeDowncast.bad2(uint128).a` (solidity/test_unsafe_downcast.sol#L23) should be used `uint256/int256`.
+- `uint128 `[UnsafeDowncast.bad2(uint128).a](solidity/test_unsafe_downcast.sol#L23) should be used `uint256/int256`.
 
-- `uint128 []UnsafeDowncast.toUint128(uint256).` (solidity/test_unsafe_downcast.sol#L35) should be used `uint256/int256`.
+- `uint128 `[UnsafeDowncast.toUint128(uint256).](solidity/test_unsafe_downcast.sol#L35) should be used `uint256/int256`.
 
-- `uint8 []UnsafeDowncast.toUint8(uint256).` (solidity/test_unsafe_downcast.sol#L42) should be used `uint256/int256`.
+- `uint8 `[UnsafeDowncast.toUint8(uint256).](solidity/test_unsafe_downcast.sol#L42) should be used `uint256/int256`.
 
-- `int8 []UnsafeDowncast.toInt8(int256).downcasted` (solidity/test_unsafe_downcast.sol#L56) should be used `uint256/int256`.
+- `int8 `[UnsafeDowncast.toInt8(int256).downcasted](solidity/test_unsafe_downcast.sol#L56) should be used `uint256/int256`.
 
 
 ### recommendation:
@@ -240,9 +240,9 @@ However, this is only the case for value types, whereas indexing [reference type
 
 **There is `1` instance of this issue:**
 
-- The following variables should be indexed in `UnsafeDowncast.Transmitted(uint32)` (solidity/test_unsafe_downcast.sol#L8):
+- The following variables should be indexed in [UnsafeDowncast.Transmitted(uint32)](solidity/test_unsafe_downcast.sol#L8):
 
-	- `ue` (solidity/test_unsafe_downcast.sol#L8)
+	- [ue](solidity/test_unsafe_downcast.sol#L8)
 
 
 ### recommendation:
@@ -268,8 +268,8 @@ Saves a storage slot. If the variable is assigned a non-zero value, saves Gsset 
 
 **There are `2` instances of this issue:**
 
-- `UnsafeDowncast.ui256` (solidity/test_unsafe_downcast.sol#L2) is never used.
-- `UnsafeDowncast.i8` (solidity/test_unsafe_downcast.sol#L7) is never used.
+- [UnsafeDowncast.ui256](solidity/test_unsafe_downcast.sol#L2) is never used.
+- [UnsafeDowncast.i8](solidity/test_unsafe_downcast.sol#L7) is never used.
 
 ### recommendation:
 
@@ -293,9 +293,9 @@ State variables that are not updated following deployment should be declared con
 
 **There are `2` instances of this issue:**
 
-- `UnsafeDowncast.ui256` (solidity/test_unsafe_downcast.sol#L2) should be constant 
+- [UnsafeDowncast.ui256](solidity/test_unsafe_downcast.sol#L2) should be constant 
 
-- `UnsafeDowncast.i8` (solidity/test_unsafe_downcast.sol#L7) should be constant 
+- [UnsafeDowncast.i8](solidity/test_unsafe_downcast.sol#L7) should be constant 
 
 
 ### recommendation:
