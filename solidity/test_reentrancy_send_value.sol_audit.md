@@ -1,5 +1,12 @@
 ## Summary 
 
+### Low Risk Issues
+
+|ID|Issues|Instances|
+|---|:---|:---:|
+| [L-0] | Missing Reentrancy-Guard when using `sendValue` from OZ's `Address.sol` | 1 |
+
+
 ### Non-critical Issues
 
 |ID|Issues|Instances|
@@ -8,6 +15,47 @@
 | [N-1] | Low-level calls | 1 |
 
 
+
+## [Low] Missing Reentrancy-Guard when using `sendValue` from OZ's `Address.sol`
+
+### description:
+
+OZ’s Address.sol library is used. Ether transfer is done with a `sendValue` call in 
+the following functions.
+
+There is this warning in OZ’s Address.sol library. Accordingly, he used the 
+Check-Effect-Interaction pattern in the project:
+```solidity
+    * IMPORTANT: because control is transferred to `recipient`, care must be
+    * taken to not create reentrancy vulnerabilities. Consider using
+    * {ReentrancyGuard} or the
+    * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
+    */
+```
+
+It would be best practice to use re-entrancy Guard for reasons such as complicated 
+dangers such as view Re-Entrancy that emerged in the last period and the possibility 
+of expanding the project and its integration with other contracts.
+
+
+**There is `1` instance of this issue:**
+
+- [recipient.sendValue(ethToSend)](solidity/test_reentrancy_send_value.sol#L22) should use Reentrancy-Guard.
+
+
+### recommendation:
+
+Using Reentrancy-Guard when using `sendValue` from OZ's `Address.sol`.
+
+
+### locations:
+- solidity/test_reentrancy_send_value.sol#L22
+
+### severity:
+Low
+
+### category:
+reentrancy-send-value
 
 ## [Informational] Incorrect versions of Solidity
 
