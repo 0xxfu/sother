@@ -94,3 +94,4 @@ from sother.detectors.statements.susceptible_ecrecover import (
     SusceptibleEcrecover,
     UncheckedEcrecover,
 )
+from sother.detectors.operations.unchecked_setters import UncheckedSetters

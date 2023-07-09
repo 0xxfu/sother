@@ -4,7 +4,8 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [L-0] | Unsafe downcasting arithmetic operation | 4 |
+| [L-0] | Setters should check the input value | 3 |
+| [L-1] | Unsafe downcasting arithmetic operation | 4 |
 
 
 ### Non-critical Issues
@@ -27,6 +28,42 @@
 | [G-5] | State variables that could be declared constant | 2 |
 
 
+
+## [Low] Setters should check the input value
+
+### description:
+
+Setters should have initial value check to prevent assigning wrong value to the variable. 
+Assignment of wrong value can lead to unexpected behavior of the contract.
+
+
+**There are `3` instances of this issue:**
+
+- [UnsafeDowncast.bad(uint256).a](solidity/test_unsafe_downcast.sol#L15) lacks an upper limit check on :
+	- [ui128 = uint128(a)](solidity/test_unsafe_downcast.sol#L16)
+
+- [UnsafeDowncast.notBad(uint256).a](solidity/test_unsafe_downcast.sol#L27) lacks an upper limit check on :
+	- [ui128 = toUint128(a)](solidity/test_unsafe_downcast.sol#L28)
+
+- [UnsafeDowncast.notBad2(uint256).a](solidity/test_unsafe_downcast.sol#L31) lacks an upper limit check on :
+	- [i256 = int256(a)](solidity/test_unsafe_downcast.sol#L32)
+
+
+### recommendation:
+
+Add an upper limit check to the setters function.
+
+
+### locations:
+- solidity/test_unsafe_downcast.sol#L15
+- solidity/test_unsafe_downcast.sol#L27
+- solidity/test_unsafe_downcast.sol#L31
+
+### severity:
+Low
+
+### category:
+unchecked-setters
 
 ## [Low] Unsafe downcasting arithmetic operation
 
