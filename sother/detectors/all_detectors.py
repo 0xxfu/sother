@@ -96,3 +96,6 @@ from sother.detectors.statements.susceptible_ecrecover import (
 )
 from sother.detectors.operations.unchecked_setters import UncheckedSetters
 from sother.detectors.operations.revert_on_approve_max import RevertOnApproveMax
+from sother.detectors.operations.unsupported_decimals_token import (
+    UnsupportedDecimalsToken,
+)
