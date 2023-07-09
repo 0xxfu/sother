@@ -39,8 +39,8 @@ Assignment of wrong value can lead to unexpected behavior of the contract.
 	- [x = a](solidity/test_unchecked_setters.sol#L8)
 
 - [UncheckedSetters.bad3(uint256).a](solidity/test_unchecked_setters.sol#L15) lacks an upper limit check on :
-	- [y = a](solidity/test_unchecked_setters.sol#L17)
 	- [x = a](solidity/test_unchecked_setters.sol#L16)
+	- [y = a](solidity/test_unchecked_setters.sol#L17)
 
 - [UncheckedSetters.bad4(uint256).a](solidity/test_unchecked_setters.sol#L20) lacks an upper limit check on :
 	- [z = uint8(a)](solidity/test_unchecked_setters.sol#L21)
