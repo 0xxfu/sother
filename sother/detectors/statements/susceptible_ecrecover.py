@@ -9,7 +9,10 @@ from typing import List
 from loguru import logger
 from slither.core.cfg.node import Node
 from slither.core.declarations import FunctionContract
+from slither.core.expressions import AssignmentOperation, CallExpression, Identifier
+from slither.core.variables import Variable
 from slither.detectors.abstract_detector import DetectorClassification, AbstractDetector
+from slither.slithir.operations import Binary
 from slither.utils.output import Output
 
 from sother.detectors.detector_settings import DetectorSettings
@@ -86,20 +89,38 @@ Verify that the result from `ecrecover` isn't `0`
 """
 
     @classmethod
-    def _detect_unchcked_ecrecover(cls, function: FunctionContract) -> set[Node]:
+    def _detect_unchecked_ecrecover(cls, function: FunctionContract) -> set[Node]:
         result_nodes: set[Node] = set()
+        unchecked_nodes: dict[Variable, Node] = dict()
         for node in function.nodes:
-            for ir in node.irs:
-                if "ecrecover(bytes32,uint8,bytes32,bytes32)" in str(ir.expression):
-                    # todo detect unchecked result
-                    pass
+            if "ecrecover(bytes32,uint8,bytes32,bytes32)" in str(node.expression):
+                if isinstance(node.expression, AssignmentOperation):
+                    # `address result = ecrecover(digest, v, r, s)`
+                    # add node to unchecked
+                    unchecked_nodes[node.expression.expression_left.value] = node
+                else:
+                    result_nodes.add(node)
+
+            elif node.contains_if() or node.contains_require_or_assert():
+                for ir in node.irs:
+                    # `if (result == address(0))`
+                    # `require(result != address(0), "address err");`
+                    # if address(0) and ecrecover result in compare condition
+                    # remove node from unchecked nodes
+                    if isinstance(ir, Binary) and "address(0)" in str(ir.expression):
+                        if ir.variable_left in unchecked_nodes:
+                            del unchecked_nodes[ir.variable_left]
+                        elif ir.variable_right in unchecked_nodes:
+                            del unchecked_nodes[ir.variable_right]
+        for unchecked in unchecked_nodes:
+            result_nodes.add(unchecked_nodes[unchecked])
         return result_nodes
 
     def _detect(self) -> List[Output]:
         results = []
         for contract in self.compilation_unit.contracts_derived:
             for function in contract.functions:
-                result_nodes: set[Node] = self._detect_unchcked_ecrecover(function)
+                result_nodes: set[Node] = self._detect_unchecked_ecrecover(function)
                 for node in result_nodes:
                     res = self.generate_result(
                         [
