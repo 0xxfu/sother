@@ -7,6 +7,7 @@ import unittest
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
+from loguru import logger
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function
 from slither.core.variables import Variable
@@ -46,6 +47,8 @@ class AbstractDetectHasInstance(AbstractDetector, ABC):
         result_nodes: set[Node] = set()
         for node in function.nodes:
             for ir in node.irs:
+                if node in result_nodes:
+                    break
                 if cls._is_instance(ir):
                     result_nodes.add(node)
         return result_nodes
