@@ -99,3 +99,4 @@ from sother.detectors.operations.revert_on_approve_max import RevertOnApproveMax
 from sother.detectors.operations.unsupported_decimals_token import (
     UnsupportedDecimalsToken,
 )
+from sother.detectors.operations.unsafe_tx_origin import UnsafeTxOrigin
