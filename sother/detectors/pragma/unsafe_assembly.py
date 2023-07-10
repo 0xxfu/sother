@@ -6,15 +6,20 @@
 import unittest
 
 from loguru import logger
-from slither.detectors.abstract_detector import DetectorClassification, AbstractDetector
+from packaging import version
+from slither.detectors.abstract_detector import (
+    DetectorClassification,
+    AbstractDetector,
+    DETECTOR_INFO,
+)
+from slither.detectors.statements.assembly import Assembly
 from slither.utils.output import Output
 
 from sother.detectors.detector_settings import DetectorSettings
 
 
-# todo implement
-class UnsafeAssembly(AbstractDetector):
-    ARGUMENT = "unsafe-floating-pragma"
+class UnsafeAssembly(Assembly):
+    ARGUMENT = "unsafe-assembly"
     HELP = "Storage Write Removal Bug On Conditional Early Termination"
     IMPACT = DetectorClassification.LOW
     CONFIDENCE = DetectorClassification.HIGH
@@ -42,8 +47,24 @@ Upgrade pragma to at latest version: https://github.com/ethereum/solidity/releas
 """
     WIKI_EXPLOIT_SCENARIO = " "
 
+    detect_version = "0.8.14"
+
     def _detect(self) -> list[Output]:
         results = []
+        solc_version = version.parse(self.compilation_unit.solc_version)
+        detect_version = version.parse(self.detect_version)
+        if solc_version < detect_version:
+            for contract in self.compilation_unit.contracts_derived:
+                values = self.detect_assembly(contract)
+                for func, nodes in values:
+                    info: DETECTOR_INFO = [func, " uses assembly\n"]
+                    # sort the nodes to get deterministic results
+                    nodes.sort(key=lambda x: x.node_id)
+                    for node in nodes:
+                        info += ["\t- ", node, "\n"]
+                    res = self.generate_result(info)
+                    results.append(res)
+
         return results
 
 

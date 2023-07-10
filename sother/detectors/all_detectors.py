@@ -108,3 +108,4 @@ from sother.detectors.pragma.unsafe_floating_pragma import UnsafeFloatingPragma
 from sother.detectors.dependency.unsafe_solmate_transfer_lib import (
     UnsafeSolmateTransferLib,
 )
+from sother.detectors.pragma.unsafe_assembly import UnsafeAssembly
