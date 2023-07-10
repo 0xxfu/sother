@@ -104,3 +104,4 @@ from sother.detectors.operations.unchecked_low_level_return_values import (
     UncheckedLowLevel,
 )
 from sother.detectors.reentrancy.reentrancy_send_value import ReentrancySendValue
+from sother.detectors.pragma.unsafe_floating_pragma import UnsafeFloatingPragma
