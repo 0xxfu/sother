@@ -1458,13 +1458,13 @@ resolved_reference = "f8bc94227deafb323c5946a4b75f26882aaca51f"
 
 [[package]]
 name = "solc-select"
-version = "1.0.3"
+version = "1.0.4"
 description = "Manage multiple Solidity compiler versions."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "solc-select-1.0.3.tar.gz", hash = "sha256:f39d08035355bd0e0a887e4a1088ea10a15dd64e4408cc7fcd72d913b46fc799"},
-    {file = "solc_select-1.0.3-py3-none-any.whl", hash = "sha256:ae812dc26483ba96c27b903239d12c5b2e6bd3997a49b475852a03b15c6d13b4"},
+    {file = "solc-select-1.0.4.tar.gz", hash = "sha256:db7b9de009af6de3a5416b80bbe5b6d636bf314703c016319b8c1231e248a6c7"},
+    {file = "solc_select-1.0.4-py3-none-any.whl", hash = "sha256:9a28b8a612ff18a171929d23e2ed68a6263f4e11784fc47fa81476a3219874cb"},
 ]
 
 [package.dependencies]
@@ -1737,4 +1737,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "f2d30b93f800432ceb7a4dc7c54cdb560371741aab0d15a81a51a9a29c29808d"
+content-hash = "4fdf4b01d9c404ac3f547f81a91ba46588705bdbf447ea3a0a8ef80b9565b061"

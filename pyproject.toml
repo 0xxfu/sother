@@ -18,6 +18,7 @@ sother = "sother.main:start"
 
 [tool.poetry.group.dev.dependencies]
 setuptools = "^68.0.0"
+solc-select = "^1.0.4"
 
 [build-system]
 requires = ["poetry-core"]
