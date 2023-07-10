@@ -105,3 +105,6 @@ from sother.detectors.operations.unchecked_low_level_return_values import (
 )
 from sother.detectors.reentrancy.reentrancy_send_value import ReentrancySendValue
 from sother.detectors.pragma.unsafe_floating_pragma import UnsafeFloatingPragma
+from sother.detectors.dependency.unsafe_solmate_transfer_lib import (
+    UnsafeSolmateTransferLib,
+)
