@@ -6,7 +6,6 @@
 import os
 import unittest
 
-import pytest
 from loguru import logger
 
 from sother.core.models import OutputResult
