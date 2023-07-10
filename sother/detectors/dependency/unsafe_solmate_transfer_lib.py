@@ -42,9 +42,7 @@ Using OpenZeppelin's `SafeERC20` instead of Solmate's `SafeTransferLib`.
         results = []
         for contract in self.compilation_unit.contracts_derived:
             for using in contract.using_for:
-                logger.debug(f"using: {using}")
                 for item in contract.using_for[using]:
-                    logger.debug(f"item: {item} instance: {type(item)}")
                     if "SafeTransferLib" in str(item):
                         res = self.generate_result(
                             [
