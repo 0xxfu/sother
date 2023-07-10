@@ -109,3 +109,4 @@ from sother.detectors.dependency.unsafe_solmate_transfer_lib import (
     UnsafeSolmateTransferLib,
 )
 from sother.detectors.pragma.unsafe_assembly import UnsafeAssembly
+from sother.detectors.events.missing_sender_in_event import MissingSenderInEvent
