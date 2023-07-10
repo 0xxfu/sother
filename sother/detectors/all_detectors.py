@@ -111,3 +111,6 @@ from sother.detectors.dependency.unsafe_solmate_transfer_lib import (
 from sother.detectors.pragma.unsafe_assembly import UnsafeAssembly
 from sother.detectors.events.missing_sender_in_event import MissingSenderInEvent
 from sother.detectors.erc.erc721.unprotected_nft_fork import UnprotectedNFTFork
+from sother.detectors.upgradeable.unused_upgradeable_counterparts import (
+    UnusedUpgradeableCounterparts,
+)
