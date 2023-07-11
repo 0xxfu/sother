@@ -114,3 +114,4 @@ from sother.detectors.erc.erc721.unprotected_nft_fork import UnprotectedNFTFork
 from sother.detectors.upgradeable.unused_upgradeable_counterparts import (
     UnusedUpgradeableCounterparts,
 )
+from sother.detectors.erc.erc721.unchecked_token_id import UncheckedTokenId
