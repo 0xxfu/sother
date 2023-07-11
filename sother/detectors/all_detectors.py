@@ -115,3 +115,6 @@ from sother.detectors.upgradeable.unused_upgradeable_counterparts import (
     UnusedUpgradeableCounterparts,
 )
 from sother.detectors.erc.erc721.unchecked_token_id import UncheckedTokenId
+from sother.detectors.erc.erc721.missing_supports_interface import (
+    MissingSupportsInterface,
+)
