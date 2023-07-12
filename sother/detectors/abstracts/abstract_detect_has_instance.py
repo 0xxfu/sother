@@ -70,11 +70,28 @@ class AbstractTransferInstance:
 
     @classmethod
     def is_erc20_transfer_instance(cls, ir: Operation) -> bool:
-        return (
-            isinstance(ir, HighLevelCall)
-            and isinstance(ir.function, Function)
-            and ir.function.solidity_signature in cls.erc20_transfer_signature
-        )
+        if isinstance(ir, HighLevelCall) and isinstance(ir.function, Function):
+            if (
+                ir.function.solidity_signature == cls.erc20_transfer_signature[0]
+                or ir.function.solidity_signature == cls.erc20_transfer_signature[3]
+            ):
+                return True
+            elif ir.function.solidity_signature in cls.erc20_transfer_signature:
+                # if the third param name is `tokenId`, it will be ERC721 token
+                # otherwise ERC20
+                return "tokenId" not in ir.function.parameters[2].name
+        return False
+
+    @classmethod
+    def is_erc721_transfer_instance(cls, ir: Operation) -> bool:
+        if isinstance(ir, HighLevelCall) and isinstance(ir.function, Function):
+            # `safeTransferFrom(address,address,uint256,bytes)`
+            # erc20 doesn't has bytes param.
+            if ir.function.solidity_signature == cls.erc721_transfer_signature[2]:
+                return True
+            elif ir.function.solidity_signature in cls.erc721_transfer_signature:
+                return "token" in ir.function.parameters[2].name
+        return False
 
     @classmethod
     def get_erc20_transfer_to(cls, ir: HighLevelCall) -> Optional[Variable]:

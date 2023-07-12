@@ -120,3 +120,4 @@ from sother.detectors.erc.erc721.missing_supports_interface import (
 )
 
 from sother.detectors.erc.erc721.non_compliant_erc721 import NonCompliantErc721
+from sother.detectors.erc.erc721.missing_erc721_received import MissingErc721Received
