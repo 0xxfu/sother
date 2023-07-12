@@ -19,7 +19,7 @@ from sother.detectors.abstracts.abstract_detect_has_instance import (
 from sother.detectors.detector_settings import DetectorSettings
 
 
-class ZeroCheckWithTransfer(AbstractTransferInstance):
+class ZeroCheckWithTransfer(AbstractTransferInstance, AbstractDetectHasInstance):
     ARGUMENT = "zero-check-with-transfer"
     HELP = "Amounts should be checked for `0` before calling a `transfer`"
     IMPACT = DetectorClassification.OPTIMIZATION

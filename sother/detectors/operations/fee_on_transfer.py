@@ -20,7 +20,7 @@ from sother.detectors.abstracts.abstract_detect_has_instance import (
 from sother.detectors.detector_settings import DetectorSettings
 
 
-class FeeOnTransfer(AbstractTransferInstance):
+class FeeOnTransfer(AbstractTransferInstance, AbstractDetectHasInstance):
     ARGUMENT = "fee-on-transfer"
     HELP = "Incompatibility with transfer-on-fee or deflationary tokens"
     IMPACT = DetectorClassification.MEDIUM

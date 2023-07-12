@@ -54,7 +54,7 @@ class AbstractDetectHasInstance(AbstractDetector, ABC):
         return result_nodes
 
 
-class AbstractTransferInstance(AbstractDetectHasInstance, ABC):
+class AbstractTransferInstance:
     transfer_signature: list[str] = [
         "transfer(address,uint256)",
         "transferFrom(address,address,uint256)",
