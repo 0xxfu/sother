@@ -16,7 +16,7 @@ from sother.detectors.detector_settings import DetectorSettings
 class OpenTodos(AbstractDetector):
     ARGUMENT = "open-todos"
     HELP = "OPEN TODOs"
-    IMPACT = DetectorClassification.OPTIMIZATION
+    IMPACT = DetectorClassification.LOW
     CONFIDENCE = DetectorClassification.HIGH
 
     WIKI = DetectorSettings.default_wiki
