@@ -118,3 +118,5 @@ from sother.detectors.erc.erc721.unchecked_token_id import UncheckedTokenId
 from sother.detectors.erc.erc721.missing_supports_interface import (
     MissingSupportsInterface,
 )
+
+from sother.detectors.erc.erc721.non_compliant_erc721 import NonCompliantErc721
