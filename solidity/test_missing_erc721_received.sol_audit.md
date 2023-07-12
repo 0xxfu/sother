@@ -89,9 +89,9 @@ from other contracts via `safeTransferFrom/transferFrom`.
 **There is `1` instance of this issue:**
 
 - [BadMissReceived](solidity/test_missing_erc721_received.sol#L22-L39) received NFT via following operations is missing `onERC721Received` function: 
-	- [token.safeTransferFrom(msg.sender,address(this),tokenId)](solidity/test_missing_erc721_received.sol#L33)
 	- [token.safeTransferFrom(msg.sender,address(this),tokenId,new bytes(32))](solidity/test_missing_erc721_received.sol#L24-L29)
 	- [token.transferFrom(msg.sender,address(this),tokenId)](solidity/test_missing_erc721_received.sol#L37)
+	- [token.safeTransferFrom(msg.sender,address(this),tokenId)](solidity/test_missing_erc721_received.sol#L33)
 
 
 ### recommendation:
