@@ -112,7 +112,7 @@ Consider adding an implementation of the `onERC721Received` function in the cont
             if len(result_nodes) > 0:
                 info: DETECTOR_INFO = [
                     contract,
-                    " received NFT via following operations by is missing `onERC721Received` function: \n",
+                    " received NFT via following operations is missing `onERC721Received` function: \n",
                 ]
                 for node in result_nodes:
                     info += [f"\t- ", node, "\n"]

@@ -4,15 +4,15 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [M-0] | Incompatibility with transfer-on-fee or deflationary tokens | 2 |
-| [M-1] | Using `ERC721.transferFrom()` may cause the user's NFT to be frozen in a contract that does not support ERC721 | 2 |
+| [M-0] | Using `ERC721.transferFrom()` may cause the user's NFT to be frozen in a contract that does not support ERC721 | 2 |
 
 
 ### Low Risk Issues
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [L-0] | Missing `supportsInterface` functions | 1 |
+| [L-0] | `onERC721Received` not implemented in ERC721 received contract | 1 |
+| [L-1] | Missing `supportsInterface` functions | 1 |
 
 
 ### Non-critical Issues
@@ -22,59 +22,6 @@
 | [N-0] | Incorrect versions of Solidity | 1 |
 
 
-### Gas Optimizations
-
-|ID|Issues|Instances|
-|---|:---|:---:|
-| [G-0] | Amounts should be checked for `0` before calling a `transfer` | 2 |
-
-
-
-## [Medium] Incompatibility with transfer-on-fee or deflationary tokens
-
-### description:
-
-Some ERC20 tokens make modifications to the standard implementations of
-their ERC20’s `transfer` or `balanceOf` functions.
-One type of such token is deflationary tokens that charge a fee on every
-`transfer()` and `transferFrom()`.
-The protocol does not have incompatibility with fee-on-transfer tokens.
-
-Note that there has been a real-world exploit related to this with 
-[Balancer pool and STA deflationary tokens](https://medium.com/1inch-network/balancer-hack-2020-a8f7131c980e).
-
-
-**There are `2` instances of this issue:**
-
-- [token.transferFrom(msg.sender,address(this),tokenId)](solidity/test_missing_erc721_received.sol#L37) with fee on transfer are not supported.
-
-- [token.transferFrom(msg.sender,address(this),tokenId)](solidity/test_missing_erc721_received.sol#L56) with fee on transfer are not supported.
-
-#### Exploit scenario
-
-i.e. Fee-on-transfer scenario:
-1. Contract calls transfer from contractA 100 tokens to current contract
-2. Current contract thinks it received 100 tokens
-3. It updates balances to increase +100 tokens
-4. While actually contract received only 90 tokens
-5. That breaks whole math for given token
-
-
-### recommendation:
-
-1. Consider comparing before and after balance to get the actual transferred amount.
-2. Alternatively, disallow tokens with fee-on-transfer mechanics to be added as tokens.
-
-
-### locations:
-- solidity/test_missing_erc721_received.sol#L37
-- solidity/test_missing_erc721_received.sol#L56
-
-### severity:
-Medium
-
-### category:
-fee-on-transfer
 
 ## [Medium] Using `ERC721.transferFrom()` may cause the user's NFT to be frozen in a contract that does not support ERC721
 
@@ -120,6 +67,38 @@ Medium
 
 ### category:
 unsafe-721-transfer
+
+## [Low] `onERC721Received` not implemented in ERC721 received contract
+
+### description:
+
+The contract does not implement the `onERC721Received` function, 
+which is considered a best practice to transfer ERC721 tokens from contracts to contracts. 
+The absence of this function could prevent the contract from receiving ERC721 tokens 
+from other contracts via `safeTransferFrom/transferFrom`.
+
+
+**There is `1` instance of this issue:**
+
+- [BadMissReceived](solidity/test_missing_erc721_received.sol#L22-L39) received NFT via following operations by is missing `onERC721Received` function: 
+	- [token.transferFrom(msg.sender,address(this),tokenId)](solidity/test_missing_erc721_received.sol#L37)
+	- [token.safeTransferFrom(msg.sender,address(this),tokenId,new bytes(32))](solidity/test_missing_erc721_received.sol#L24-L29)
+	- [token.safeTransferFrom(msg.sender,address(this),tokenId)](solidity/test_missing_erc721_received.sol#L33)
+
+
+### recommendation:
+
+Consider adding an implementation of the `onERC721Received` function in the contract.
+
+
+### locations:
+- solidity/test_missing_erc721_received.sol#L22-L39
+
+### severity:
+Low
+
+### category:
+missing-erc721-received
 
 ## [Low] Missing `supportsInterface` functions
 
@@ -189,35 +168,3 @@ Informational
 
 ### category:
 solc-version
-
-## [Optimization] Amounts should be checked for `0` before calling a `transfer`
-
-### description:
-
-According to the fact that EIP-20 [states](https://github.com/ethereum/EIPs/blob/46b9b698815abbfa628cd1097311deee77dd45c5/EIPS/eip-20.md?plain=1#L116) that zero-valued transfers must be accepted.
-
-Checking non-zero transfer values can avoid an expensive external call and save gas.
-While this is done at some places, it’s not consistently done in the solution.
-
-
-**There are `2` instances of this issue:**
-
-- Adding a non-zero-value check for [token.transferFrom(msg.sender,address(this),tokenId)](solidity/test_missing_erc721_received.sol#L37) at the beginning of [BadMissReceived.deposit3(IERC721,uint256)](solidity/test_missing_erc721_received.sol#L36-L38)
-
-- Adding a non-zero-value check for [token.transferFrom(msg.sender,address(this),tokenId)](solidity/test_missing_erc721_received.sol#L56) at the beginning of [NotBad.deposit3(IERC721,uint256)](solidity/test_missing_erc721_received.sol#L55-L57)
-
-
-### recommendation:
-
-Consider adding a non-zero-value check at the beginning of function.
-
-
-### locations:
-- solidity/test_missing_erc721_received.sol#L37
-- solidity/test_missing_erc721_received.sol#L56
-
-### severity:
-Optimization
-
-### category:
-zero-check-with-transfer
