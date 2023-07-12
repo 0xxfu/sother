@@ -92,7 +92,7 @@ function supportsInterface(bytes4 interfaceId)
             ):
                 result_inherits.add(inherit)
         for function in contract.functions:
-            if function.signature_str == "supportsInterface(bytes4) returns(bool)":
+            if function.solidity_signature == "supportsInterface(bytes4)":
                 result_function = function
                 for node in function.nodes:
                     for ir in node.irs:
