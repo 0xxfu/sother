@@ -44,6 +44,8 @@ supportsInterface functions work correctly.
     def _detect(self) -> list[Output]:
         results = []
         for contract in self.compilation_unit.contracts_derived:
+            if contract.is_interface or contract.is_library:
+                continue
             if contract.is_possible_erc721():
                 if not any(
                     [
