@@ -51,10 +51,10 @@ Consider adding a non-zero-value check at the beginning of function.
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
-        if not cls.is_transfer_instance(ir):
+        if not cls.is_erc20_transfer_instance(ir):
             return False
         return not cls.is_check_zero_in_function(
-            ir.node.function, cls.get_transfer_amount(ir)
+            ir.node.function, cls.get_erc20_transfer_amount(ir)
         )
 
     @classmethod

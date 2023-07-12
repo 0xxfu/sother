@@ -55,11 +55,11 @@ i.e. Fee-on-transfer scenario:
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
-        if not cls.is_transfer_instance(ir):
+        if not cls.is_erc20_transfer_instance(ir):
             return False
 
         return not cls.is_check_balance_in_function(
-            ir.node.function, cls.get_transfer_to(ir)
+            ir.node.function, cls.get_erc20_transfer_to(ir)
         )
 
     @classmethod

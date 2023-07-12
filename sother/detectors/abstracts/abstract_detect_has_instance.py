@@ -55,44 +55,50 @@ class AbstractDetectHasInstance(AbstractDetector, ABC):
 
 
 class AbstractTransferInstance:
-    transfer_signature: list[str] = [
+    erc20_transfer_signature: list[str] = [
         "transfer(address,uint256)",
         "transferFrom(address,address,uint256)",
         "safeTransfer(address,address,uint256)",
         "safeTransferFrom(address,address,address,uint256)",
     ]
 
+    erc721_transfer_signature: list[str] = [
+        "transferFrom(address,address,uint256)",
+        "safeTransferFrom(address,address,uint256)",
+        "safeTransferFrom(address,address,uint256,bytes)",
+    ]
+
     @classmethod
-    def is_transfer_instance(cls, ir: Operation) -> bool:
+    def is_erc20_transfer_instance(cls, ir: Operation) -> bool:
         return (
             isinstance(ir, HighLevelCall)
             and isinstance(ir.function, Function)
-            and ir.function.solidity_signature in cls.transfer_signature
+            and ir.function.solidity_signature in cls.erc20_transfer_signature
         )
 
     @classmethod
-    def get_transfer_to(cls, ir: HighLevelCall) -> Optional[Variable]:
+    def get_erc20_transfer_to(cls, ir: HighLevelCall) -> Optional[Variable]:
         transfer_to: Optional[Variable] = None
-        if ir.function.solidity_signature == cls.transfer_signature[0]:
+        if ir.function.solidity_signature == cls.erc20_transfer_signature[0]:
             transfer_to = ir.arguments[0]
-        elif ir.function.solidity_signature == cls.transfer_signature[1]:
+        elif ir.function.solidity_signature == cls.erc20_transfer_signature[1]:
             transfer_to = ir.arguments[1]
-        elif ir.function.solidity_signature == cls.transfer_signature[2]:
+        elif ir.function.solidity_signature == cls.erc20_transfer_signature[2]:
             transfer_to = ir.arguments[1]
-        elif ir.function.solidity_signature == cls.transfer_signature[3]:
+        elif ir.function.solidity_signature == cls.erc20_transfer_signature[3]:
             transfer_to = ir.arguments[2]
         return transfer_to
 
     @classmethod
-    def get_transfer_amount(cls, ir: HighLevelCall) -> Optional[Variable]:
+    def get_erc20_transfer_amount(cls, ir: HighLevelCall) -> Optional[Variable]:
         transfer_amount: Optional[Variable] = None
-        if ir.function.solidity_signature == cls.transfer_signature[0]:
+        if ir.function.solidity_signature == cls.erc20_transfer_signature[0]:
             transfer_amount = ir.arguments[1]
-        elif ir.function.solidity_signature == cls.transfer_signature[1]:
+        elif ir.function.solidity_signature == cls.erc20_transfer_signature[1]:
             transfer_amount = ir.arguments[2]
-        elif ir.function.solidity_signature == cls.transfer_signature[2]:
+        elif ir.function.solidity_signature == cls.erc20_transfer_signature[2]:
             transfer_amount = ir.arguments[2]
-        elif ir.function.solidity_signature == cls.transfer_signature[3]:
+        elif ir.function.solidity_signature == cls.erc20_transfer_signature[3]:
             transfer_amount = ir.arguments[3]
         return transfer_amount
 
