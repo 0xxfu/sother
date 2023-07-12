@@ -142,9 +142,9 @@ However, this is only the case for value types, whereas indexing [reference type
 
 - The following variables should be indexed in [MissingSenderInEvents.BadEvent(address,uint256)](solidity/test_missing_sender_in_events.sol#L3):
 
-	- [a](solidity/test_missing_sender_in_events.sol#L3)
-
 	- [x](solidity/test_missing_sender_in_events.sol#L3)
+
+	- [a](solidity/test_missing_sender_in_events.sol#L3)
 
 - The following variables should be indexed in [MissingSenderInEvents.NotBadEvent(address,uint256)](solidity/test_missing_sender_in_events.sol#L4):
 
