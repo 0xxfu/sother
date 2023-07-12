@@ -5,22 +5,6 @@
 """
 import unittest
 
-"""
-@author: xfu
-@email: angerpeanut@gmail.com
-@date: 2023-07
-"""
-import unittest
-
-from slither.core.expressions import BinaryOperation, CallExpression
-
-"""
-@author: xfu
-@email: angerpeanut@gmail.com
-@date: 2023-07
-"""
-import unittest
-
 from loguru import logger
 from slither.analyses.data_dependency.data_dependency import is_dependent
 from slither.core.declarations import FunctionContract, SolidityVariableComposed
