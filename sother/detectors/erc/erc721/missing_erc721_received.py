@@ -74,7 +74,12 @@ class Erc721OnReceived(AbstractTransferInstance, ABC):
             if cls.is_erc721_transfer_instance(ir):
                 # `safeTransferFrom(address,address,uint256)`
                 # address(this) in first param
-                return "address(this)," in str(ir.expression)
+                return "From(address(this)," in str(ir.expression)
+        return False
+
+    @classmethod
+    def _is_checked_received_callback(cls, node: Node) -> bool:
+        # todo checked callback
         return False
 
 
@@ -118,6 +123,60 @@ Consider adding an implementation of the `onERC721Received` function in the cont
                     info += [f"\t- ", node, "\n"]
 
                 results.append(self.generate_result(info))
+        return results
+
+
+class UncheckedErc721Received(Erc721OnReceived, AbstractDetector):
+    ARGUMENT = "unchecked-erc721-received"
+    HELP = "`onERC721Received` callback is never called when new tokens are minted or transferred"
+    IMPACT = DetectorClassification.LOW
+    CONFIDENCE = DetectorClassification.HIGH
+
+    WIKI = DetectorSettings.default_wiki
+    WIKI_TITLE = "`onERC721Received` callback is never called when new tokens are minted or transferred"
+
+    WIKI_DESCRIPTION = """
+The ERC721 implementation used by the contract does not properly call the
+corresponding callback when new tokens are minted or transferred.
+
+The ERC721 standard states that the onERC721Received callback must be called when a
+mint or transfer operation occurs.
+
+However, the smart contracts interacting as users of the contracts will not be
+notified with the `onERC721Received` callback, as expected according to the ERC721
+standard.
+"""
+    WIKI_EXPLOIT_SCENARIO = """
+Alice deploys a contract to interact with the Controller contract to send and receive
+ERC721 tokens. Her contract correctly implements the `onERC71Received` callback, but this
+is not called when tokens are minted or transferred back to her contract. As a result, the
+tokens are trapped.
+"""
+
+    WIKI_RECOMMENDATION = """
+Short term, ensure that the ERC721 implementations execute the standard callback when
+they are required.
+
+Example see OpenZeppelin implementation: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/8b72e20e326078029b92d526ff5a44add2671df1/contracts/token/ERC721/ERC721.sol#L425-L447
+"""
+
+    def _detect(self) -> List[Output]:
+        results = []
+        for contract in self.compilation_unit.contracts_derived:
+            result_nodes: set[Node] = set()
+            for function in contract.functions:
+                for node in function.nodes:
+                    if self._is_transfer_from_this(
+                        node
+                    ) and not self._is_checked_received_callback(node):
+                        result_nodes.add(node)
+            if len(result_nodes) > 0:
+                for node in result_nodes:
+                    info: DETECTOR_INFO = [
+                        node,
+                        " unchecked `onERC721Received` callback.\n",
+                    ]
+                    results.append(self.generate_result(info))
         return results
 
 

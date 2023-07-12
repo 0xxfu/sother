@@ -65,3 +65,22 @@ contract NotBad {
         return this.onERC721Received.selector;
     }
 }
+
+contract BadUnchecked {
+    function deposit(IERC721 token, uint256 tokenId) external {
+        token.safeTransferFrom(
+            address(this),
+            msg.sender,
+            tokenId,
+            new bytes(32)
+        );
+    }
+
+    function deposit2(IERC721 token, uint256 tokenId) external {
+        token.safeTransferFrom(address(this), msg.sender, tokenId);
+    }
+
+    function deposit3(IERC721 token, uint256 tokenId) external {
+        token.transferFrom(address(this), msg.sender, tokenId);
+    }
+}
