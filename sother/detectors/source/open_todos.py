@@ -35,32 +35,44 @@ Consider resolving the To-dos before deploying code to a production
 context. Use an independent issue tracker or other project management
 software to track development tasks.
 """
+    WIKI_EXPLOIT_SCENARIO = " "
 
     def _detect(self) -> list[Output]:
         results = []
         todo = "todo"
         for contract in self.compilation_unit.contracts:
             if contract.comments and todo in contract.comments.lower():
-                result = self.generate_result(
-                    [
+                todos_in_comment: list[str] = list()
+                for item in contract.comments.split("\n"):
+                    if todo in item.lower():
+                        todos_in_comment.append(item)
+                if len(todos_in_comment) > 0:
+                    info = [
                         f"Todo in ",
                         contract,
                         " comments: \n",
-                        f"```\n{contract.comments}\n```",
                     ]
-                )
-                results.append(result)
+                    for td in todos_in_comment:
+                        info += ["\t- `", td, "`\n"]
+                    result = self.generate_result(info)
+                    results.append(result)
 
-            if todo in contract.source_mapping.content.lower():
-                result = self.generate_result(
-                    [
+            if contract.source_mapping.content:
+                todos_in_content: list[str] = list()
+                for item in contract.source_mapping.content.split("\n"):
+                    if any(["*" in item, "//" in item]) and todo in item.lower():
+                        todos_in_content.append(item)
+
+                if len(todos_in_content) > 0:
+                    info = [
                         f"Todo in ",
                         contract,
                         " content: \n",
-                        f"```\n{contract.source_mapping.content}\n```",
                     ]
-                )
-                results.append(result)
+                    for td in todos_in_content:
+                        info += ["\t- `", td, "`\n"]
+                    result = self.generate_result(info)
+                    results.append(result)
 
         return results
 
