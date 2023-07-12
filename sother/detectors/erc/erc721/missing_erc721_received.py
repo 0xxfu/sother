@@ -5,46 +5,25 @@
 """
 import unittest
 from abc import ABC
-from typing import List
-
-from slither.core.cfg.node import Node
-
-from sother.detectors.abstracts.abstract_detect_has_instance import (
-    AbstractTransferInstance,
-)
-
-"""
-@author: xfu
-@email: angerpeanut@gmail.com
-@date: 2023-07
-"""
-import unittest
-
-from slither.core.expressions import BinaryOperation, CallExpression
-
-"""
-@author: xfu
-@email: angerpeanut@gmail.com
-@date: 2023-07
-"""
-import unittest
 
 from loguru import logger
-from slither.analyses.data_dependency.data_dependency import is_dependent
+from slither.core.cfg.node import Node
 from slither.core.declarations import (
-    FunctionContract,
-    SolidityVariableComposed,
     Contract,
-    Function,
+    FunctionContract,
 )
+from slither.core.expressions import CallExpression
 from slither.detectors.abstract_detector import (
     AbstractDetector,
     DetectorClassification,
     DETECTOR_INFO,
 )
-from slither.slithir.operations import Binary, InternalCall, Operation, HighLevelCall
+from slither.slithir.operations import InternalCall, HighLevelCall
 from slither.utils.output import Output
 
+from sother.detectors.abstracts.abstract_detect_has_instance import (
+    AbstractTransferInstance,
+)
 from sother.detectors.detector_settings import DetectorSettings
 
 
@@ -78,8 +57,28 @@ class Erc721OnReceived(AbstractTransferInstance, ABC):
         return False
 
     @classmethod
-    def _is_checked_received_callback(cls, node: Node) -> bool:
-        # todo checked callback
+    def _is_checked_received_callback(
+        cls, nodes: list[Node], visited: list[Node] = None
+    ) -> bool:
+        if visited is None:
+            visited = list()
+        for node in nodes:
+            if node in visited:
+                continue
+            visited.append(node)
+
+            for ir in node.irs:
+                if (
+                    isinstance(ir, HighLevelCall)
+                    and ir.function.solidity_signature
+                    == "onERC721Received(address,address,uint256,bytes)"
+                ):
+                    return True
+                elif isinstance(ir, InternalCall) and isinstance(
+                    ir.function, FunctionContract
+                ):
+                    if cls._is_checked_received_callback(ir.function.nodes, visited):
+                        return True
         return False
 
 
@@ -104,7 +103,7 @@ from other contracts via `safeTransferFrom/transferFrom`.
 Consider adding an implementation of the `onERC721Received` function in the contract.
 """
 
-    def _detect(self) -> List[Output]:
+    def _detect(self) -> list[Output]:
         results = []
         for contract in self.compilation_unit.contracts_derived:
             if self._has_implement_on_received(contract):
@@ -160,7 +159,7 @@ they are required.
 Example see OpenZeppelin implementation: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/8b72e20e326078029b92d526ff5a44add2671df1/contracts/token/ERC721/ERC721.sol#L425-L447
 """
 
-    def _detect(self) -> List[Output]:
+    def _detect(self) -> list[Output]:
         results = []
         for contract in self.compilation_unit.contracts_derived:
             result_nodes: set[Node] = set()
@@ -168,7 +167,7 @@ Example see OpenZeppelin implementation: https://github.com/OpenZeppelin/openzep
                 for node in function.nodes:
                     if self._is_transfer_from_this(
                         node
-                    ) and not self._is_checked_received_callback(node):
+                    ) and not self._is_checked_received_callback(node.sons):
                         result_nodes.add(node)
             if len(result_nodes) > 0:
                 for node in result_nodes:
