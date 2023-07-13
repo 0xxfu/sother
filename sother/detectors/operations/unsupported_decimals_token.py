@@ -71,7 +71,7 @@ For example:
     def _detect_node_info(cls, node: Node) -> DETECTOR_INFO:
         return [
             node,
-            " should use `safe` call target function.",
+            " should use `safe**()` call target function.",
             "\n",
         ]
 
