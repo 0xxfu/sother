@@ -125,3 +125,7 @@ from sother.detectors.erc.erc721.missing_erc721_received import (
     UncheckedErc721Received,
 )
 from sother.detectors.source.open_todos import OpenTodos
+from sother.detectors.operations.use_selfbalance import (
+    UseSelfBalance,
+    UseAssemblyBalance,
+)
