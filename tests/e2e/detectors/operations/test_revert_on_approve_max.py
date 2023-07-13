@@ -6,13 +6,7 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.operations.divide_by_constant import DivideByConstant
-from sother.detectors.operations.payable_calls import PayableCalls
-from sother.detectors.operations.revert_on_approve_max import RevertOnApproveMax
-from sother.detectors.operations.unchecked_setters import UncheckedSetters
-from sother.detectors.operations.unsigned_int_compare_zero import UnsignedIntCompareZero
-from sother.detectors.operations.unused_return_values import UnusedReturnValues
-from sother.detectors.variables.bool_state_variables import BoolStateVariables
+from sother.detectors.erc.erc20.revert_on_approve_max import RevertOnApproveMax
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 

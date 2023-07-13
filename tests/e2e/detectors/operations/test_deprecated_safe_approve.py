@@ -6,9 +6,7 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.operations.deprecated_safe_approve import DeprecatedSafeApprove
-from sother.detectors.operations.divide_by_constant import DivideByConstant
-from sother.detectors.variables.bool_state_variables import BoolStateVariables
+from sother.detectors.erc.erc20.deprecated_safe_approve import DeprecatedSafeApprove
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 
