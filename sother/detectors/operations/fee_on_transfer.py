@@ -71,6 +71,7 @@ i.e. Fee-on-transfer scenario:
         get_balance_count = 0
         for node in function.nodes:
             for ir in node.irs:
+                # todo detect in internal call
                 if not (
                     isinstance(ir, HighLevelCall)
                     and isinstance(ir.function, Function)
