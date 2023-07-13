@@ -129,3 +129,4 @@ from sother.detectors.operations.use_selfbalance import (
     UseSelfBalance,
     UseAssemblyBalance,
 )
+from sother.detectors.statements.use_delete_statement import UseDeleteStatement
