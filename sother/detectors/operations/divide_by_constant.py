@@ -29,7 +29,10 @@ class DivideByConstant(AbstractDetector):
 
     WIKI_TITLE = "Using `x >> constant(uint)` with the right shift operator is a more gas-efficient"
     WIKI_DESCRIPTION = """
-`<x> / 2` is the same as `<x> >> 1`. While the compiler uses the `SHR` opcode to accomplish both, the version that uses division incurs an overhead of [**20 gas**](https://gist.github.com/0xxfu/84e3727f28e01f9b628836d5bf55d0cc) due to `JUMP`s to and from a compiler utility function that introduces checks which can be avoided by using `unchecked {}` around the division by two
+`<x> / 2` is the same as `<x> >> 1`. While the compiler uses the `SHR` opcode to accomplish both, 
+the version that uses division incurs an overhead of [**20 gas**](https://gist.github.com/0xxfu/84e3727f28e01f9b628836d5bf55d0cc) 
+due to `JUMP`s to and from a compiler utility function that introduces checks which can 
+be avoided by using `unchecked {}` around the division by two
 
 """
 
