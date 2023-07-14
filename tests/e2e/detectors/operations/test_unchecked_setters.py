@@ -6,7 +6,7 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.operations.divide_by_constant import DivideByConstant
+from sother.detectors.operations.use_shifting import DivideByConstant
 from sother.detectors.operations.payable_calls import PayableCalls
 from sother.detectors.operations.unchecked_setters import UncheckedSetters
 from sother.detectors.operations.unsigned_int_compare_zero import UnsignedIntCompareZero

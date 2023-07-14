@@ -8,7 +8,7 @@ import unittest
 from sother.core.models import OutputResult
 from sother.detectors.erc.erc721.unchecked_token_id import UncheckedTokenId
 from sother.detectors.erc.erc721.unprotected_nft_fork import UnprotectedNFTFork
-from sother.detectors.operations.divide_by_constant import DivideByConstant
+from sother.detectors.operations.use_shifting import DivideByConstant
 from sother.detectors.operations.payable_calls import PayableCalls
 from sother.detectors.erc.erc721.unsafe_721_transfer import UnsafeTransferErc721
 from sother.detectors.variables.bool_state_variables import BoolStateVariables
