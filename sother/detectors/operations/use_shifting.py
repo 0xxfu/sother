@@ -73,5 +73,60 @@ Using bit shifting (`>>` operator) replace division divided by constant.
         return results
 
 
+class MulPowerTwo(AbstractDetector):
+    ARGUMENT = "mul-power-two"
+    HELP = "Multiplications of powers of 2 can be replaced by a left shift operation to save gas"
+    IMPACT = DetectorClassification.OPTIMIZATION
+    CONFIDENCE = DetectorClassification.HIGH
+
+    WIKI = DetectorSettings.default_wiki
+    WIKI_TITLE = "Multiplications of powers of 2 can be replaced by a left shift operation to save gas"
+
+    WIKI_DESCRIPTION = """
+`1 << x` is the same as `2**x`. 
+A multiplication by any number x being a power of 2 can be calculated by shifting to the left. 
+While the `EXP` opcode uses [`gas_cost = 10 + 50 * byte_len_exponent`](https://github.com/wolflo/evm-opcodes/blob/main/gas.md#a1-exp), 
+the `SHL` opcode only uses 3 gas.
+
+"""
+
+    WIKI_RECOMMENDATION = """
+Using bit shifting (`<<` operator) replace multiplications of powers of 2 `(2**x)`.
+"""
+
+    def _detect(self) -> List[Output]:
+        results = []
+        powers_of_2: list[Node] = []
+        uint_list = Uint
+        for function in GasUtils.get_available_functions(self.compilation_unit):
+            for node in function.nodes:
+                for ir in node.all_slithir_operations():
+                    ir_exp = ir.expression
+                    # expression is `**` operator
+                    if (
+                        isinstance(ir_exp, BinaryOperation)
+                        and ir_exp.type == BinaryOperationType.POWER
+                    ):
+                        exp_left = ir_exp.expression_left
+                        # multiplications of powers of 2
+                        # `2**x`
+                        if (
+                            isinstance(exp_left, Literal)
+                            and str(exp_left.type) in uint_list
+                            and exp_left.value == "2"
+                        ):
+                            powers_of_2.append(node)
+
+        for exp in powers_of_2:
+            res = self.generate_result(
+                [
+                    exp,
+                    " should use bit shifting (`<<` operator) to save gas.\n",
+                ]
+            )
+            results.append(res)
+        return results
+
+
 if __name__ == "__main__":
     unittest.main()

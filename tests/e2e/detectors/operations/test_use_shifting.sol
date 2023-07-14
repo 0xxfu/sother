@@ -35,3 +35,21 @@ contract DivVsShr {
         return result;
     }
 }
+
+contract MulPower {
+    uint256 state;
+
+    function bad(uint256 x) external {
+        uint256 a = 2**10;
+        uint256 b = x**10;
+        uint256 c = 2**x;
+        state = a + b + c;
+    }
+
+    function good(uint256 x) external {
+        uint256 a = 1 << 10;
+        uint256 b = x**10;
+        uint256 c = 1 << x;
+        state = a + b + c;
+    }
+}
