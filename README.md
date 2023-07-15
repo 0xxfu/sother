@@ -29,8 +29,3 @@ poetry update slither-analyzer
 sother file.sol --print slithir
 ```
 
-## Install to local
-
-```shell
-pip install .
-```
