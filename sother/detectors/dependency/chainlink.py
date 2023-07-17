@@ -107,6 +107,10 @@ class AbstractUncheckedChainlink(AbstractDetectHasInstance, ABC):
         if visited is None:
             visited = list()
         for node in nodes:
+            if node in visited:
+                continue
+            visited.append(node)
+
             if node.contains_require_or_assert() or node.contains_if():
                 for var in node.local_variables_read:
                     if is_dependent(var, local_var, node):
