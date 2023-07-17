@@ -5,6 +5,8 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [M-0] | Usage of deprecated ChainLink APIs | 8 |
+| [M-1] | `latestRoundData` returns has been ignored | 1 |
+| [M-2] | `latestRoundData` might return stale results | 2 |
 
 
 ### Low Risk Issues
@@ -13,7 +15,7 @@
 |---|:---|:---:|
 | [L-0] | Setters should check the input value | 1 |
 | [L-1] | Unsafe downcasting arithmetic operation | 2 |
-| [L-2] | Block timestamp | 1 |
+| [L-2] | Block timestamp | 3 |
 
 
 ### Non-critical Issues
@@ -21,7 +23,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 1 |
-| [N-1] | Conformance to Solidity naming conventions | 3 |
+| [N-1] | Conformance to Solidity naming conventions | 4 |
 
 
 ### Gas Optimizations
@@ -29,16 +31,18 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | State variables only set in the constructor should be declared immutable | 2 |
-| [G-1] | Use `calldata` instead of `memory` for function parameters | 1 |
-| [G-2] | Setting the constructor to `payable` | 1 |
-| [G-3] | Using `private` rather than `public` for constants, saves gas | 1 |
-| [G-4] | State variables should be cached in stack variables rather than re-reading them from storage | 1 |
-| [G-5] | Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead | 22 |
-| [G-6] | `Bytes` constants are more efficient than `string` constants | 1 |
-| [G-7] | Use indexed events for value types as they are less costly compared to non-indexed ones | 2 |
-| [G-8] | `++i` costs less gas than `i++`, especially when it's used in for-loops (`--i/i--` too) | 1 |
-| [G-9] | Using custom errors replace `require` or `assert` | 1 |
-| [G-10] | State variables that could be declared constant | 1 |
+| [G-1] | `internal` functions only called once can be inlined to save gas | 1 |
+| [G-2] | Use `calldata` instead of `memory` for function parameters | 1 |
+| [G-3] | Setting the constructor to `payable` | 1 |
+| [G-4] | Using `private` rather than `public` for constants, saves gas | 1 |
+| [G-5] | State variables should be cached in stack variables rather than re-reading them from storage | 1 |
+| [G-6] | Shortening revert strings to fit in 32 `bytes` | 6 |
+| [G-7] | Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead | 28 |
+| [G-8] | `Bytes` constants are more efficient than `string` constants | 1 |
+| [G-9] | Use indexed events for value types as they are less costly compared to non-indexed ones | 2 |
+| [G-10] | `++i` costs less gas than `i++`, especially when it's used in for-loops (`--i/i--` too) | 1 |
+| [G-11] | Using custom errors replace `require` or `assert` | 1 |
+| [G-12] | State variables that could be declared constant | 1 |
 
 
 
@@ -97,7 +101,140 @@ It is recommended to use `latestRoundData()` method instead of deprecated APIs.
 Medium
 
 ### category:
-deprecated-chain-link
+deprecated-chainlink
+
+## [Medium] `latestRoundData` returns has been ignored
+
+### description:
+
+The `latestRoundData` function in the contract `xxx.sol` fetches the asset price 
+from a Chainlink aggregator using the latestRoundData function. 
+However, the returns is ignored.
+
+If there is a problem with chainlink starting a new round and finding consensus 
+on the new value for the oracle (e.g. chainlink nodes abandon the oracle, 
+chain congestion, vulnerability/attacks on the chainlink system) 
+consumers of this contract may continue using outdated stale data 
+(if oracles are unable to submit no new round is started)
+
+
+
+**There is `1` instance of this issue:**
+
+- [(roundId,price,answeredInRound) = aggregator.latestRoundData()](solidity/test_chaink_link.sol#L246-L247) returns has been ignored.
+
+
+### recommendation:
+
+Consider checking the all oracle responses value after calling out 
+to `chainlinkOracle.latestRoundData()` verifying that the result is within 
+an allowed margin.
+
+For example:
+```
+    (
+        uint80 roundId,
+        int256 price,
+        uint256 startedAt,
+        uint256 updatedAt,
+        uint80 answeredInRound
+    ) = aggregator.latestRoundData();
+
+    if (updatedAt < roundId) {
+        revert("Stale price");
+    }
+    if (answeredInRound < roundId){
+        revert("answer is being carried over");
+    }
+    if (startedAt == 0) {
+        revert("Round not complete");
+    }
+    if (price == 0) {
+        revert("answer reporting 0");
+    }
+
+    if (updatedAt < block.timestamp - maxDelayTime) {
+        revert("time err");
+    }
+```
+
+
+### locations:
+- solidity/test_chaink_link.sol#L246-L247
+
+### severity:
+Medium
+
+### category:
+ignored-chainlink-returns
+
+## [Medium] `latestRoundData` might return stale results
+
+### description:
+
+The `latestRoundData` function in the contract `xxx.sol` fetches the asset price 
+from a Chainlink aggregator using the latestRoundData function. 
+However, the returned `updatedAt` timestamp is not checked..
+
+If there is a problem with chainlink starting a new round and finding consensus 
+on the new value for the oracle (e.g. chainlink nodes abandon the oracle, 
+chain congestion, vulnerability/attacks on the chainlink system) 
+consumers of this contract may continue using outdated stale data 
+(if oracles are unable to submit no new round is started)
+
+
+
+**There are `2` instances of this issue:**
+
+- [(roundId,price,startedAt,updatedAt,answeredInRound) = aggregator.latestRoundData()](solidity/test_chaink_link.sol#L254-L260) unchecked `updatedAt` of `latestRoundData()`.
+
+- [(roundId,price,startedAt,updatedAt,answeredInRound) = aggregator.latestRoundData()](solidity/test_chaink_link.sol#L267-L273) unchecked `updatedAt` of `latestRoundData()`.
+
+
+### recommendation:
+
+Consider checking the oracle responses `updatedAt` value after calling out 
+to `chainlinkOracle.latestRoundData()` verifying that the result is within 
+an allowed margin of freshness.
+
+For example:
+```
+    (
+        uint80 roundId,
+        int256 price,
+        uint256 startedAt,
+        uint256 updatedAt,
+        uint80 answeredInRound
+    ) = aggregator.latestRoundData();
+
+    if (updatedAt < roundId) {
+        revert("Stale price");
+    }
+    if (answeredInRound < roundId){
+        revert("answer is being carried over");
+    }
+    if (startedAt == 0) {
+        revert("Round not complete");
+    }
+    if (price == 0) {
+        revert("answer reporting 0");
+    }
+
+    if (updatedAt < block.timestamp - maxDelayTime) {
+        revert("time err");
+    }
+```
+
+
+### locations:
+- solidity/test_chaink_link.sol#L254-L260
+- solidity/test_chaink_link.sol#L267-L273
+
+### severity:
+Medium
+
+### category:
+unchecked-chainlink-staleness
 
 ## [Low] Setters should check the input value
 
@@ -162,11 +299,19 @@ unsafe-downcast
 ### description:
 Dangerous usage of `block.timestamp`. `block.timestamp` can be manipulated by miners.
 
-**There is `1` instance of this issue:**
+**There are `3` instances of this issue:**
 
-- [UncheckedReturns.good()](solidity/test_chaink_link.sol#L264-L277) uses timestamp for comparisons
+- [UncheckedReturns.bad3()](solidity/test_chaink_link.sol#L266-L280) uses timestamp for comparisons
 	Dangerous comparisons:
-	- [valid = price > 0 && answeredInRound == roundId && ((block.timestamp - updatedAt) <= 10)](solidity/test_chaink_link.sol#L272-L274)
+	- [valid = price > 0 && answeredInRound == roundId && ((block.timestamp - updatedAt) <= 10)](solidity/test_chaink_link.sol#L275-L277)
+
+- [UncheckedReturns.good1()](solidity/test_chaink_link.sol#L282-L309) uses timestamp for comparisons
+	Dangerous comparisons:
+	- [updatedAt < block.timestamp - maxDelayTime](solidity/test_chaink_link.sol#L304)
+
+- [UncheckedReturns.checkChainlink(uint80,int256,uint256,uint256,uint80)](solidity/test_chaink_link.sol#L323-L346) uses timestamp for comparisons
+	Dangerous comparisons:
+	- [updatedAt < block.timestamp - maxDelayTime](solidity/test_chaink_link.sol#L343)
 
 #### Exploit scenario
 "Bob's contract relies on `block.timestamp` for its randomness. Eve is a miner and manipulates `block.timestamp` to exploit Bob's contract.
@@ -175,7 +320,9 @@ Dangerous usage of `block.timestamp`. `block.timestamp` can be manipulated by mi
 Avoid relying on `block.timestamp`.
 
 ### locations:
-- solidity/test_chaink_link.sol#L264-L277
+- solidity/test_chaink_link.sol#L266-L280
+- solidity/test_chaink_link.sol#L282-L309
+- solidity/test_chaink_link.sol#L323-L346
 
 ### severity:
 Low
@@ -227,13 +374,15 @@ Solidity defines a [naming convention](https://solidity.readthedocs.io/en/v0.4.2
 - Allow constant variable name/symbol/decimals to be lowercase (`ERC20`).
 - Allow `_` at the beginning of the `mixed_case` match for private variables and unused parameters.
 
-**There are `3` instances of this issue:**
+**There are `4` instances of this issue:**
 
 - Parameter [AggregatorFacade.getAnswer(uint256)._roundId](solidity/test_chaink_link.sol#L156) is not in mixedCase
 
 - Parameter [AggregatorFacade.getTimestamp(uint256)._roundId](solidity/test_chaink_link.sol#L175) is not in mixedCase
 
 - Parameter [AggregatorFacade.getRoundData(uint80)._roundId](solidity/test_chaink_link.sol#L200) is not in mixedCase
+
+- Constant [UncheckedReturns.maxDelayTime](solidity/test_chaink_link.sol#L243) is not in UPPER_CASE_WITH_UNDERSCORES
 
 
 ### recommendation:
@@ -243,6 +392,7 @@ Follow the Solidity [naming convention](https://solidity.readthedocs.io/en/v0.4.
 - solidity/test_chaink_link.sol#L156
 - solidity/test_chaink_link.sol#L175
 - solidity/test_chaink_link.sol#L200
+- solidity/test_chaink_link.sol#L243
 
 ### severity:
 Informational
@@ -278,6 +428,31 @@ Optimization
 
 ### category:
 immutable-states
+
+## [Optimization] `internal` functions only called once can be inlined to save gas
+
+### description:
+
+Not inlining costs **20 to 40 gas** because of two extra `JUMP` instructions and additional stack operations needed for function calls.
+more detail see [this](https://docs.soliditylang.org/en/v0.8.20/internals/optimizer.html#function-inlining) and [this](https://blog.soliditylang.org/2021/03/02/saving-gas-with-simple-inliner/)
+        
+
+**There is `1` instance of this issue:**
+
+- [UncheckedReturns.checkChainlink(uint80,int256,uint256,uint256,uint80)](solidity/test_chaink_link.sol#L323-L346) could be inlined to save gas.
+
+
+### recommendation:
+Using inlining replace `internal` function which only called once
+
+### locations:
+- solidity/test_chaink_link.sol#L323-L346
+
+### severity:
+Optimization
+
+### category:
+internal-function-to-inline
 
 ## [Optimization] Use `calldata` instead of `memory` for function parameters
 
@@ -396,6 +571,52 @@ Optimization
 ### category:
 reread-state-variables
 
+## [Optimization] Shortening revert strings to fit in 32 `bytes`
+
+### description:
+
+In Solidity, the size of a string is not fixed and depends on the length of the string. 
+Each character in a string requires 2 `bytes` of storage. 
+Additionally, there is an overhead of 32 `bytes` to store the length of the string.
+
+Shortening revert strings to fit in 32 bytes will decrease deployment time gas 
+and will decrease runtime gas when the revert condition is met.
+
+
+**There are `6` instances of this issue:**
+
+- [revert(string)(answer is being carried over)](solidity/test_chaink_link.sol#L295) should be shortened strings to fit in 32 `bytes` (16 characters).
+
+- [revert(string)(Round not complete)](solidity/test_chaink_link.sol#L298) should be shortened strings to fit in 32 `bytes` (16 characters).
+
+- [revert(string)(answer reporting 0)](solidity/test_chaink_link.sol#L301) should be shortened strings to fit in 32 `bytes` (16 characters).
+
+- [revert(string)(answer is being carried over)](solidity/test_chaink_link.sol#L334) should be shortened strings to fit in 32 `bytes` (16 characters).
+
+- [revert(string)(Round not complete)](solidity/test_chaink_link.sol#L337) should be shortened strings to fit in 32 `bytes` (16 characters).
+
+- [revert(string)(answer reporting 0)](solidity/test_chaink_link.sol#L340) should be shortened strings to fit in 32 `bytes` (16 characters).
+
+
+### recommendation:
+
+Shortening revert strings to fit in 32 `bytes`
+
+
+### locations:
+- solidity/test_chaink_link.sol#L295
+- solidity/test_chaink_link.sol#L298
+- solidity/test_chaink_link.sol#L301
+- solidity/test_chaink_link.sol#L334
+- solidity/test_chaink_link.sol#L337
+- solidity/test_chaink_link.sol#L340
+
+### severity:
+Optimization
+
+### category:
+revert-long-strings
+
 ## [Optimization] Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead
 
 ### description:
@@ -407,7 +628,7 @@ More detail see [this.](https://docs.soliditylang.org/en/latest/internals/layout
 Each operation involving a `uint8` costs an extra [**22-28 gas**](https://gist.github.com/0xxfu/3672fec07eb3031cd5da14ac015e04a1) (depending on whether the other operand is also a variable of type `uint8`) as compared to ones involving `uint256`, due to the compiler having to clear the higher bits of the memory word before operating on the `uint8`, as well as the associated stack operations of doing so. Use a larger size then downcast where needed
 
 
-**There are `22` instances of this issue:**
+**There are `28` instances of this issue:**
 
 - `uint8 `[AggregatorV3Interface.decimals().](solidity/test_chaink_link.sol#L26) should be used `uint256/int256`.
 
@@ -441,17 +662,29 @@ Each operation involving a `uint8` costs an extra [**22-28 gas**](https://gist.g
 
 - `uint80 `[AggregatorFacade._getRoundData(uint80).answeredInRound](solidity/test_chaink_link.sol#L228) should be used `uint256/int256`.
 
-- `uint80 `[UncheckedReturns.bad().roundId](solidity/test_chaink_link.sol#L244) should be used `uint256/int256`.
+- `uint80 `[UncheckedReturns.bad().roundId](solidity/test_chaink_link.sol#L246) should be used `uint256/int256`.
 
-- `uint80 `[UncheckedReturns.bad().answeredInRound](solidity/test_chaink_link.sol#L244) should be used `uint256/int256`.
+- `uint80 `[UncheckedReturns.bad().answeredInRound](solidity/test_chaink_link.sol#L246) should be used `uint256/int256`.
 
-- `uint80 `[UncheckedReturns.bad2().roundId](solidity/test_chaink_link.sol#L253) should be used `uint256/int256`.
+- `uint80 `[UncheckedReturns.bad2().roundId](solidity/test_chaink_link.sol#L255) should be used `uint256/int256`.
 
-- `uint80 `[UncheckedReturns.bad2().answeredInRound](solidity/test_chaink_link.sol#L257) should be used `uint256/int256`.
+- `uint80 `[UncheckedReturns.bad2().answeredInRound](solidity/test_chaink_link.sol#L259) should be used `uint256/int256`.
 
-- `uint80 `[UncheckedReturns.good().roundId](solidity/test_chaink_link.sol#L266) should be used `uint256/int256`.
+- `uint80 `[UncheckedReturns.bad3().roundId](solidity/test_chaink_link.sol#L268) should be used `uint256/int256`.
 
-- `uint80 `[UncheckedReturns.good().answeredInRound](solidity/test_chaink_link.sol#L270) should be used `uint256/int256`.
+- `uint80 `[UncheckedReturns.bad3().answeredInRound](solidity/test_chaink_link.sol#L272) should be used `uint256/int256`.
+
+- `uint80 `[UncheckedReturns.good1().roundId](solidity/test_chaink_link.sol#L284) should be used `uint256/int256`.
+
+- `uint80 `[UncheckedReturns.good1().answeredInRound](solidity/test_chaink_link.sol#L288) should be used `uint256/int256`.
+
+- `uint80 `[UncheckedReturns.good2().roundId](solidity/test_chaink_link.sol#L313) should be used `uint256/int256`.
+
+- `uint80 `[UncheckedReturns.good2().answeredInRound](solidity/test_chaink_link.sol#L317) should be used `uint256/int256`.
+
+- `uint80 `[UncheckedReturns.checkChainlink(uint80,int256,uint256,uint256,uint80).roundId](solidity/test_chaink_link.sol#L324) should be used `uint256/int256`.
+
+- `uint80 `[UncheckedReturns.checkChainlink(uint80,int256,uint256,uint256,uint80).answeredInRound](solidity/test_chaink_link.sol#L328) should be used `uint256/int256`.
 
 
 ### recommendation:
@@ -476,12 +709,18 @@ Using `uint256/int256` replace `uint128/uint64/uint32/uint16/uint8` or `int128/i
 - solidity/test_chaink_link.sol#L220
 - solidity/test_chaink_link.sol#L224
 - solidity/test_chaink_link.sol#L228
-- solidity/test_chaink_link.sol#L244
-- solidity/test_chaink_link.sol#L244
-- solidity/test_chaink_link.sol#L253
-- solidity/test_chaink_link.sol#L257
-- solidity/test_chaink_link.sol#L266
-- solidity/test_chaink_link.sol#L270
+- solidity/test_chaink_link.sol#L246
+- solidity/test_chaink_link.sol#L246
+- solidity/test_chaink_link.sol#L255
+- solidity/test_chaink_link.sol#L259
+- solidity/test_chaink_link.sol#L268
+- solidity/test_chaink_link.sol#L272
+- solidity/test_chaink_link.sol#L284
+- solidity/test_chaink_link.sol#L288
+- solidity/test_chaink_link.sol#L313
+- solidity/test_chaink_link.sol#L317
+- solidity/test_chaink_link.sol#L324
+- solidity/test_chaink_link.sol#L328
 
 ### severity:
 Optimization

@@ -6,14 +6,16 @@
 import abc
 import unittest
 from abc import ABC
+from typing import Optional
 
 from loguru import logger
+from slither.analyses.data_dependency.data_dependency import is_dependent
 from slither.core.cfg.node import Node
-from slither.core.declarations import Function
+from slither.core.declarations import Function, FunctionContract
 from slither.core.expressions import AssignmentOperation
 from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import DETECTOR_INFO, DetectorClassification
-from slither.slithir.operations import Operation, HighLevelCall
+from slither.slithir.operations import Operation, HighLevelCall, Unpack, InternalCall
 
 from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
@@ -98,6 +100,41 @@ class AbstractUncheckedChainlink(AbstractDetectHasInstance, ABC):
             return cls._is_unchecked_instance(ir, ir.node.local_variables_written)
         return False
 
+    @classmethod
+    def _is_checked_variable(
+        cls, local_var: LocalVariable, nodes: list[Node], visited: list[Node] = None
+    ) -> bool:
+        if visited is None:
+            visited = list()
+        for node in nodes:
+            if node.contains_require_or_assert() or node.contains_if():
+                for var in node.local_variables_read:
+                    if is_dependent(var, local_var, node):
+                        return True
+            else:
+                for ir in node.irs:
+                    if isinstance(ir, InternalCall) and isinstance(
+                        ir.function, FunctionContract
+                    ):
+                        if cls._is_checked_variable(
+                            local_var, ir.function.nodes, visited
+                        ):
+                            return True
+        return False
+
+    @classmethod
+    def _get_unpack_written_variable(
+        cls, unpack_index, node: Node
+    ) -> Optional[LocalVariable]:
+        unpack_idx = 0
+        local_var_written: Optional[LocalVariable] = None
+        for node_ir in node.irs:
+            if isinstance(node_ir, Unpack):
+                if unpack_idx == unpack_index:
+                    local_var_written = node_ir.lvalue
+                unpack_idx += 1
+        return local_var_written
+
 
 class IgnoredChainlinkReturns(AbstractUncheckedChainlink):
     ARGUMENT = "ignored-chainlink-returns"
@@ -127,7 +164,7 @@ to `chainlinkOracle.latestRoundData()` verifying that the result is within
 an allowed margin.
 
 For example:
-    ```
+```
     (
         uint80 roundId,
         int256 price,
@@ -173,7 +210,7 @@ For example:
 
 
 class UncheckedChainlinkStaleness(AbstractUncheckedChainlink):
-    ARGUMENT = "deprecated-chainlink"
+    ARGUMENT = "unchecked-chainlink-staleness"
     HELP = "`latestRoundData` might return stale results"
     IMPACT = DetectorClassification.MEDIUM
     CONFIDENCE = DetectorClassification.HIGH
@@ -200,7 +237,7 @@ to `chainlinkOracle.latestRoundData()` verifying that the result is within
 an allowed margin of freshness.
 
 For example:
-    ```
+```
     (
         uint80 roundId,
         int256 price,
@@ -232,11 +269,20 @@ For example:
 
     @classmethod
     def _is_unchecked_instance(
-        cls, ir: Operation, local_var_written: list[LocalVariable]
+        cls, ir: Operation, local_vars_written: list[LocalVariable]
     ) -> bool:
-        if len(local_var_written) < cls.return_size:
+        if len(local_vars_written) < cls.return_size:
             return False
-        return False
+
+        unpack_index = 3
+        local_var_written: Optional[LocalVariable] = cls._get_unpack_written_variable(
+            unpack_index, ir.node
+        )
+
+        if local_var_written is None:
+            return False
+
+        return not cls._is_checked_variable(local_var_written, ir.node.sons)
 
     @classmethod
     def _detect_node_info(cls, node: Node) -> DETECTOR_INFO:

@@ -263,7 +263,7 @@ contract UncheckedReturns {
         return (price, valid);
     }
 
-    function good() external view returns (int256, bool) {
+    function bad3() external view returns (int256, bool) {
         (
             uint80 roundId,
             int256 price,
@@ -279,7 +279,7 @@ contract UncheckedReturns {
         return (price, valid);
     }
 
-    function good2() external view returns (int256) {
+    function good1() external view returns (int256) {
         (
             uint80 roundId,
             int256 price,
@@ -308,7 +308,7 @@ contract UncheckedReturns {
         return price;
     }
 
-    function good3() external view returns (int256) {
+    function good2() external view returns (int256) {
         (
             uint80 roundId,
             int256 price,

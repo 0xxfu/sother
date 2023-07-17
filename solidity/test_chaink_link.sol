@@ -240,6 +240,8 @@ contract AggregatorFacade is AggregatorInterface, AggregatorV3Interface {
 contract UncheckedReturns {
     AggregatorV3Interface public aggregator;
 
+    uint256 private constant maxDelayTime = 10;
+
     function bad() external view returns (int256, bool) {
         (uint80 roundId, int256 price, , , uint80 answeredInRound) = aggregator
             .latestRoundData();
@@ -261,18 +263,85 @@ contract UncheckedReturns {
         return (price, valid);
     }
 
-    function good() external view returns (int256, bool) {
+    function bad3() external view returns (int256, bool) {
         (
             uint80 roundId,
             int256 price,
-            ,
+            uint256 startedAt,
             uint256 updatedAt,
             uint80 answeredInRound
         ) = aggregator.latestRoundData();
+
         bool valid = price > 0 &&
             answeredInRound == roundId &&
             ((block.timestamp - updatedAt) <= 10);
 
         return (price, valid);
+    }
+
+    function good1() external view returns (int256) {
+        (
+            uint80 roundId,
+            int256 price,
+            uint256 startedAt,
+            uint256 updatedAt,
+            uint80 answeredInRound
+        ) = aggregator.latestRoundData();
+
+        if (updatedAt < roundId) {
+            revert("Stale price");
+        }
+        if (answeredInRound < roundId) {
+            revert("answer is being carried over");
+        }
+        if (startedAt == 0) {
+            revert("Round not complete");
+        }
+        if (price == 0) {
+            revert("answer reporting 0");
+        }
+
+        if (updatedAt < block.timestamp - maxDelayTime) {
+            revert("time err");
+        }
+
+        return price;
+    }
+
+    function good2() external view returns (int256) {
+        (
+            uint80 roundId,
+            int256 price,
+            uint256 startedAt,
+            uint256 updatedAt,
+            uint80 answeredInRound
+        ) = aggregator.latestRoundData();
+        checkChainlink(roundId, price, startedAt, updatedAt, answeredInRound);
+        return price;
+    }
+
+    function checkChainlink(
+        uint80 roundId,
+        int256 price,
+        uint256 startedAt,
+        uint256 updatedAt,
+        uint80 answeredInRound
+    ) internal view {
+        if (updatedAt < roundId) {
+            revert("Stale price");
+        }
+        if (answeredInRound < roundId) {
+            revert("answer is being carried over");
+        }
+        if (startedAt == 0) {
+            revert("Round not complete");
+        }
+        if (price == 0) {
+            revert("answer reporting 0");
+        }
+
+        if (updatedAt < block.timestamp - maxDelayTime) {
+            revert("time err");
+        }
     }
 }
