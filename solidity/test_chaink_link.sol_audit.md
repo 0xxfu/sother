@@ -6,7 +6,8 @@
 |---|:---|:---:|
 | [M-0] | Usage of deprecated ChainLink APIs | 8 |
 | [M-1] | `latestRoundData` returns has been ignored | 1 |
-| [M-2] | `latestRoundData` might return stale results | 2 |
+| [M-2] | Unchecked return data `roundId` from Chainlink aggregators | 2 |
+| [M-3] | `latestRoundData` might return stale results | 2 |
 
 
 ### Low Risk Issues
@@ -139,10 +140,7 @@ For example:
         uint256 updatedAt,
         uint80 answeredInRound
     ) = aggregator.latestRoundData();
-
-    if (updatedAt < roundId) {
-        revert("Stale price");
-    }
+    
     if (answeredInRound < roundId){
         revert("answer is being carried over");
     }
@@ -152,7 +150,6 @@ For example:
     if (price == 0) {
         revert("answer reporting 0");
     }
-
     if (updatedAt < block.timestamp - maxDelayTime) {
         revert("time err");
     }
@@ -168,13 +165,80 @@ Medium
 ### category:
 ignored-chainlink-returns
 
+## [Medium] Unchecked return data `roundId` from Chainlink aggregators
+
+### description:
+
+The `latestRoundData` function in the contract `xxx.sol` fetches the asset price 
+from a Chainlink aggregator using the latestRoundData function. 
+However, there are no checks on `roundId`.
+
+Stale prices could put funds at risk. 
+According to Chainlink's documentation, This function does not error 
+if no answer has been reached but returns 0, 
+causing an incorrect price fed to the PriceOracle. 
+The external Chainlink oracle, which provides index price information to the system, 
+introduces risk inherent to any dependency on third-party data sources. 
+For example, the oracle could fall behind or otherwise fail to be maintained, 
+resulting in outdated data being fed to the index price calculations of the liquidity.
+
+
+
+**There are `2` instances of this issue:**
+
+- [(roundId,price,startedAt,updatedAt,answeredInRound) = aggregator.latestRoundData()](solidity/test_chaink_link.sol#L254-L260) unchecked `roundId` of `latestRoundData()`.
+
+- [(roundId,price,startedAt,updatedAt,answeredInRound) = aggregator.latestRoundData()](solidity/test_chaink_link.sol#L267-L273) unchecked `roundId` of `latestRoundData()`.
+
+
+### recommendation:
+
+Consider checking the oracle responses `answeredInRound` and `roundId` values after calling out 
+to `chainlinkOracle.latestRoundData()` verifying that the result is within 
+an allowed margin of freshness.
+
+For example:
+```
+    (
+        uint80 roundId,
+        int256 price,
+        uint256 startedAt,
+        uint256 updatedAt,
+        uint80 answeredInRound
+    ) = aggregator.latestRoundData();
+
+    if (answeredInRound < roundId){
+        revert("answer is being carried over");
+    }
+    if (startedAt == 0) {
+        revert("Round not complete");
+    }
+    if (price == 0) {
+        revert("answer reporting 0");
+    }
+    if (updatedAt < block.timestamp - maxDelayTime) {
+        revert("time err");
+    }
+```
+
+
+### locations:
+- solidity/test_chaink_link.sol#L254-L260
+- solidity/test_chaink_link.sol#L267-L273
+
+### severity:
+Medium
+
+### category:
+unchecked-chainlink-round
+
 ## [Medium] `latestRoundData` might return stale results
 
 ### description:
 
 The `latestRoundData` function in the contract `xxx.sol` fetches the asset price 
 from a Chainlink aggregator using the latestRoundData function. 
-However, the returned `updatedAt` timestamp is not checked..
+However, the returns `updatedAt` timestamp is not checked.
 
 If there is a problem with chainlink starting a new round and finding consensus 
 on the new value for the oracle (e.g. chainlink nodes abandon the oracle, 
@@ -207,9 +271,6 @@ For example:
         uint80 answeredInRound
     ) = aggregator.latestRoundData();
 
-    if (updatedAt < roundId) {
-        revert("Stale price");
-    }
     if (answeredInRound < roundId){
         revert("answer is being carried over");
     }
@@ -219,7 +280,6 @@ For example:
     if (price == 0) {
         revert("answer reporting 0");
     }
-
     if (updatedAt < block.timestamp - maxDelayTime) {
         revert("time err");
     }
@@ -553,8 +613,8 @@ More detail see [this.](https://gist.github.com/0xxfu/af8f63ccbf36af9d067ed6eff9
 **There is `1` instance of this issue:**
 
 - [AggregatorFacade.aggregator](solidity/test_chaink_link.sol#L56) should be cached with local memory-based variable in [AggregatorFacade._getRoundData(uint80)](solidity/test_chaink_link.sol#L220-L237), It is called more than once:
-	- [updatedAt = uint64(aggregator.getTimestamp(_roundId))](solidity/test_chaink_link.sol#L232)
 	- [answer = aggregator.getAnswer(_roundId)](solidity/test_chaink_link.sol#L231)
+	- [updatedAt = uint64(aggregator.getTimestamp(_roundId))](solidity/test_chaink_link.sol#L232)
 
 
 ### recommendation:

@@ -172,10 +172,7 @@ For example:
         uint256 updatedAt,
         uint80 answeredInRound
     ) = aggregator.latestRoundData();
-
-    if (updatedAt < roundId) {
-        revert("Stale price");
-    }
+    
     if (answeredInRound < roundId){
         revert("answer is being carried over");
     }
@@ -185,7 +182,6 @@ For example:
     if (price == 0) {
         revert("answer reporting 0");
     }
-
     if (updatedAt < block.timestamp - maxDelayTime) {
         revert("time err");
     }
@@ -246,9 +242,6 @@ For example:
         uint80 answeredInRound
     ) = aggregator.latestRoundData();
 
-    if (updatedAt < roundId) {
-        revert("Stale price");
-    }
     if (answeredInRound < roundId){
         revert("answer is being carried over");
     }
@@ -258,7 +251,6 @@ For example:
     if (price == 0) {
         revert("answer reporting 0");
     }
-
     if (updatedAt < block.timestamp - maxDelayTime) {
         revert("time err");
     }
@@ -289,6 +281,89 @@ For example:
         return [
             node,
             " unchecked `updatedAt` of `latestRoundData()`.",
+            "\n",
+        ]
+
+
+class UncheckedChainlinkRound(AbstractUncheckedChainlink):
+    ARGUMENT = "unchecked-chainlink-round"
+    HELP = "Unchecked return data `roundId` from Chainlink aggregators"
+    IMPACT = DetectorClassification.MEDIUM
+    CONFIDENCE = DetectorClassification.HIGH
+
+    WIKI = DetectorSettings.default_wiki
+    WIKI_TITLE = "Unchecked return data `roundId` from Chainlink aggregators"
+
+    WIKI_DESCRIPTION = """
+The `latestRoundData` function in the contract `xxx.sol` fetches the asset price 
+from a Chainlink aggregator using the latestRoundData function. 
+However, there are no checks on `roundId`.
+
+Stale prices could put funds at risk. 
+According to Chainlink's documentation, This function does not error 
+if no answer has been reached but returns 0, 
+causing an incorrect price fed to the PriceOracle. 
+The external Chainlink oracle, which provides index price information to the system, 
+introduces risk inherent to any dependency on third-party data sources. 
+For example, the oracle could fall behind or otherwise fail to be maintained, 
+resulting in outdated data being fed to the index price calculations of the liquidity.
+
+"""
+
+    WIKI_RECOMMENDATION = """
+Consider checking the oracle responses `answeredInRound` and `roundId` values after calling out 
+to `chainlinkOracle.latestRoundData()` verifying that the result is within 
+an allowed margin of freshness.
+
+For example:
+```
+    (
+        uint80 roundId,
+        int256 price,
+        uint256 startedAt,
+        uint256 updatedAt,
+        uint80 answeredInRound
+    ) = aggregator.latestRoundData();
+
+    if (answeredInRound < roundId){
+        revert("answer is being carried over");
+    }
+    if (startedAt == 0) {
+        revert("Round not complete");
+    }
+    if (price == 0) {
+        revert("answer reporting 0");
+    }
+    if (updatedAt < block.timestamp - maxDelayTime) {
+        revert("time err");
+    }
+```
+"""
+
+    WIKI_EXPLOIT_SCENARIO = " "
+
+    @classmethod
+    def _is_unchecked_instance(
+        cls, ir: Operation, local_vars_written: list[LocalVariable]
+    ) -> bool:
+        if len(local_vars_written) < cls.return_size:
+            return False
+
+        unpack_index = 0
+        local_var_written: Optional[LocalVariable] = cls._get_unpack_written_variable(
+            unpack_index, ir.node
+        )
+
+        if local_var_written is None:
+            return False
+
+        return not cls._is_checked_variable(local_var_written, ir.node.sons)
+
+    @classmethod
+    def _detect_node_info(cls, node: Node) -> DETECTOR_INFO:
+        return [
+            node,
+            " unchecked `roundId` of `latestRoundData()`.",
             "\n",
         ]
 

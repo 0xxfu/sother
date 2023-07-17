@@ -10,6 +10,7 @@ from sother.detectors.dependency.chainlink import (
     DeprecatedChainLink,
     UncheckedChainlinkStaleness,
     IgnoredChainlinkReturns,
+    UncheckedChainlinkRound,
 )
 
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
@@ -36,6 +37,13 @@ class TestChainLink(DetectorTestCase):
             UncheckedChainlinkStaleness,
         )
         self.check_detect_results(UncheckedChainlinkStaleness.WIKI_TITLE, results)
+
+    def test_unchecked_chainlink_round(self):
+        results: list[OutputResult] = self.detect(
+            f"{self.get_test_solidity_filename(__file__)}.sol",
+            UncheckedChainlinkRound,
+        )
+        self.check_detect_results(UncheckedChainlinkRound.WIKI_TITLE, results)
 
 
 if __name__ == "__main__":

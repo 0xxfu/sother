@@ -288,9 +288,6 @@ contract UncheckedReturns {
             uint80 answeredInRound
         ) = aggregator.latestRoundData();
 
-        if (updatedAt < roundId) {
-            revert("Stale price");
-        }
         if (answeredInRound < roundId) {
             revert("answer is being carried over");
         }
@@ -300,7 +297,6 @@ contract UncheckedReturns {
         if (price == 0) {
             revert("answer reporting 0");
         }
-
         if (updatedAt < block.timestamp - maxDelayTime) {
             revert("time err");
         }
@@ -327,9 +323,6 @@ contract UncheckedReturns {
         uint256 updatedAt,
         uint80 answeredInRound
     ) internal view {
-        if (updatedAt < roundId) {
-            revert("Stale price");
-        }
         if (answeredInRound < roundId) {
             revert("answer is being carried over");
         }
@@ -339,7 +332,6 @@ contract UncheckedReturns {
         if (price == 0) {
             revert("answer reporting 0");
         }
-
         if (updatedAt < block.timestamp - maxDelayTime) {
             revert("time err");
         }

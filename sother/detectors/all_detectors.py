@@ -135,4 +135,5 @@ from sother.detectors.dependency.chainlink import (
     DeprecatedChainLink,
     IgnoredChainlinkReturns,
     UncheckedChainlinkStaleness,
+    UncheckedChainlinkRound,
 )
