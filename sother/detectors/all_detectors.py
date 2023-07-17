@@ -137,3 +137,4 @@ from sother.detectors.dependency.chainlink import (
     UncheckedChainlinkStaleness,
     UncheckedChainlinkRound,
 )
+from sother.detectors.erc.erc20.revert_on_total_supply import RevertOnTotalSupply

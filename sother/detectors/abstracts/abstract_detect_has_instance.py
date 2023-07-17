@@ -12,7 +12,7 @@ from slither.core.cfg.node import Node
 from slither.core.declarations import Function
 from slither.core.variables import Variable
 from slither.detectors.abstract_detector import AbstractDetector, DETECTOR_INFO
-from slither.slithir.operations import Operation, HighLevelCall
+from slither.slithir.operations import Operation, HighLevelCall, InternalCall
 from slither.utils.output import Output
 
 
@@ -52,6 +52,34 @@ class AbstractDetectHasInstance(AbstractDetector, ABC):
                 if cls._is_instance(ir):
                     result_nodes.add(node)
         return result_nodes
+
+
+class AbstractVariableInNodes(ABC):
+    @classmethod
+    @abstractmethod
+    def is_variable_checked_instance(cls, var: Variable, ir: Operation) -> bool:
+        pass
+
+    @classmethod
+    def is_variable_in_nodes(
+        cls, var: Variable, nodes: list[Node], visited: list[Node] = None
+    ) -> bool:
+        if visited is None:
+            visited = list()
+        for node in nodes:
+            if node in visited:
+                continue
+            visited.append(node)
+
+            for ir in node.irs:
+                if cls.is_variable_checked_instance(var, ir):
+                    return True
+                elif isinstance(ir, InternalCall) and ir.function:
+                    if cls.is_variable_in_nodes(var, ir.function.nodes, visited):
+                        return True
+            if cls.is_variable_in_nodes(var, node.sons, visited):
+                return True
+        return False
 
 
 class AbstractTransferInstance:
