@@ -52,7 +52,7 @@ interface AggregatorV3Interface {
         );
 }
 
-contract AggregatorFacade is AggregatorInterface,AggregatorV3Interface {
+contract AggregatorFacade is AggregatorInterface, AggregatorV3Interface {
     AggregatorInterface public aggregator;
     uint8 public override decimals;
     string public override description;
@@ -234,5 +234,45 @@ contract AggregatorFacade is AggregatorInterface,AggregatorV3Interface {
         require(updatedAt > 0, V3_NO_DATA_ERROR);
 
         return (_roundId, answer, updatedAt, updatedAt, _roundId);
+    }
+}
+
+contract UncheckedReturns {
+    AggregatorV3Interface public aggregator;
+
+    function bad() external view returns (int256, bool) {
+        (uint80 roundId, int256 price, , , uint80 answeredInRound) = aggregator
+            .latestRoundData();
+        bool valid = price > 0 && answeredInRound == roundId;
+
+        return (price, valid);
+    }
+
+    function bad2() external view returns (int256, bool) {
+        (
+            uint80 roundId,
+            int256 price,
+            uint256 startedAt,
+            uint256 updatedAt,
+            uint80 answeredInRound
+        ) = aggregator.latestRoundData();
+        bool valid = price > 0 && answeredInRound == roundId;
+
+        return (price, valid);
+    }
+
+    function good() external view returns (int256, bool) {
+        (
+            uint80 roundId,
+            int256 price,
+            ,
+            uint256 updatedAt,
+            uint80 answeredInRound
+        ) = aggregator.latestRoundData();
+        bool valid = price > 0 &&
+            answeredInRound == roundId &&
+            ((block.timestamp - updatedAt) <= 10);
+
+        return (price, valid);
     }
 }

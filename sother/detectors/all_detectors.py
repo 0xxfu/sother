@@ -131,4 +131,8 @@ from sother.detectors.operations.use_selfbalance import (
 )
 from sother.detectors.statements.use_delete_statement import UseDeleteStatement
 from sother.detectors.statements.inefficient_new_bytes import InefficientNewBytes
-from sother.detectors.dependency.chainlink import DeprecatedChainLink
+from sother.detectors.dependency.chainlink import (
+    DeprecatedChainLink,
+    IgnoredChainlinkReturns,
+    UncheckedChainlinkStaleness,
+)

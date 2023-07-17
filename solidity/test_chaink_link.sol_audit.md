@@ -13,6 +13,7 @@
 |---|:---|:---:|
 | [L-0] | Setters should check the input value | 1 |
 | [L-1] | Unsafe downcasting arithmetic operation | 2 |
+| [L-2] | Block timestamp | 1 |
 
 
 ### Non-critical Issues
@@ -32,11 +33,12 @@
 | [G-2] | Setting the constructor to `payable` | 1 |
 | [G-3] | Using `private` rather than `public` for constants, saves gas | 1 |
 | [G-4] | State variables should be cached in stack variables rather than re-reading them from storage | 1 |
-| [G-5] | Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead | 16 |
+| [G-5] | Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead | 22 |
 | [G-6] | `Bytes` constants are more efficient than `string` constants | 1 |
 | [G-7] | Use indexed events for value types as they are less costly compared to non-indexed ones | 2 |
 | [G-8] | `++i` costs less gas than `i++`, especially when it's used in for-loops (`--i/i--` too) | 1 |
 | [G-9] | Using custom errors replace `require` or `assert` | 1 |
+| [G-10] | State variables that could be declared constant | 1 |
 
 
 
@@ -48,7 +50,7 @@ According to [Chainlink's documentation](https://docs.chain.link/data-feeds/api-
 the following functions are deprecated: `latestRound()`/`latestAnswer()`/`latestTimestamp()`/
 `getAnswer(uint256 _roundId)`/`getTimestamp(uint256 _roundId)`. 
 
-> These does not error if no
+> This does not error if no
 > answer has been reached, it will simply return 0. Either wait to point to
 > an already answered Aggregator or use the recommended `getRoundData`
 > instead which includes better verification information.
@@ -59,21 +61,21 @@ Prices cannot be obtained. Protocol stops and contracts have to be redeployed.
 
 **There are `8` instances of this issue:**
 
--  should use `latestRoundData()` instead of [aggregator.latestRound()](solidity/test_deprecated_chaink_link.sol#L84)
+-  should use `latestRoundData()` instead of [aggregator.latestRound()](solidity/test_chaink_link.sol#L84)
 
--  should use `latestRoundData()` instead of [aggregator.latestAnswer()](solidity/test_deprecated_chaink_link.sol#L96)
+-  should use `latestRoundData()` instead of [aggregator.latestAnswer()](solidity/test_chaink_link.sol#L96)
 
--  should use `latestRoundData()` instead of [aggregator.latestTimestamp()](solidity/test_deprecated_chaink_link.sol#L114)
+-  should use `latestRoundData()` instead of [aggregator.latestTimestamp()](solidity/test_chaink_link.sol#L114)
 
--  should use `latestRoundData()` instead of [_getRoundData(uint80(aggregator.latestRound()))](solidity/test_deprecated_chaink_link.sol#L144)
+-  should use `latestRoundData()` instead of [_getRoundData(uint80(aggregator.latestRound()))](solidity/test_chaink_link.sol#L144)
 
--  should use `latestRoundData()` instead of [aggregator.getAnswer(_roundId)](solidity/test_deprecated_chaink_link.sol#L163)
+-  should use `latestRoundData()` instead of [aggregator.getAnswer(_roundId)](solidity/test_chaink_link.sol#L163)
 
--  should use `latestRoundData()` instead of [aggregator.getTimestamp(_roundId)](solidity/test_deprecated_chaink_link.sol#L182)
+-  should use `latestRoundData()` instead of [aggregator.getTimestamp(_roundId)](solidity/test_chaink_link.sol#L182)
 
--  should use `latestRoundData()` instead of [answer = aggregator.getAnswer(_roundId)](solidity/test_deprecated_chaink_link.sol#L231)
+-  should use `latestRoundData()` instead of [answer = aggregator.getAnswer(_roundId)](solidity/test_chaink_link.sol#L231)
 
--  should use `latestRoundData()` instead of [updatedAt = uint64(aggregator.getTimestamp(_roundId))](solidity/test_deprecated_chaink_link.sol#L232)
+-  should use `latestRoundData()` instead of [updatedAt = uint64(aggregator.getTimestamp(_roundId))](solidity/test_chaink_link.sol#L232)
 
 
 ### recommendation:
@@ -82,14 +84,14 @@ It is recommended to use `latestRoundData()` method instead of deprecated APIs.
 
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L84
-- solidity/test_deprecated_chaink_link.sol#L96
-- solidity/test_deprecated_chaink_link.sol#L114
-- solidity/test_deprecated_chaink_link.sol#L144
-- solidity/test_deprecated_chaink_link.sol#L163
-- solidity/test_deprecated_chaink_link.sol#L182
-- solidity/test_deprecated_chaink_link.sol#L231
-- solidity/test_deprecated_chaink_link.sol#L232
+- solidity/test_chaink_link.sol#L84
+- solidity/test_chaink_link.sol#L96
+- solidity/test_chaink_link.sol#L114
+- solidity/test_chaink_link.sol#L144
+- solidity/test_chaink_link.sol#L163
+- solidity/test_chaink_link.sol#L182
+- solidity/test_chaink_link.sol#L231
+- solidity/test_chaink_link.sol#L232
 
 ### severity:
 Medium
@@ -107,8 +109,8 @@ Assignment of wrong value can lead to unexpected behavior of the contract.
 
 **There is `1` instance of this issue:**
 
-- [AggregatorFacade.constructor(address,uint8,string)._decimals](solidity/test_deprecated_chaink_link.sol#L68) lacks an upper limit check on :
-	- [decimals = _decimals](solidity/test_deprecated_chaink_link.sol#L72)
+- [AggregatorFacade.constructor(address,uint8,string)._decimals](solidity/test_chaink_link.sol#L68) lacks an upper limit check on :
+	- [decimals = _decimals](solidity/test_chaink_link.sol#L72)
 
 
 ### recommendation:
@@ -117,7 +119,7 @@ Add an upper limit check to the setters function.
 
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L68
+- solidity/test_chaink_link.sol#L68
 
 ### severity:
 Low
@@ -137,8 +139,8 @@ Without any other checks, this wrapping will lead to unexpected behavior and bug
 
 **There are `2` instances of this issue:**
 
-- [_getRoundData(uint80(aggregator.latestRound()))](solidity/test_deprecated_chaink_link.sol#L144) should use `uint256/int256` or `OpenZeppelin SafeCast lib`.
-- [updatedAt = uint64(aggregator.getTimestamp(_roundId))](solidity/test_deprecated_chaink_link.sol#L232) should use `uint256/int256` or `OpenZeppelin SafeCast lib`.
+- [_getRoundData(uint80(aggregator.latestRound()))](solidity/test_chaink_link.sol#L144) should use `uint256/int256` or `OpenZeppelin SafeCast lib`.
+- [updatedAt = uint64(aggregator.getTimestamp(_roundId))](solidity/test_chaink_link.sol#L232) should use `uint256/int256` or `OpenZeppelin SafeCast lib`.
 
 ### recommendation:
 
@@ -146,14 +148,40 @@ Just use `uint256/int256`, or use [OpenZeppelin SafeCast lib](https://github.com
 
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L144
-- solidity/test_deprecated_chaink_link.sol#L232
+- solidity/test_chaink_link.sol#L144
+- solidity/test_chaink_link.sol#L232
 
 ### severity:
 Low
 
 ### category:
 unsafe-downcast
+
+## [Low] Block timestamp
+
+### description:
+Dangerous usage of `block.timestamp`. `block.timestamp` can be manipulated by miners.
+
+**There is `1` instance of this issue:**
+
+- [UncheckedReturns.good()](solidity/test_chaink_link.sol#L264-L277) uses timestamp for comparisons
+	Dangerous comparisons:
+	- [valid = price > 0 && answeredInRound == roundId && ((block.timestamp - updatedAt) <= 10)](solidity/test_chaink_link.sol#L272-L274)
+
+#### Exploit scenario
+"Bob's contract relies on `block.timestamp` for its randomness. Eve is a miner and manipulates `block.timestamp` to exploit Bob's contract.
+
+### recommendation:
+Avoid relying on `block.timestamp`.
+
+### locations:
+- solidity/test_chaink_link.sol#L264-L277
+
+### severity:
+Low
+
+### category:
+timestamp
 
 ## [Informational] Incorrect versions of Solidity
 
@@ -201,20 +229,20 @@ Solidity defines a [naming convention](https://solidity.readthedocs.io/en/v0.4.2
 
 **There are `3` instances of this issue:**
 
-- Parameter [AggregatorFacade.getAnswer(uint256)._roundId](solidity/test_deprecated_chaink_link.sol#L156) is not in mixedCase
+- Parameter [AggregatorFacade.getAnswer(uint256)._roundId](solidity/test_chaink_link.sol#L156) is not in mixedCase
 
-- Parameter [AggregatorFacade.getTimestamp(uint256)._roundId](solidity/test_deprecated_chaink_link.sol#L175) is not in mixedCase
+- Parameter [AggregatorFacade.getTimestamp(uint256)._roundId](solidity/test_chaink_link.sol#L175) is not in mixedCase
 
-- Parameter [AggregatorFacade.getRoundData(uint80)._roundId](solidity/test_deprecated_chaink_link.sol#L200) is not in mixedCase
+- Parameter [AggregatorFacade.getRoundData(uint80)._roundId](solidity/test_chaink_link.sol#L200) is not in mixedCase
 
 
 ### recommendation:
 Follow the Solidity [naming convention](https://solidity.readthedocs.io/en/v0.4.25/style-guide.html#naming-conventions).
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L156
-- solidity/test_deprecated_chaink_link.sol#L175
-- solidity/test_deprecated_chaink_link.sol#L200
+- solidity/test_chaink_link.sol#L156
+- solidity/test_chaink_link.sol#L175
+- solidity/test_chaink_link.sol#L200
 
 ### severity:
 Informational
@@ -233,17 +261,17 @@ While strings are not value types, and therefore cannot be immutable/constant if
 
 **There are `2` instances of this issue:**
 
-- [AggregatorFacade.aggregator](solidity/test_deprecated_chaink_link.sol#L56) should be immutable 
+- [AggregatorFacade.aggregator](solidity/test_chaink_link.sol#L56) should be immutable 
 
-- [AggregatorFacade.decimals](solidity/test_deprecated_chaink_link.sol#L57) should be immutable 
+- [AggregatorFacade.decimals](solidity/test_chaink_link.sol#L57) should be immutable 
 
 
 ### recommendation:
 Add the `immutable` attribute to state variables that never change or are set only in the constructor.
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L56
-- solidity/test_deprecated_chaink_link.sol#L57
+- solidity/test_chaink_link.sol#L56
+- solidity/test_chaink_link.sol#L57
 
 ### severity:
 Optimization
@@ -265,15 +293,15 @@ More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-s
 
 **There is `1` instance of this issue:**
 
-- [AggregatorFacade.constructor(address,uint8,string)](solidity/test_deprecated_chaink_link.sol#L66-L74) read-only `memory` parameters below should be changed to `calldata` :
-	- [AggregatorFacade.constructor(address,uint8,string)._description](solidity/test_deprecated_chaink_link.sol#L69)
+- [AggregatorFacade.constructor(address,uint8,string)](solidity/test_chaink_link.sol#L66-L74) read-only `memory` parameters below should be changed to `calldata` :
+	- [AggregatorFacade.constructor(address,uint8,string)._description](solidity/test_chaink_link.sol#L69)
 
 
 ### recommendation:
 Use `calldata` instead of `memory` for external functions where the function argument is read-only.
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L66-L74
+- solidity/test_chaink_link.sol#L66-L74
 
 ### severity:
 Optimization
@@ -293,7 +321,7 @@ of `msg.value == 0` and saves `13 gas` on deployment with no security risks.
 
 **There is `1` instance of this issue:**
 
-- [AggregatorFacade.constructor(address,uint8,string)](solidity/test_deprecated_chaink_link.sol#L66-L74) should be set to `payable` 
+- [AggregatorFacade.constructor(address,uint8,string)](solidity/test_chaink_link.sol#L66-L74) should be set to `payable` 
 
 
 ### recommendation:
@@ -302,7 +330,7 @@ Set the constructor to `payable`.
 
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L66-L74
+- solidity/test_chaink_link.sol#L66-L74
 
 ### severity:
 Optimization
@@ -321,7 +349,7 @@ Saves **3406-3606 gas** in deployment gas due to the compiler not having to crea
 
 **There is `1` instance of this issue:**
 
-- [AggregatorFacade.version](solidity/test_deprecated_chaink_link.sol#L60) should be used `private` visibility to save gas.
+- [AggregatorFacade.version](solidity/test_chaink_link.sol#L60) should be used `private` visibility to save gas.
 
 
 ### recommendation:
@@ -330,7 +358,7 @@ Using `private` replace `public` with constant.
 
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L60
+- solidity/test_chaink_link.sol#L60
 
 ### severity:
 Optimization
@@ -349,9 +377,9 @@ More detail see [this.](https://gist.github.com/0xxfu/af8f63ccbf36af9d067ed6eff9
 
 **There is `1` instance of this issue:**
 
-- [AggregatorFacade.aggregator](solidity/test_deprecated_chaink_link.sol#L56) should be cached with local memory-based variable in [AggregatorFacade._getRoundData(uint80)](solidity/test_deprecated_chaink_link.sol#L220-L237), It is called more than once:
-	- [answer = aggregator.getAnswer(_roundId)](solidity/test_deprecated_chaink_link.sol#L231)
-	- [updatedAt = uint64(aggregator.getTimestamp(_roundId))](solidity/test_deprecated_chaink_link.sol#L232)
+- [AggregatorFacade.aggregator](solidity/test_chaink_link.sol#L56) should be cached with local memory-based variable in [AggregatorFacade._getRoundData(uint80)](solidity/test_chaink_link.sol#L220-L237), It is called more than once:
+	- [updatedAt = uint64(aggregator.getTimestamp(_roundId))](solidity/test_chaink_link.sol#L232)
+	- [answer = aggregator.getAnswer(_roundId)](solidity/test_chaink_link.sol#L231)
 
 
 ### recommendation:
@@ -360,7 +388,7 @@ Cache storage-based state variables in local memory-based variables appropriatel
 
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L56
+- solidity/test_chaink_link.sol#L56
 
 ### severity:
 Optimization
@@ -379,39 +407,51 @@ More detail see [this.](https://docs.soliditylang.org/en/latest/internals/layout
 Each operation involving a `uint8` costs an extra [**22-28 gas**](https://gist.github.com/0xxfu/3672fec07eb3031cd5da14ac015e04a1) (depending on whether the other operand is also a variable of type `uint8`) as compared to ones involving `uint256`, due to the compiler having to clear the higher bits of the memory word before operating on the `uint8`, as well as the associated stack operations of doing so. Use a larger size then downcast where needed
 
 
-**There are `16` instances of this issue:**
+**There are `22` instances of this issue:**
 
-- `uint8 `[AggregatorV3Interface.decimals().](solidity/test_deprecated_chaink_link.sol#L26) should be used `uint256/int256`.
+- `uint8 `[AggregatorV3Interface.decimals().](solidity/test_chaink_link.sol#L26) should be used `uint256/int256`.
 
-- `uint80 `[AggregatorV3Interface.getRoundData(uint80)._roundId](solidity/test_deprecated_chaink_link.sol#L32) should be used `uint256/int256`.
+- `uint80 `[AggregatorV3Interface.getRoundData(uint80)._roundId](solidity/test_chaink_link.sol#L32) should be used `uint256/int256`.
 
-- `uint80 `[AggregatorV3Interface.getRoundData(uint80).roundId](solidity/test_deprecated_chaink_link.sol#L36) should be used `uint256/int256`.
+- `uint80 `[AggregatorV3Interface.getRoundData(uint80).roundId](solidity/test_chaink_link.sol#L36) should be used `uint256/int256`.
 
-- `uint80 `[AggregatorV3Interface.getRoundData(uint80).answeredInRound](solidity/test_deprecated_chaink_link.sol#L40) should be used `uint256/int256`.
+- `uint80 `[AggregatorV3Interface.getRoundData(uint80).answeredInRound](solidity/test_chaink_link.sol#L40) should be used `uint256/int256`.
 
-- `uint80 `[AggregatorV3Interface.latestRoundData().roundId](solidity/test_deprecated_chaink_link.sol#L47) should be used `uint256/int256`.
+- `uint80 `[AggregatorV3Interface.latestRoundData().roundId](solidity/test_chaink_link.sol#L47) should be used `uint256/int256`.
 
-- `uint80 `[AggregatorV3Interface.latestRoundData().answeredInRound](solidity/test_deprecated_chaink_link.sol#L51) should be used `uint256/int256`.
+- `uint80 `[AggregatorV3Interface.latestRoundData().answeredInRound](solidity/test_chaink_link.sol#L51) should be used `uint256/int256`.
 
-- `uint8 `[AggregatorFacade.decimals](solidity/test_deprecated_chaink_link.sol#L57) should be used `uint256/int256`.
+- `uint8 `[AggregatorFacade.decimals](solidity/test_chaink_link.sol#L57) should be used `uint256/int256`.
 
-- `uint8 `[AggregatorFacade.constructor(address,uint8,string)._decimals](solidity/test_deprecated_chaink_link.sol#L68) should be used `uint256/int256`.
+- `uint8 `[AggregatorFacade.constructor(address,uint8,string)._decimals](solidity/test_chaink_link.sol#L68) should be used `uint256/int256`.
 
-- `uint80 `[AggregatorFacade.latestRoundData().roundId](solidity/test_deprecated_chaink_link.sol#L137) should be used `uint256/int256`.
+- `uint80 `[AggregatorFacade.latestRoundData().roundId](solidity/test_chaink_link.sol#L137) should be used `uint256/int256`.
 
-- `uint80 `[AggregatorFacade.latestRoundData().answeredInRound](solidity/test_deprecated_chaink_link.sol#L141) should be used `uint256/int256`.
+- `uint80 `[AggregatorFacade.latestRoundData().answeredInRound](solidity/test_chaink_link.sol#L141) should be used `uint256/int256`.
 
-- `uint80 `[AggregatorFacade.getRoundData(uint80)._roundId](solidity/test_deprecated_chaink_link.sol#L200) should be used `uint256/int256`.
+- `uint80 `[AggregatorFacade.getRoundData(uint80)._roundId](solidity/test_chaink_link.sol#L200) should be used `uint256/int256`.
 
-- `uint80 `[AggregatorFacade.getRoundData(uint80).roundId](solidity/test_deprecated_chaink_link.sol#L206) should be used `uint256/int256`.
+- `uint80 `[AggregatorFacade.getRoundData(uint80).roundId](solidity/test_chaink_link.sol#L206) should be used `uint256/int256`.
 
-- `uint80 `[AggregatorFacade.getRoundData(uint80).answeredInRound](solidity/test_deprecated_chaink_link.sol#L210) should be used `uint256/int256`.
+- `uint80 `[AggregatorFacade.getRoundData(uint80).answeredInRound](solidity/test_chaink_link.sol#L210) should be used `uint256/int256`.
 
-- `uint80 `[AggregatorFacade._getRoundData(uint80)._roundId](solidity/test_deprecated_chaink_link.sol#L220) should be used `uint256/int256`.
+- `uint80 `[AggregatorFacade._getRoundData(uint80)._roundId](solidity/test_chaink_link.sol#L220) should be used `uint256/int256`.
 
-- `uint80 `[AggregatorFacade._getRoundData(uint80).roundId](solidity/test_deprecated_chaink_link.sol#L224) should be used `uint256/int256`.
+- `uint80 `[AggregatorFacade._getRoundData(uint80).roundId](solidity/test_chaink_link.sol#L224) should be used `uint256/int256`.
 
-- `uint80 `[AggregatorFacade._getRoundData(uint80).answeredInRound](solidity/test_deprecated_chaink_link.sol#L228) should be used `uint256/int256`.
+- `uint80 `[AggregatorFacade._getRoundData(uint80).answeredInRound](solidity/test_chaink_link.sol#L228) should be used `uint256/int256`.
+
+- `uint80 `[UncheckedReturns.bad().roundId](solidity/test_chaink_link.sol#L244) should be used `uint256/int256`.
+
+- `uint80 `[UncheckedReturns.bad().answeredInRound](solidity/test_chaink_link.sol#L244) should be used `uint256/int256`.
+
+- `uint80 `[UncheckedReturns.bad2().roundId](solidity/test_chaink_link.sol#L253) should be used `uint256/int256`.
+
+- `uint80 `[UncheckedReturns.bad2().answeredInRound](solidity/test_chaink_link.sol#L257) should be used `uint256/int256`.
+
+- `uint80 `[UncheckedReturns.good().roundId](solidity/test_chaink_link.sol#L266) should be used `uint256/int256`.
+
+- `uint80 `[UncheckedReturns.good().answeredInRound](solidity/test_chaink_link.sol#L270) should be used `uint256/int256`.
 
 
 ### recommendation:
@@ -420,22 +460,28 @@ Using `uint256/int256` replace `uint128/uint64/uint32/uint16/uint8` or `int128/i
 
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L26
-- solidity/test_deprecated_chaink_link.sol#L32
-- solidity/test_deprecated_chaink_link.sol#L36
-- solidity/test_deprecated_chaink_link.sol#L40
-- solidity/test_deprecated_chaink_link.sol#L47
-- solidity/test_deprecated_chaink_link.sol#L51
-- solidity/test_deprecated_chaink_link.sol#L57
-- solidity/test_deprecated_chaink_link.sol#L68
-- solidity/test_deprecated_chaink_link.sol#L137
-- solidity/test_deprecated_chaink_link.sol#L141
-- solidity/test_deprecated_chaink_link.sol#L200
-- solidity/test_deprecated_chaink_link.sol#L206
-- solidity/test_deprecated_chaink_link.sol#L210
-- solidity/test_deprecated_chaink_link.sol#L220
-- solidity/test_deprecated_chaink_link.sol#L224
-- solidity/test_deprecated_chaink_link.sol#L228
+- solidity/test_chaink_link.sol#L26
+- solidity/test_chaink_link.sol#L32
+- solidity/test_chaink_link.sol#L36
+- solidity/test_chaink_link.sol#L40
+- solidity/test_chaink_link.sol#L47
+- solidity/test_chaink_link.sol#L51
+- solidity/test_chaink_link.sol#L57
+- solidity/test_chaink_link.sol#L68
+- solidity/test_chaink_link.sol#L137
+- solidity/test_chaink_link.sol#L141
+- solidity/test_chaink_link.sol#L200
+- solidity/test_chaink_link.sol#L206
+- solidity/test_chaink_link.sol#L210
+- solidity/test_chaink_link.sol#L220
+- solidity/test_chaink_link.sol#L224
+- solidity/test_chaink_link.sol#L228
+- solidity/test_chaink_link.sol#L244
+- solidity/test_chaink_link.sol#L244
+- solidity/test_chaink_link.sol#L253
+- solidity/test_chaink_link.sol#L257
+- solidity/test_chaink_link.sol#L266
+- solidity/test_chaink_link.sol#L270
 
 ### severity:
 Optimization
@@ -465,7 +511,7 @@ If data can fit into 32 bytes, then you should use `bytes32` datatype rather tha
 
 **There is `1` instance of this issue:**
 
-- [AggregatorFacade.V3_NO_DATA_ERROR](solidity/test_deprecated_chaink_link.sol#L64) should use `bytes(1..31)` instead of `string`.
+- [AggregatorFacade.V3_NO_DATA_ERROR](solidity/test_chaink_link.sol#L64) should use `bytes(1..31)` instead of `string`.
 
 
 ### recommendation:
@@ -474,7 +520,7 @@ Replace `string` constant with `bytes(1..32)` constant.
 
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L64
+- solidity/test_chaink_link.sol#L64
 
 ### severity:
 Optimization
@@ -493,13 +539,13 @@ However, this is only the case for value types, whereas indexing [reference type
 
 **There are `2` instances of this issue:**
 
-- The following variables should be indexed in [AggregatorInterface.AnswerUpdated(int256,uint256,uint256)](solidity/test_deprecated_chaink_link.sol#L12-L16):
+- The following variables should be indexed in [AggregatorInterface.AnswerUpdated(int256,uint256,uint256)](solidity/test_chaink_link.sol#L12-L16):
 
-	- [updatedAt](solidity/test_deprecated_chaink_link.sol#L15)
+	- [updatedAt](solidity/test_chaink_link.sol#L15)
 
-- The following variables should be indexed in [AggregatorInterface.NewRound(uint256,address,uint256)](solidity/test_deprecated_chaink_link.sol#L18-L22):
+- The following variables should be indexed in [AggregatorInterface.NewRound(uint256,address,uint256)](solidity/test_chaink_link.sol#L18-L22):
 
-	- [startedAt](solidity/test_deprecated_chaink_link.sol#L21)
+	- [startedAt](solidity/test_chaink_link.sol#L21)
 
 
 ### recommendation:
@@ -508,8 +554,8 @@ Using the `indexed` keyword for values types `bool/int/address/string/bytes` in 
 
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L12-L16
-- solidity/test_deprecated_chaink_link.sol#L18-L22
+- solidity/test_chaink_link.sol#L12-L16
+- solidity/test_chaink_link.sol#L18-L22
 
 ### severity:
 Optimization
@@ -533,7 +579,7 @@ this will save gas.
 
 **There is `1` instance of this issue:**
 
-- [require(bool,string)(updatedAt > 0,V3_NO_DATA_ERROR)](solidity/test_deprecated_chaink_link.sol#L234) should use `!= 0` instead of `> 0` for unsigned integer comparison.
+- [require(bool,string)(updatedAt > 0,V3_NO_DATA_ERROR)](solidity/test_chaink_link.sol#L234) should use `!= 0` instead of `> 0` for unsigned integer comparison.
 
 
 ### recommendation:
@@ -542,7 +588,7 @@ Use `!= 0` instead of `> 0` for unsigned integer comparison.
 
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L234
+- solidity/test_chaink_link.sol#L234
 
 ### severity:
 Optimization
@@ -561,7 +607,7 @@ More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d9
 
 **There is `1` instance of this issue:**
 
-- [require(bool,string)(updatedAt > 0,V3_NO_DATA_ERROR)](solidity/test_deprecated_chaink_link.sol#L234) should use custom error to save gas.
+- [require(bool,string)(updatedAt > 0,V3_NO_DATA_ERROR)](solidity/test_chaink_link.sol#L234) should use custom error to save gas.
 
 
 ### recommendation:
@@ -570,10 +616,32 @@ Using custom errors replace `require` or `assert`.
 
 
 ### locations:
-- solidity/test_deprecated_chaink_link.sol#L234
+- solidity/test_chaink_link.sol#L234
 
 ### severity:
 Optimization
 
 ### category:
 use-custom-error
+
+## [Optimization] State variables that could be declared constant
+
+### description:
+State variables that are not updated following deployment should be declared constant to save gas.
+
+**There is `1` instance of this issue:**
+
+- [UncheckedReturns.aggregator](solidity/test_chaink_link.sol#L241) should be constant 
+
+
+### recommendation:
+Add the `constant` attribute to state variables that never change.
+
+### locations:
+- solidity/test_chaink_link.sol#L241
+
+### severity:
+Optimization
+
+### category:
+constable-states
