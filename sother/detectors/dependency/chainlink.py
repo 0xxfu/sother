@@ -221,7 +221,7 @@ class UncheckedChainlinkStaleness(AbstractUncheckedChainlink):
     WIKI_DESCRIPTION = """
 The `latestRoundData` function in the contract `xxx.sol` fetches the asset price 
 from a Chainlink aggregator using the latestRoundData function. 
-However, the returned `updatedAt` timestamp is not checked..
+However, the returns `updatedAt` timestamp is not checked.
 
 If there is a problem with chainlink starting a new round and finding consensus 
 on the new value for the oracle (e.g. chainlink nodes abandon the oracle, 
