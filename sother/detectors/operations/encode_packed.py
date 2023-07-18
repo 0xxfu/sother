@@ -29,9 +29,11 @@ it can often be cast to `bytes()` or `bytes32()` [instead](https://ethereum.stac
 There is also discussion of [removing abi.encodePacked from future versions of Solidity](https://github.com/ethereum/solidity/issues/11593),
 so using `abi.encode` now will ensure compatibility in the future.
 """
-    WIKI_RECOMMENDATION = """Do not use more than one dynamic type in `abi.encodePacked()`
-    (see the [Solidity documentation](https://docs.soliditylang.org/en/latest/abi-spec.html#non-standard-packed-mode)). 
-    Use `abi.encode()`, preferably."""
+    WIKI_RECOMMENDATION = """
+Do not use more than one dynamic type in `abi.encodePacked()` 
+(see the [Solidity documentation](https://docs.soliditylang.org/en/latest/abi-spec.html#non-standard-packed-mode)). 
+Use `abi.encode()`, preferably.
+"""
 
 
 if __name__ == "__main__":
