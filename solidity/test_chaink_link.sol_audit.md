@@ -613,8 +613,8 @@ More detail see [this.](https://gist.github.com/0xxfu/af8f63ccbf36af9d067ed6eff9
 **There is `1` instance of this issue:**
 
 - [AggregatorFacade.aggregator](solidity/test_chaink_link.sol#L56) should be cached with local memory-based variable in [AggregatorFacade._getRoundData(uint80)](solidity/test_chaink_link.sol#L220-L237), It is called more than once:
-	- [answer = aggregator.getAnswer(_roundId)](solidity/test_chaink_link.sol#L231)
 	- [updatedAt = uint64(aggregator.getTimestamp(_roundId))](solidity/test_chaink_link.sol#L232)
+	- [answer = aggregator.getAnswer(_roundId)](solidity/test_chaink_link.sol#L231)
 
 
 ### recommendation:

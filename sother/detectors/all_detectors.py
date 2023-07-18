@@ -138,3 +138,4 @@ from sother.detectors.dependency.chainlink import (
     UncheckedChainlinkRound,
 )
 from sother.detectors.erc.erc20.revert_on_total_supply import RevertOnTotalSupply
+from sother.detectors.statements.incorrect_deadline import IncorrectDeadline
