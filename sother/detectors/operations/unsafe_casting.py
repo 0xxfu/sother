@@ -19,15 +19,23 @@ from slither.core.expressions.expression import Expression
 from slither.core.solidity_types.elementary_type import Uint, Int
 from slither.core.variables import Variable
 from slither.core.variables.local_variable import LocalVariable
-from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.detectors.abstract_detector import (
+    AbstractDetector,
+    DetectorClassification,
+    DETECTOR_INFO,
+)
 from slither.slithir.operations import (
     Assignment,
     TypeConversion as IrTypeConversion,
     Binary,
     BinaryType,
+    Operation,
 )
 from slither.utils.output import Output
 
+from sother.detectors.abstracts.abstract_detect_has_instance import (
+    AbstractDetectHasInstance,
+)
 from sother.detectors.detector_settings import DetectorSettings
 
 
@@ -159,6 +167,61 @@ Just use `uint256/int256`, or use [OpenZeppelin SafeCast lib](https://github.com
                     ) in compare_variables:
                         result_nodes.remove(node)
         return result_nodes
+
+
+class UnsafeDoubleCast(AbstractDetectHasInstance):
+    ARGUMENT = "unsafe-double-cast"
+    HELP = "Double type casts create complexity within the code"
+    IMPACT = DetectorClassification.LOW
+    CONFIDENCE = DetectorClassification.HIGH
+
+    WIKI = DetectorSettings.default_wiki
+
+    WIKI_TITLE = "Double type casts create complexity within the code"
+
+    WIKI_DESCRIPTION = """
+Double type casting should be avoided in Solidity contracts to prevent unintended 
+consequences and ensure accurate data representation. 
+Performing multiple type casts in succession can lead to unexpected truncation, 
+rounding errors, or loss of precision, potentially compromising the contract's 
+functionality and reliability. Furthermore, double type casting can make the code 
+less readable and harder to maintain, increasing the likelihood of errors and 
+misunderstandings during development and debugging. To ensure precise and consistent 
+data handling, developers should use appropriate data types and avoid unnecessary 
+or excessive type casting, promoting a more robust and dependable contract execution.
+"""
+    WIKI_EXPLOIT_SCENARIO = """ """
+
+    WIKI_RECOMMENDATION = """
+Consider using single casting instead of double casting.
+"""
+
+    @classmethod
+    def _is_instance(cls, ir: Operation) -> bool:
+        if isinstance(ir, IrTypeConversion):
+            all_int = Uint + Int
+            cast_count = 0
+            for node_ir in ir.node.irs:
+                if isinstance(node_ir, IrTypeConversion) and all(
+                    [
+                        str(ir.lvalue.type) in all_int,
+                        str(ir.variable.type) in all_int,
+                    ]
+                ):
+                    cast_count += 1
+
+            if cast_count >= 2:
+                return True
+
+        return False
+
+    @classmethod
+    def _detect_node_info(cls, node: Node) -> DETECTOR_INFO:
+        return [
+            node,
+            " should use single casting instead of double casting.",
+            "\n",
+        ]
 
 
 if __name__ == "__main__":

@@ -67,3 +67,35 @@ contract UnsafeDowncast {
         return int256(value);
     }
 }
+
+contract UnsafeDoubleCast {
+    uint256 ui256;
+    uint128 ui128;
+    uint32 ui32;
+    int256 i256;
+
+    function bad00(uint256 a) external {
+        ui128 = uint128(uint64(a));
+
+        ui32 = uint32(uint64(block.timestamp));
+    }
+
+    function bad2(uint128 a) public pure returns (uint32) {
+        return uint32(uint8(a));
+    }
+
+    function notBad(uint256 a) external {
+        ui128 = toUint128(a);
+    }
+
+    function notBad2(uint256 a) external {
+        i256 = int256(a);
+    }
+
+    function toUint128(uint256 value) internal pure returns (uint128) {
+        if (value > type(uint128).max) {
+            revert("err");
+        }
+        return uint128(value);
+    }
+}

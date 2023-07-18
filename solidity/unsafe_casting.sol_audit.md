@@ -6,7 +6,8 @@
 |---|:---|:---:|
 | [L-0] | Events are missing sender information | 1 |
 | [L-1] | Setters should check the input value | 6 |
-| [L-2] | Unsafe downcasting arithmetic operation | 7 |
+| [L-2] | Double type casts create complexity within the code | 4 |
+| [L-3] | Unsafe downcasting arithmetic operation | 7 |
 
 
 ### Non-critical Issues
@@ -106,6 +107,49 @@ Low
 
 ### category:
 unchecked-setters
+
+## [Low] Double type casts create complexity within the code
+
+### description:
+
+Double type casting should be avoided in Solidity contracts to prevent unintended 
+consequences and ensure accurate data representation. 
+Performing multiple type casts in succession can lead to unexpected truncation, 
+rounding errors, or loss of precision, potentially compromising the contract's 
+functionality and reliability. Furthermore, double type casting can make the code 
+less readable and harder to maintain, increasing the likelihood of errors and 
+misunderstandings during development and debugging. To ensure precise and consistent 
+data handling, developers should use appropriate data types and avoid unnecessary 
+or excessive type casting, promoting a more robust and dependable contract execution.
+
+
+**There are `4` instances of this issue:**
+
+- [Transmitted(uint32(uint256(a >> 8)))](solidity/unsafe_casting.sol#L20) should use single casting instead of double casting.
+
+- [ui128 = uint128(uint64(a))](solidity/unsafe_casting.sol#L78) should use single casting instead of double casting.
+
+- [ui32 = uint32(uint64(block.timestamp))](solidity/unsafe_casting.sol#L80) should use single casting instead of double casting.
+
+- [uint32(uint8(a))](solidity/unsafe_casting.sol#L84) should use single casting instead of double casting.
+
+
+### recommendation:
+
+Consider using single casting instead of double casting.
+
+
+### locations:
+- solidity/unsafe_casting.sol#L20
+- solidity/unsafe_casting.sol#L78
+- solidity/unsafe_casting.sol#L80
+- solidity/unsafe_casting.sol#L84
+
+### severity:
+Low
+
+### category:
+unsafe-double-cast
 
 ## [Low] Unsafe downcasting arithmetic operation
 

@@ -300,24 +300,24 @@ More detail see [this.](https://gist.github.com/0xxfu/af8f63ccbf36af9d067ed6eff9
 **There are `4` instances of this issue:**
 
 - [ReentrancyTransfer.token](solidity/test_reentrancy_transfer.sol#L42) should be cached with local memory-based variable in [ReentrancyTransfer.good0(address,uint256)](solidity/test_reentrancy_transfer.sol#L57-L62), It is called more than once:
-	- [afterBalance = token.balanceOf(to)](solidity/test_reentrancy_transfer.sol#L61)
 	- [token.transferFrom(address(this),to,amount)](solidity/test_reentrancy_transfer.sol#L60)
-	- [beforeBalance = token.balanceOf(to)](solidity/test_reentrancy_transfer.sol#L58)
 	- [token.transfer(to,amount)](solidity/test_reentrancy_transfer.sol#L59)
-
-- [ReentrancyTransfer.token](solidity/test_reentrancy_transfer.sol#L42) should be cached with local memory-based variable in [ReentrancyTransfer.bad0(address,uint256)](solidity/test_reentrancy_transfer.sol#L47-L50), It is called more than once:
-	- [token.transferFrom(address(this),to,amount)](solidity/test_reentrancy_transfer.sol#L49)
-	- [token.transfer(to,amount)](solidity/test_reentrancy_transfer.sol#L48)
-
-- [ReentrancyTransfer.token](solidity/test_reentrancy_transfer.sol#L42) should be cached with local memory-based variable in [ReentrancyTransfer.good1(address,uint256)](solidity/test_reentrancy_transfer.sol#L64-L69), It is called more than once:
-	- [token.safeTransfer(to,amount)](solidity/test_reentrancy_transfer.sol#L66)
-	- [afterBalance = token.balanceOf(to)](solidity/test_reentrancy_transfer.sol#L68)
-	- [token.safeTransferFrom(address(this),to,amount)](solidity/test_reentrancy_transfer.sol#L67)
-	- [beforeBalance = token.balanceOf(to)](solidity/test_reentrancy_transfer.sol#L65)
+	- [afterBalance = token.balanceOf(to)](solidity/test_reentrancy_transfer.sol#L61)
+	- [beforeBalance = token.balanceOf(to)](solidity/test_reentrancy_transfer.sol#L58)
 
 - [ReentrancyTransfer.token](solidity/test_reentrancy_transfer.sol#L42) should be cached with local memory-based variable in [ReentrancyTransfer.bad1(address,uint256)](solidity/test_reentrancy_transfer.sol#L52-L55), It is called more than once:
 	- [token.safeTransferFrom(address(this),to,amount)](solidity/test_reentrancy_transfer.sol#L54)
 	- [token.safeTransfer(to,amount)](solidity/test_reentrancy_transfer.sol#L53)
+
+- [ReentrancyTransfer.token](solidity/test_reentrancy_transfer.sol#L42) should be cached with local memory-based variable in [ReentrancyTransfer.good1(address,uint256)](solidity/test_reentrancy_transfer.sol#L64-L69), It is called more than once:
+	- [afterBalance = token.balanceOf(to)](solidity/test_reentrancy_transfer.sol#L68)
+	- [beforeBalance = token.balanceOf(to)](solidity/test_reentrancy_transfer.sol#L65)
+	- [token.safeTransferFrom(address(this),to,amount)](solidity/test_reentrancy_transfer.sol#L67)
+	- [token.safeTransfer(to,amount)](solidity/test_reentrancy_transfer.sol#L66)
+
+- [ReentrancyTransfer.token](solidity/test_reentrancy_transfer.sol#L42) should be cached with local memory-based variable in [ReentrancyTransfer.bad0(address,uint256)](solidity/test_reentrancy_transfer.sol#L47-L50), It is called more than once:
+	- [token.transfer(to,amount)](solidity/test_reentrancy_transfer.sol#L48)
+	- [token.transferFrom(address(this),to,amount)](solidity/test_reentrancy_transfer.sol#L49)
 
 
 ### recommendation:
