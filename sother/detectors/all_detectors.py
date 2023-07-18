@@ -139,3 +139,4 @@ from sother.detectors.dependency.chainlink import (
 )
 from sother.detectors.erc.erc20.revert_on_total_supply import RevertOnTotalSupply
 from sother.detectors.statements.incorrect_deadline import IncorrectDeadline
+from sother.detectors.reentrancy.reentrancy_transfer import ReentrancyTransfer

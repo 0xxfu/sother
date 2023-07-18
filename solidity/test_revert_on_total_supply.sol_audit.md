@@ -167,8 +167,8 @@ The instances below point to the second+ call of the function within a single fu
 	- [addr.totalSupply() == 0](solidity/test_revert_on_total_supply.sol#L20)
 
 - `IERC20.totalSupply()` called result should be cached with local variable in [RevertTotalSupply.notBad3(IERC20)](solidity/test_revert_on_total_supply.sol#L36-L43), It is called more than once:
-	- [addr.totalSupply() == 0](solidity/test_revert_on_total_supply.sol#L38)
 	- [supply = addr.totalSupply()](solidity/test_revert_on_total_supply.sol#L37)
+	- [addr.totalSupply() == 0](solidity/test_revert_on_total_supply.sol#L38)
 
 
 ### recommendation:
