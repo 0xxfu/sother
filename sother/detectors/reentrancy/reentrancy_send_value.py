@@ -49,7 +49,8 @@ of expanding the project and its integration with other contracts.
 """
 
     WIKI_RECOMMENDATION = """
-Using Reentrancy-Guard when using `sendValue` from OZ's `Address.sol`.
+Using [Reentrancy-Guard](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/bfff03c0d2a59bcd8e2ead1da9aed9edf0080d05/contracts/security/ReentrancyGuard.sol#L50C5-L62) 
+when using `sendValue` from OZ's `Address.sol`.
 """
     WIKI_EXPLOIT_SCENARIO = " "
 
