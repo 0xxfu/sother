@@ -24,7 +24,7 @@ from sother.detectors.detector_settings import DetectorSettings
 
 
 class UnusedNamedReturnVariables(AbstractDetector):
-    ARGUMENT = "unused-return-name"
+    ARGUMENT = "unused-named-return-variables"
     HELP = "Not using the named return variables anywhere in the function is confusing"
     IMPACT = DetectorClassification.OPTIMIZATION
     CONFIDENCE = DetectorClassification.HIGH
