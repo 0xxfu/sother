@@ -25,7 +25,10 @@ from sother.detectors.variables.public_to_private_constant import (
     PublicToPrivateConstant,
 )
 from sother.detectors.variables.reread_state_variables import RereadStateVariables
-from sother.detectors.variables.unused_variables import UnusedStateVars
+from sother.detectors.variables.unused_variables import (
+    UnusedStateVars,
+    UnusedNamedReturnVariables,
+)
 from sother.detectors.operations.use_shifting import DivideByConstant, MulPowerTwo
 from sother.detectors.events.superfluous_fields_event import SuperfluousFieldsEvent
 from sother.detectors.functions.cache_call_function_result import (
@@ -140,6 +143,3 @@ from sother.detectors.dependency.chainlink import (
 from sother.detectors.erc.erc20.revert_on_total_supply import RevertOnTotalSupply
 from sother.detectors.statements.incorrect_deadline import IncorrectDeadline
 from sother.detectors.reentrancy.reentrancy_transfer import ReentrancyTransfer
-from sother.detectors.statements.unused_named_return_variables import (
-    UnusedNamedReturnVariables,
-)
