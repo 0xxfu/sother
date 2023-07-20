@@ -26,12 +26,14 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Remove unused local variables | 1 |
-| [G-1] | Not using the named return variables anywhere in the function is confusing | 3 |
-| [G-2] | Remove unused parameter variables | 2 |
-| [G-3] | Remove or replace unused state variables | 1 |
-| [G-4] | Use `delete` to Clear Variables | 3 |
-| [G-5] | State variables that could be declared constant | 2 |
+| [G-0] | Empty blocks should be removed or emit something | 1 |
+| [G-1] | Remove unused local variables | 2 |
+| [G-2] | Not using the named return variables anywhere in the function is confusing | 3 |
+| [G-3] | Remove unused parameter variables | 3 |
+| [G-4] | Remove or replace unused state variables | 1 |
+| [G-5] | Remove unused struct declaration | 1 |
+| [G-6] | Use `delete` to Clear Variables | 3 |
+| [G-7] | State variables that could be declared constant | 2 |
 
 
 
@@ -179,6 +181,37 @@ Informational
 ### category:
 naming-convention
 
+## [Optimization] Empty blocks should be removed or emit something
+
+### description:
+
+The code should be refactored such that they no longer exist, or the block should do 
+something useful, such as emitting an event or reverting. 
+If the contract is meant to be extended, the contract should be `abstract` and the function 
+signatures be added without any default implementation.
+
+
+**There is `1` instance of this issue:**
+
+- [UnusedStruct.f0(UnusedStruct.StructUsedA)](solidity/test_unused_state.sol#L99) should removed or do something
+
+
+### recommendation:
+
+Empty blocks should emit an event, or revert. 
+If not, they can simply be removed to save gas upon deployment. 
+This is valid for `receive()` functions, but also `constructors()`
+
+
+### locations:
+- solidity/test_unused_state.sol#L99
+
+### severity:
+Optimization
+
+### category:
+empty-block
+
 ## [Optimization] Remove unused local variables
 
 ### description:
@@ -189,12 +222,14 @@ And are a bad code practice.
 Removing those variables can save deployment and called gas. and improve code quality. 
 
 
+**There are `2` instances of this issue:**
 
-**There is `1` instance of this issue:**
+- The local variables in [UnusedLocalVar.bad0()](solidity/test_unused_state.sol#L66-L71) are unused.
+	- [UnusedLocalVar.bad0().c](solidity/test_unused_state.sol#L69)
+	- [UnusedLocalVar.bad0().b](solidity/test_unused_state.sol#L68)
 
-- The local variables in [UnusedLocalVar.bad0()](solidity/test_unused_state.sol#L65-L70) are unused.
-	- [UnusedLocalVar.bad0().b](solidity/test_unused_state.sol#L67)
-	- [UnusedLocalVar.bad0().c](solidity/test_unused_state.sol#L68)
+- The local variables in [UnusedStruct.f1(uint256)](solidity/test_unused_state.sol#L101-L103) are unused.
+	- [UnusedStruct.f1(uint256).localB](solidity/test_unused_state.sol#L102)
 
 
 ### recommendation:
@@ -203,7 +238,8 @@ Remove the unused local variables.
 
 
 ### locations:
-- solidity/test_unused_state.sol#L65-L70
+- solidity/test_unused_state.sol#L66-L71
+- solidity/test_unused_state.sol#L101-L103
 
 ### severity:
 Optimization
@@ -260,13 +296,16 @@ Removing those variables can save deployment and called gas. and improve code qu
 
 
 
-**There are `2` instances of this issue:**
+**There are `3` instances of this issue:**
 
-- The param variables in [UnusedParameter.bad0(uint256,uint256)](solidity/test_unused_state.sol#L45-L47) are unused.
-	- [UnusedParameter.bad0(uint256,uint256).b](solidity/test_unused_state.sol#L45)
+- The param variables in [UnusedParameter.bad0(uint256,uint256)](solidity/test_unused_state.sol#L46-L48) are unused.
+	- [UnusedParameter.bad0(uint256,uint256).b](solidity/test_unused_state.sol#L46)
 
-- The param variables in [UnusedParameter.bad1(uint256,uint256)](solidity/test_unused_state.sol#L49-L51) are unused.
-	- [UnusedParameter.bad1(uint256,uint256).b](solidity/test_unused_state.sol#L49)
+- The param variables in [UnusedParameter.bad1(uint256,uint256)](solidity/test_unused_state.sol#L50-L52) are unused.
+	- [UnusedParameter.bad1(uint256,uint256).b](solidity/test_unused_state.sol#L50)
+
+- The param variables in [UnusedStruct.f0(UnusedStruct.StructUsedA)](solidity/test_unused_state.sol#L99) are unused.
+	- [UnusedStruct.f0(UnusedStruct.StructUsedA).a](solidity/test_unused_state.sol#L99)
 
 
 ### recommendation:
@@ -275,8 +314,9 @@ Remove the unused parameter variables.
 
 
 ### locations:
-- solidity/test_unused_state.sol#L45-L47
-- solidity/test_unused_state.sol#L49-L51
+- solidity/test_unused_state.sol#L46-L48
+- solidity/test_unused_state.sol#L50-L52
+- solidity/test_unused_state.sol#L99
 
 ### severity:
 Optimization
@@ -314,6 +354,35 @@ Optimization
 ### category:
 unused-state-variables
 
+## [Optimization] Remove unused struct declaration
+
+### description:
+
+Unused struct declaration are gas consuming. 
+And are a bad code practice. 
+Removing those structs can save deployment and improve code quality. 
+
+
+**There is `1` instance of this issue:**
+
+- The structs declaration in [UnusedStruct](solidity/test_unused_state.sol#L87-L104) are unused.
+	- [UnusedStruct.StructUnused](solidity/test_unused_state.sol#L88-L90)
+
+
+### recommendation:
+
+Remove unused struct declaration.
+
+
+### locations:
+- solidity/test_unused_state.sol#L87-L104
+
+### severity:
+Optimization
+
+### category:
+unused-struct
+
 ## [Optimization] Use `delete` to Clear Variables
 
 ### description:
@@ -335,9 +404,9 @@ Consider replacing assignments of zero with delete statements.
 
 - Should use `delete` statement instead of [a = 0](solidity/test_unused_state.sol#L37)
 
-- Should use `delete` statement instead of [a = 0](solidity/test_unused_state.sol#L66)
+- Should use `delete` statement instead of [a = 0](solidity/test_unused_state.sol#L67)
 
-- Should use `delete` statement instead of [a = 0](solidity/test_unused_state.sol#L73)
+- Should use `delete` statement instead of [a = 0](solidity/test_unused_state.sol#L74)
 
 
 ### recommendation:
@@ -348,8 +417,8 @@ Replacing assignments of zero with delete statements.
 
 ### locations:
 - solidity/test_unused_state.sol#L37
-- solidity/test_unused_state.sol#L66
-- solidity/test_unused_state.sol#L73
+- solidity/test_unused_state.sol#L67
+- solidity/test_unused_state.sol#L74
 
 ### severity:
 Optimization

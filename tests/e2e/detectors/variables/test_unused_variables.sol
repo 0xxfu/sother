@@ -75,3 +75,35 @@ contract UnusedLocalVar {
         x = a;
     }
 }
+
+pragma experimental ABIEncoderV2;
+
+library NotBadLib {
+    struct StructNotBad {
+        uint256 a;
+    }
+}
+
+contract UnusedStruct {
+    struct StructUnused {
+        uint256 a;
+    }
+
+    struct StructUsedA {
+        uint256 a;
+    }
+    struct StructUsedB {
+        uint256 a;
+    }
+    struct StructUsedC {
+        uint256 a;
+    }
+
+    StructUsedC stateC;
+
+    function f0(StructUsedA calldata a) external pure {}
+
+    function f1(uint256 a) external pure {
+        StructUsedB memory localB = StructUsedB(a);
+    }
+}

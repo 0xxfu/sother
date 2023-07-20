@@ -35,6 +35,7 @@ contract UnusedReturnName {
 
     function good2() external pure returns (uint256) {
         uint256 a = 0;
+
         return a;
     }
 }
@@ -72,5 +73,32 @@ contract UnusedLocalVar {
     function notBad0() external {
         uint256 a = 0;
         x = a;
+    }
+}
+
+pragma experimental ABIEncoderV2;
+
+library NotBadLib {
+    struct StructNotBad {
+        uint256 a;
+    }
+}
+
+contract UnusedStruct {
+    struct StructUnused {
+        uint256 a;
+    }
+
+    struct StructUsedA {
+        uint256 a;
+    }
+    struct StructUsedB {
+        uint256 a;
+    }
+
+    function f0(StructUsedA calldata a) external pure {}
+
+    function f1(uint256 a) external pure {
+        StructUsedB memory localB = StructUsedB(a);
     }
 }

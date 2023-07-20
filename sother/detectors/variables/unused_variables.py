@@ -7,7 +7,9 @@ import unittest
 from typing import List
 
 from loguru import logger
-from slither.core.variables import StateVariable
+from slither.core.declarations import StructureContract
+from slither.core.solidity_types import UserDefinedType
+from slither.core.variables import StateVariable, Variable
 from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import (
     AbstractDetector,
@@ -169,7 +171,6 @@ Unused local variables are gas consuming,
 since the initial value assignment costs gas. 
 And are a bad code practice. 
 Removing those variables can save deployment and called gas. and improve code quality. 
-
 """
 
     WIKI_RECOMMENDATION = """
@@ -193,4 +194,65 @@ Remove the unused local variables.
                     for var in result_vars:
                         info += ["\t- ", var, "\n"]
                     results.append(self.generate_result(info))
+        return results
+
+
+class UnusedStruct(AbstractDetector):
+    ARGUMENT = "unused-struct"
+    HELP = "Remove unused struct declaration"
+    IMPACT = DetectorClassification.OPTIMIZATION
+    CONFIDENCE = DetectorClassification.HIGH
+
+    WIKI = DetectorSettings.default_wiki
+
+    WIKI_TITLE = "Remove unused struct declaration"
+
+    WIKI_DESCRIPTION = """
+Unused struct declaration are gas consuming. 
+And are a bad code practice. 
+Removing those structs can save deployment and improve code quality. 
+"""
+
+    WIKI_RECOMMENDATION = """
+Remove unused struct declaration.
+"""
+
+    @classmethod
+    def _detect_struct_in_variables(
+        cls, structs: list[StructureContract], variables: list[Variable]
+    ) -> list[StructureContract]:
+        for var in variables:
+            var_type = var.type
+            if (
+                isinstance(var_type, UserDefinedType)
+                and isinstance(var_type.type, StructureContract)
+                and var_type.type in structs
+            ):
+                structs.remove(var_type.type)
+        return structs
+
+    def _detect(self) -> List[Output]:
+        results = []
+        for contract in self.compilation_unit.contracts_derived:
+            if contract.is_library or contract.is_interface:
+                continue
+
+            result_structs: list[StructureContract] = contract.structures_declared
+            result_structs = self._detect_struct_in_variables(
+                result_structs, contract.state_variables
+            )
+            for function in contract.functions:
+                result_structs = self._detect_struct_in_variables(
+                    result_structs, function.variables
+                )
+            if len(result_structs) > 0:
+                info: DETECTOR_INFO = [
+                    "The structs declaration in ",
+                    contract,
+                    " are unused.\n",
+                ]
+                for var in result_structs:
+                    info += ["\t- ", var, "\n"]
+                results.append(self.generate_result(info))
+                results.append(self.generate_result(info))
         return results
