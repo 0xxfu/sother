@@ -25,7 +25,7 @@ from sother.detectors.variables.public_to_private_constant import (
     PublicToPrivateConstant,
 )
 from sother.detectors.variables.reread_state_variables import RereadStateVariables
-from sother.detectors.variables.unused_state_variables import UnusedStateVars
+from sother.detectors.variables.unused_variables import UnusedStateVars
 from sother.detectors.operations.use_shifting import DivideByConstant, MulPowerTwo
 from sother.detectors.events.superfluous_fields_event import SuperfluousFieldsEvent
 from sother.detectors.functions.cache_call_function_result import (
