@@ -177,8 +177,7 @@ Pre-calculate the results into `constant` instead of calculate `keccak256`/`abi.
 
     WIKI = DetectorSettings.default_wiki
 
-    WIKI_TITLE = """Pre-calculate the results into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime.
-"""
+    WIKI_TITLE = """Pre-calculate the results into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime."""
     WIKI_DESCRIPTION = """
 It should be saved to an `constant` variable, and the `constant` used instead. 
 If the hash is being used as a part of a function selector, 
