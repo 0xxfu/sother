@@ -26,8 +26,9 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Remove or replace unused state variables | 1 |
-| [G-1] | State variables that could be declared constant | 2 |
+| [G-0] | Not using the named return variables anywhere in the function is confusing | 3 |
+| [G-1] | Remove or replace unused state variables | 1 |
+| [G-2] | State variables that could be declared constant | 2 |
 
 
 
@@ -174,6 +175,44 @@ Informational
 
 ### category:
 naming-convention
+
+## [Optimization] Not using the named return variables anywhere in the function is confusing
+
+### description:
+
+Consider changing the variable to be an unnamed one, 
+since the variable is never assigned, nor is it returned by name. 
+If the optimizer is not turned on, leaving the code as it is will also waste gas 
+for the stack variable.
+
+
+**There are `3` instances of this issue:**
+
+- The named return variables in [UnusedReturnName.bad0()](solidity/test_unused_state.sol#L14-L16) are unused.
+	- [UnusedReturnName.bad0().a](solidity/test_unused_state.sol#L14)
+
+- The named return variables in [UnusedReturnName.bad1()](solidity/test_unused_state.sol#L18-L21) are unused.
+	- [UnusedReturnName.bad1().b](solidity/test_unused_state.sol#L18)
+
+- The named return variables in [UnusedReturnName.bad2()](solidity/test_unused_state.sol#L23-L26) are unused.
+	- [UnusedReturnName.bad2().a](solidity/test_unused_state.sol#L23)
+
+
+### recommendation:
+
+Remove the unused named return variables.
+
+
+### locations:
+- solidity/test_unused_state.sol#L14-L16
+- solidity/test_unused_state.sol#L18-L21
+- solidity/test_unused_state.sol#L23-L26
+
+### severity:
+Optimization
+
+### category:
+unused-named-return-variables
 
 ## [Optimization] Remove or replace unused state variables
 
