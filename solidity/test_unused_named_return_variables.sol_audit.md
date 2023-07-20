@@ -87,4 +87,4 @@ Remove the unused named return variables.
 Optimization
 
 ### category:
-unused-return-name
+unused-named-return-variables

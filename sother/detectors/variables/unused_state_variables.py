@@ -16,9 +16,8 @@ from slither.utils.output import Output
 from sother.detectors.detector_settings import DetectorSettings
 
 
-# todo
 # override UnusedStateVars
-class UnusedStateVariables(AbstractDetector):
+class UnusedStateVars(AbstractDetector):
     ARGUMENT = "unused-state-variables"
     HELP = "Remove or replace unused state variables"
     IMPACT = DetectorClassification.OPTIMIZATION

@@ -6,7 +6,6 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.variables.unused_state_variables import UnusedStateVariables
 from sother.detectors.variables.zero_initialized_state_variable import (
     ZeroInitializedStateVariable,
 )

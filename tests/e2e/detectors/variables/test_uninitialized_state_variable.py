@@ -6,13 +6,10 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.variables.uninitialized_local_variables import (
-    UninitializedLocalVars,
-)
+
 from sother.detectors.variables.uninitialized_state_variables import (
     UninitializedStateVarsDetection,
 )
-from sother.detectors.variables.unused_state_variables import UnusedStateVariables
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 

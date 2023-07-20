@@ -18,8 +18,8 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [N-0] | Conformance to Solidity naming conventions | 1 |
-| [N-1] | Unused state variable | 1 |
+| [N-0] | Incorrect versions of Solidity | 1 |
+| [N-1] | Conformance to Solidity naming conventions | 1 |
 
 
 ### Gas Optimizations
@@ -114,6 +114,41 @@ Low
 ### category:
 payable-calls
 
+## [Informational] Incorrect versions of Solidity
+
+### description:
+
+`solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
+We also recommend avoiding complex `pragma` statement.
+
+**There is `1` instance of this issue:**
+
+- solc-0.8.19 is not recommended for deployment
+
+
+### recommendation:
+
+Deploy with any of the following Solidity versions:
+- 0.8.20
+
+The recommendations take into account:
+- Risks related to recent releases
+- Risks of complex code generation changes
+- Risks of new language features
+- Risks of known bugs
+
+Use a simple pragma version that allows any of these versions.
+Consider using the latest version of Solidity for testing.
+
+### locations:
+- 
+
+### severity:
+Informational
+
+### category:
+solc-version
+
 ## [Informational] Conformance to Solidity naming conventions
 
 ### description:
@@ -139,28 +174,6 @@ Informational
 
 ### category:
 naming-convention
-
-## [Informational] Unused state variable
-
-### description:
-Unused state variable.
-
-**There is `1` instance of this issue:**
-
-- [UnUsedState.__gap](solidity/test_unused_state.sol#L7) is never used in [UnUsedState](solidity/test_unused_state.sol#L3-L11)
-
-
-### recommendation:
-Remove unused state variables.
-
-### locations:
-- solidity/test_unused_state.sol#L7
-
-### severity:
-Informational
-
-### category:
-unused-state
 
 ## [Optimization] Remove or replace unused state variables
 
@@ -194,17 +207,17 @@ State variables that are not updated following deployment should be declared con
 
 **There are `2` instances of this issue:**
 
-- [UnUsedState.unusedState](solidity/test_unused_state.sol#L6) should be constant 
-
 - [UnUsedState.destination](solidity/test_unused_state.sol#L4) should be constant 
+
+- [UnUsedState.unusedState](solidity/test_unused_state.sol#L6) should be constant 
 
 
 ### recommendation:
 Add the `constant` attribute to state variables that never change.
 
 ### locations:
-- solidity/test_unused_state.sol#L6
 - solidity/test_unused_state.sol#L4
+- solidity/test_unused_state.sol#L6
 
 ### severity:
 Optimization
