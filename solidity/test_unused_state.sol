@@ -95,10 +95,24 @@ contract UnusedStruct {
     struct StructUsedB {
         uint256 a;
     }
+    struct StructUsedC {
+        uint256 a;
+    }
+
+    StructUsedC stateC;
 
     function f0(StructUsedA calldata a) external pure {}
 
     function f1(uint256 a) external pure {
         StructUsedB memory localB = StructUsedB(a);
+    }
+}
+
+contract UnusedError {
+    error ErrorUsed();
+    error ErrorUnused();
+
+    function f0() external {
+        revert ErrorUsed();
     }
 }

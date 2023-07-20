@@ -107,3 +107,12 @@ contract UnusedStruct {
         StructUsedB memory localB = StructUsedB(a);
     }
 }
+
+contract UnusedError {
+    error ErrorUsed();
+    error ErrorUnused();
+
+    function f0() external {
+        revert ErrorUsed();
+    }
+}

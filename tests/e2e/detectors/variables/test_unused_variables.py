@@ -12,6 +12,7 @@ from sother.detectors.variables.unused_variables import (
     UnusedParameter,
     UnusedLocalVar,
     UnusedStruct,
+    UnusedError,
 )
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
@@ -51,6 +52,13 @@ class TestUnusedState(DetectorTestCase):
             UnusedStruct,
         )
         self.check_detect_results(UnusedStruct.WIKI_TITLE, results)
+
+    def test_unused_error(self):
+        results: list[OutputResult] = self.detect(
+            f"{self.get_test_solidity_filename(__file__)}.sol",
+            UnusedError,
+        )
+        self.check_detect_results(UnusedError.WIKI_TITLE, results)
 
 
 if __name__ == "__main__":

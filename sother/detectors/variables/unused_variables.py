@@ -7,7 +7,8 @@ import unittest
 from typing import List
 
 from loguru import logger
-from slither.core.declarations import StructureContract
+from slither.core.declarations import StructureContract, CustomErrorContract
+from slither.core.expressions import CallExpression, Identifier
 from slither.core.solidity_types import UserDefinedType
 from slither.core.variables import StateVariable, Variable
 from slither.core.variables.local_variable import LocalVariable
@@ -197,6 +198,7 @@ Remove the unused local variables.
         return results
 
 
+# todo detect all contract
 class UnusedStruct(AbstractDetector):
     ARGUMENT = "unused-struct"
     HELP = "Remove unused struct declaration"
@@ -254,5 +256,51 @@ Remove unused struct declaration.
                 for var in result_structs:
                     info += ["\t- ", var, "\n"]
                 results.append(self.generate_result(info))
+        return results
+
+
+class UnusedError(AbstractDetector):
+    ARGUMENT = "unused-error"
+    HELP = "Remove unused error definition"
+    IMPACT = DetectorClassification.OPTIMIZATION
+    CONFIDENCE = DetectorClassification.HIGH
+
+    WIKI = DetectorSettings.default_wiki
+
+    WIKI_TITLE = "Remove unused error definition"
+
+    WIKI_DESCRIPTION = """
+Unused  error definition are gas consuming. 
+And are a bad code practice. 
+Removing those errors save deployment and improve code quality. 
+"""
+
+    WIKI_RECOMMENDATION = """
+Remove unused error definition.
+"""
+
+    def _detect(self) -> List[Output]:
+        results = []
+        for contract in self.compilation_unit.contracts_derived:
+            if contract.is_library or contract.is_interface:
+                continue
+            result_errors: list[CustomErrorContract] = contract.custom_errors_declared
+            for function in contract.functions:
+                for node in function.nodes:
+                    if (
+                        isinstance(node.expression, CallExpression)
+                        and isinstance(node.expression.called, Identifier)
+                        and node.expression.called.value in result_errors
+                    ):
+                        result_errors.remove(node.expression.called.value)
+
+            if len(result_errors) > 0:
+                info: DETECTOR_INFO = [
+                    "The error definition in ",
+                    contract,
+                    " are unused.\n",
+                ]
+                for err in result_errors:
+                    info += ["\t- `error ", err.solidity_signature, "`\n"]
                 results.append(self.generate_result(info))
         return results
