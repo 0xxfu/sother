@@ -6,6 +6,7 @@
 import unittest
 from typing import List
 
+from loguru import logger
 from slither.core.variables import StateVariable
 from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import (
@@ -97,7 +98,7 @@ Remove the unused named return variables.
             for function in contract.functions:
                 result_vars: set[LocalVariable] = set()
                 for return_var in function.returns:
-                    if return_var not in function.variables_written:
+                    if return_var.name and return_var not in function.variables_written:
                         result_vars.add(return_var)
                 if len(result_vars) > 0:
                     info: DETECTOR_INFO = [
@@ -139,14 +140,53 @@ Remove the unused parameter variables.
             for function in contract.functions:
                 result_vars: set[LocalVariable] = set()
                 for param_var in function.parameters:
-                    if (
-                        param_var not in function.variables_written
-                        and param_var not in function.variables_read
-                    ):
+                    if param_var not in function.variables_read:
                         result_vars.add(param_var)
                 if len(result_vars) > 0:
                     info: DETECTOR_INFO = [
                         "The param variables in ",
+                        function,
+                        " are unused.\n",
+                    ]
+                    for var in result_vars:
+                        info += ["\t- ", var, "\n"]
+                    results.append(self.generate_result(info))
+        return results
+
+
+class UnusedLocalVar(AbstractDetector):
+    ARGUMENT = "unused-local-var"
+    HELP = "Remove unused local variables"
+    IMPACT = DetectorClassification.OPTIMIZATION
+    CONFIDENCE = DetectorClassification.HIGH
+
+    WIKI = DetectorSettings.default_wiki
+
+    WIKI_TITLE = "Remove unused local variables"
+
+    WIKI_DESCRIPTION = """
+Unused local variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
+
+"""
+
+    WIKI_RECOMMENDATION = """
+Remove the unused local variables.
+"""
+
+    def _detect(self) -> List[Output]:
+        results = []
+        for contract in self.compilation_unit.contracts_derived:
+            for function in contract.functions:
+                result_vars: set[LocalVariable] = set()
+                for param_var in function.local_variables:
+                    if param_var not in function.variables_read:
+                        result_vars.add(param_var)
+                if len(result_vars) > 0:
+                    info: DETECTOR_INFO = [
+                        "The local variables in ",
                         function,
                         " are unused.\n",
                     ]

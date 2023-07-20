@@ -29,6 +29,7 @@ from sother.detectors.variables.unused_variables import (
     UnusedStateVars,
     UnusedNamedReturnVariables,
     UnusedParameter,
+    UnusedLocalVar,
 )
 from sother.detectors.operations.use_shifting import DivideByConstant, MulPowerTwo
 from sother.detectors.events.superfluous_fields_event import SuperfluousFieldsEvent

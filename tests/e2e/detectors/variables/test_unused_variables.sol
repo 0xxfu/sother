@@ -32,9 +32,17 @@ contract UnusedReturnName {
         a = 1;
         b = 1;
     }
+
+    function good2() external pure returns (uint256) {
+        uint256 a = 0;
+
+        return a;
+    }
 }
 
 contract UnusedParameter {
+    // gas 329
+    // gas 278
     function bad0(uint256 a, uint256 b) external pure returns (uint256) {
         return a;
     }
@@ -49,5 +57,21 @@ contract UnusedParameter {
 
     function notBad1(uint256 a, uint256 b) external pure returns (uint256) {
         return notBad0(a) + b;
+    }
+}
+
+contract UnusedLocalVar {
+    uint256 x;
+
+    function bad0() external pure returns (uint256) {
+        uint256 a = 0;
+        uint256 b = 1;
+        uint256 c;
+        return a;
+    }
+
+    function notBad0() external {
+        uint256 a = 0;
+        x = a;
     }
 }

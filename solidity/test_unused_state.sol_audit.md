@@ -26,10 +26,12 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Not using the named return variables anywhere in the function is confusing | 6 |
-| [G-1] | Remove unused parameter variables | 2 |
-| [G-2] | Remove or replace unused state variables | 1 |
-| [G-3] | State variables that could be declared constant | 2 |
+| [G-0] | Remove unused local variables | 1 |
+| [G-1] | Not using the named return variables anywhere in the function is confusing | 3 |
+| [G-2] | Remove unused parameter variables | 2 |
+| [G-3] | Remove or replace unused state variables | 1 |
+| [G-4] | Use `delete` to Clear Variables | 3 |
+| [G-5] | State variables that could be declared constant | 2 |
 
 
 
@@ -177,6 +179,38 @@ Informational
 ### category:
 naming-convention
 
+## [Optimization] Remove unused local variables
+
+### description:
+
+Unused local variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
+
+
+
+**There is `1` instance of this issue:**
+
+- The local variables in [UnusedLocalVar.bad0()](solidity/test_unused_state.sol#L65-L70) are unused.
+	- [UnusedLocalVar.bad0().b](solidity/test_unused_state.sol#L67)
+	- [UnusedLocalVar.bad0().c](solidity/test_unused_state.sol#L68)
+
+
+### recommendation:
+
+Remove the unused local variables.
+
+
+### locations:
+- solidity/test_unused_state.sol#L65-L70
+
+### severity:
+Optimization
+
+### category:
+unused-local-var
+
 ## [Optimization] Not using the named return variables anywhere in the function is confusing
 
 ### description:
@@ -187,7 +221,7 @@ If the optimizer is not turned on, leaving the code as it is will also waste gas
 for the stack variable.
 
 
-**There are `6` instances of this issue:**
+**There are `3` instances of this issue:**
 
 - The named return variables in [UnusedReturnName.bad0()](solidity/test_unused_state.sol#L13-L15) are unused.
 	- [UnusedReturnName.bad0().a](solidity/test_unused_state.sol#L13)
@@ -197,15 +231,6 @@ for the stack variable.
 
 - The named return variables in [UnusedReturnName.bad2()](solidity/test_unused_state.sol#L22-L25) are unused.
 	- [UnusedReturnName.bad2().a](solidity/test_unused_state.sol#L22)
-
-- The named return variables in [UnusedParameter.bad0(uint256,uint256)](solidity/test_unused_state.sol#L38-L40) are unused.
-	- [UnusedParameter.bad0(uint256,uint256).](solidity/test_unused_state.sol#L38)
-
-- The named return variables in [UnusedParameter.notBad0(uint256)](solidity/test_unused_state.sol#L46-L48) are unused.
-	- [UnusedParameter.notBad0(uint256).](solidity/test_unused_state.sol#L46)
-
-- The named return variables in [UnusedParameter.notBad1(uint256,uint256)](solidity/test_unused_state.sol#L50-L52) are unused.
-	- [UnusedParameter.notBad1(uint256,uint256).](solidity/test_unused_state.sol#L50)
 
 
 ### recommendation:
@@ -217,9 +242,6 @@ Remove the unused named return variables.
 - solidity/test_unused_state.sol#L13-L15
 - solidity/test_unused_state.sol#L17-L20
 - solidity/test_unused_state.sol#L22-L25
-- solidity/test_unused_state.sol#L38-L40
-- solidity/test_unused_state.sol#L46-L48
-- solidity/test_unused_state.sol#L50-L52
 
 ### severity:
 Optimization
@@ -231,16 +253,20 @@ unused-named-return-variables
 
 ### description:
 
-Removing unused parameters can save deployment and called gas.
+Unused parameters variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
+
 
 
 **There are `2` instances of this issue:**
 
-- The param variables in [UnusedParameter.bad0(uint256,uint256)](solidity/test_unused_state.sol#L38-L40) are unused.
-	- [UnusedParameter.bad0(uint256,uint256).b](solidity/test_unused_state.sol#L38)
+- The param variables in [UnusedParameter.bad0(uint256,uint256)](solidity/test_unused_state.sol#L45-L47) are unused.
+	- [UnusedParameter.bad0(uint256,uint256).b](solidity/test_unused_state.sol#L45)
 
-- The param variables in [UnusedParameter.bad1(uint256,uint256)](solidity/test_unused_state.sol#L42-L44) are unused.
-	- [UnusedParameter.bad1(uint256,uint256).b](solidity/test_unused_state.sol#L42)
+- The param variables in [UnusedParameter.bad1(uint256,uint256)](solidity/test_unused_state.sol#L49-L51) are unused.
+	- [UnusedParameter.bad1(uint256,uint256).b](solidity/test_unused_state.sol#L49)
 
 
 ### recommendation:
@@ -249,8 +275,8 @@ Remove the unused parameter variables.
 
 
 ### locations:
-- solidity/test_unused_state.sol#L38-L40
-- solidity/test_unused_state.sol#L42-L44
+- solidity/test_unused_state.sol#L45-L47
+- solidity/test_unused_state.sol#L49-L51
 
 ### severity:
 Optimization
@@ -287,6 +313,49 @@ Optimization
 
 ### category:
 unused-state-variables
+
+## [Optimization] Use `delete` to Clear Variables
+
+### description:
+
+delete a assigns the initial value for the type to a. i.e. 
+for integers it is equivalent to a = 0, but it can also be used on arrays, 
+where it assigns a dynamic array of length zero or a static array of the same 
+length with all elements reset. For structs, it assigns a struct with all members reset. 
+Similarly, it can also be used to set an address to zero address. 
+It has no effect on whole mappings though (as the keys of mappings may be arbitrary 
+and are generally unknown). However, individual keys and what they map to can be deleted: 
+If a is a mapping, then delete a[x] will delete the value stored at x.
+
+The delete key better conveys the intention and is also more idiomatic. 
+Consider replacing assignments of zero with delete statements.
+
+
+**There are `3` instances of this issue:**
+
+- Should use `delete` statement instead of [a = 0](solidity/test_unused_state.sol#L37)
+
+- Should use `delete` statement instead of [a = 0](solidity/test_unused_state.sol#L66)
+
+- Should use `delete` statement instead of [a = 0](solidity/test_unused_state.sol#L73)
+
+
+### recommendation:
+
+Replacing assignments of zero with delete statements.
+
+
+
+### locations:
+- solidity/test_unused_state.sol#L37
+- solidity/test_unused_state.sol#L66
+- solidity/test_unused_state.sol#L73
+
+### severity:
+Optimization
+
+### category:
+use-delete-statement
 
 ## [Optimization] State variables that could be declared constant
 
