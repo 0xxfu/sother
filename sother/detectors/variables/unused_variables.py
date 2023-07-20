@@ -122,7 +122,11 @@ class UnusedParameter(AbstractDetector):
     WIKI_TITLE = "Remove unused parameter variables"
 
     WIKI_DESCRIPTION = """
-Removing unused parameters can save deployment and called gas.
+Unused parameters variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
+
 """
 
     WIKI_RECOMMENDATION = """
