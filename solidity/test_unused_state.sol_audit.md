@@ -26,9 +26,10 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Not using the named return variables anywhere in the function is confusing | 3 |
-| [G-1] | Remove or replace unused state variables | 1 |
-| [G-2] | State variables that could be declared constant | 2 |
+| [G-0] | Not using the named return variables anywhere in the function is confusing | 6 |
+| [G-1] | Remove unused parameter variables | 2 |
+| [G-2] | Remove or replace unused state variables | 1 |
+| [G-3] | State variables that could be declared constant | 2 |
 
 
 
@@ -39,8 +40,8 @@ Uninitialized state variables.
 
 **There is `1` instance of this issue:**
 
-- [UnUsedState.destination](solidity/test_unused_state.sol#L4) is never initialized. It is used in:
-	- [UnUsedState.transfer()](solidity/test_unused_state.sol#L8-L10)
+- [UnUsedState.destination](solidity/test_unused_state.sol#L2) is never initialized. It is used in:
+	- [UnUsedState.transfer()](solidity/test_unused_state.sol#L7-L9)
 
 #### Exploit scenario
 
@@ -62,7 +63,7 @@ Initialize all the variables. If a variable is meant to be initialized to zero, 
 
 
 ### locations:
-- solidity/test_unused_state.sol#L4
+- solidity/test_unused_state.sol#L2
 
 ### severity:
 High
@@ -79,8 +80,8 @@ The use of `payable.transfer()` is [heavily frowned upon](https://consensys.net/
 
 **There is `1` instance of this issue:**
 
-- Payable calls in [UnUsedState.transfer()](solidity/test_unused_state.sol#L8-L10):
-	- [destination.transfer(msg.value)](solidity/test_unused_state.sol#L9)
+- Payable calls in [UnUsedState.transfer()](solidity/test_unused_state.sol#L7-L9):
+	- [destination.transfer(msg.value)](solidity/test_unused_state.sol#L8)
 
 #### Exploit scenario
 
@@ -107,7 +108,7 @@ Use OpenZeppelin's [Address.sendValue()](https://github.com/OpenZeppelin/openzep
 
 
 ### locations:
-- solidity/test_unused_state.sol#L8-L10
+- solidity/test_unused_state.sol#L7-L9
 
 ### severity:
 Low
@@ -161,14 +162,14 @@ Solidity defines a [naming convention](https://solidity.readthedocs.io/en/v0.4.2
 
 **There is `1` instance of this issue:**
 
-- Variable [UnUsedState.__gap](solidity/test_unused_state.sol#L7) is not in mixedCase
+- Variable [UnUsedState.__gap](solidity/test_unused_state.sol#L5) is not in mixedCase
 
 
 ### recommendation:
 Follow the Solidity [naming convention](https://solidity.readthedocs.io/en/v0.4.25/style-guide.html#naming-conventions).
 
 ### locations:
-- solidity/test_unused_state.sol#L7
+- solidity/test_unused_state.sol#L5
 
 ### severity:
 Informational
@@ -186,16 +187,25 @@ If the optimizer is not turned on, leaving the code as it is will also waste gas
 for the stack variable.
 
 
-**There are `3` instances of this issue:**
+**There are `6` instances of this issue:**
 
-- The named return variables in [UnusedReturnName.bad0()](solidity/test_unused_state.sol#L14-L16) are unused.
-	- [UnusedReturnName.bad0().a](solidity/test_unused_state.sol#L14)
+- The named return variables in [UnusedReturnName.bad0()](solidity/test_unused_state.sol#L13-L15) are unused.
+	- [UnusedReturnName.bad0().a](solidity/test_unused_state.sol#L13)
 
-- The named return variables in [UnusedReturnName.bad1()](solidity/test_unused_state.sol#L18-L21) are unused.
-	- [UnusedReturnName.bad1().b](solidity/test_unused_state.sol#L18)
+- The named return variables in [UnusedReturnName.bad1()](solidity/test_unused_state.sol#L17-L20) are unused.
+	- [UnusedReturnName.bad1().b](solidity/test_unused_state.sol#L17)
 
-- The named return variables in [UnusedReturnName.bad2()](solidity/test_unused_state.sol#L23-L26) are unused.
-	- [UnusedReturnName.bad2().a](solidity/test_unused_state.sol#L23)
+- The named return variables in [UnusedReturnName.bad2()](solidity/test_unused_state.sol#L22-L25) are unused.
+	- [UnusedReturnName.bad2().a](solidity/test_unused_state.sol#L22)
+
+- The named return variables in [UnusedParameter.bad0(uint256,uint256)](solidity/test_unused_state.sol#L38-L40) are unused.
+	- [UnusedParameter.bad0(uint256,uint256).](solidity/test_unused_state.sol#L38)
+
+- The named return variables in [UnusedParameter.notBad0(uint256)](solidity/test_unused_state.sol#L46-L48) are unused.
+	- [UnusedParameter.notBad0(uint256).](solidity/test_unused_state.sol#L46)
+
+- The named return variables in [UnusedParameter.notBad1(uint256,uint256)](solidity/test_unused_state.sol#L50-L52) are unused.
+	- [UnusedParameter.notBad1(uint256,uint256).](solidity/test_unused_state.sol#L50)
 
 
 ### recommendation:
@@ -204,9 +214,12 @@ Remove the unused named return variables.
 
 
 ### locations:
-- solidity/test_unused_state.sol#L14-L16
-- solidity/test_unused_state.sol#L18-L21
-- solidity/test_unused_state.sol#L23-L26
+- solidity/test_unused_state.sol#L13-L15
+- solidity/test_unused_state.sol#L17-L20
+- solidity/test_unused_state.sol#L22-L25
+- solidity/test_unused_state.sol#L38-L40
+- solidity/test_unused_state.sol#L46-L48
+- solidity/test_unused_state.sol#L50-L52
 
 ### severity:
 Optimization
@@ -214,16 +227,52 @@ Optimization
 ### category:
 unused-named-return-variables
 
+## [Optimization] Remove unused parameter variables
+
+### description:
+
+Removing unused parameters can save deployment and called gas.
+
+
+**There are `2` instances of this issue:**
+
+- The param variables in [UnusedParameter.bad0(uint256,uint256)](solidity/test_unused_state.sol#L38-L40) are unused.
+	- [UnusedParameter.bad0(uint256,uint256).b](solidity/test_unused_state.sol#L38)
+
+- The param variables in [UnusedParameter.bad1(uint256,uint256)](solidity/test_unused_state.sol#L42-L44) are unused.
+	- [UnusedParameter.bad1(uint256,uint256).b](solidity/test_unused_state.sol#L42)
+
+
+### recommendation:
+
+Remove the unused parameter variables.
+
+
+### locations:
+- solidity/test_unused_state.sol#L38-L40
+- solidity/test_unused_state.sol#L42-L44
+
+### severity:
+Optimization
+
+### category:
+unused-parameter
+
 ## [Optimization] Remove or replace unused state variables
 
 ### description:
 
-Saves a storage slot. If the variable is assigned a non-zero value, saves Gsset (20000 gas). If it's assigned a zero value, saves Gsreset (2900 gas). If the variable remains unassigned, there is no gas savings unless the variable is public, in which case the compiler-generated non-payable getter deployment cost is saved. If the state variable is overriding an interface's public function, mark the variable as constant or immutable so that it does not use a storage slot
+Saves a storage slot. If the variable is assigned a non-zero value, 
+saves Gsset (20000 gas). If it's assigned a zero value, saves Gsreset (2900 gas). 
+If the variable remains unassigned, there is no gas savings unless the variable is public, 
+in which case the compiler-generated non-payable getter deployment cost is saved. 
+If the state variable is overriding an interface's public function, 
+mark the variable as constant or immutable so that it does not use a storage slot
 
 
 **There is `1` instance of this issue:**
 
-- [UnUsedState.unusedState](solidity/test_unused_state.sol#L6) is never used.
+- [UnUsedState.unusedState](solidity/test_unused_state.sol#L4) is never used.
 
 ### recommendation:
 
@@ -231,7 +280,7 @@ Remove or replace the unused state variables
 
 
 ### locations:
-- solidity/test_unused_state.sol#L6
+- solidity/test_unused_state.sol#L4
 
 ### severity:
 Optimization
@@ -246,17 +295,17 @@ State variables that are not updated following deployment should be declared con
 
 **There are `2` instances of this issue:**
 
-- [UnUsedState.destination](solidity/test_unused_state.sol#L4) should be constant 
+- [UnUsedState.destination](solidity/test_unused_state.sol#L2) should be constant 
 
-- [UnUsedState.unusedState](solidity/test_unused_state.sol#L6) should be constant 
+- [UnUsedState.unusedState](solidity/test_unused_state.sol#L4) should be constant 
 
 
 ### recommendation:
 Add the `constant` attribute to state variables that never change.
 
 ### locations:
+- solidity/test_unused_state.sol#L2
 - solidity/test_unused_state.sol#L4
-- solidity/test_unused_state.sol#L6
 
 ### severity:
 Optimization
