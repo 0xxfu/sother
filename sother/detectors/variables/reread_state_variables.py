@@ -57,13 +57,14 @@ def detect_reread_state(
 # todo except `if()else` recount
 class RereadStateVariables(AbstractDetector):
     ARGUMENT = "reread-state-variables"
-    HELP = "State variables should be cached in stack variables rather than re-reading them from storage"
+    HELP = "Cache state variables instead of rereading"
     IMPACT = DetectorClassification.OPTIMIZATION
     CONFIDENCE = DetectorClassification.HIGH
 
     WIKI = DetectorSettings.default_wiki
 
-    WIKI_TITLE = "State variables should be cached in stack variables rather than re-reading them from storage"
+    WIKI_TITLE = "Cache state variables instead of rereading"
+
     WIKI_DESCRIPTION = """
 The instances below point to the second+ access of a state variable within a function. Caching of a state variable replaces each Gwarmaccess (**100 gas**) with a much cheaper stack read. Other less obvious fixes/optimizations include having local memory caches of state variable structs, or having local caches of state variable contracts/addresses.
 
