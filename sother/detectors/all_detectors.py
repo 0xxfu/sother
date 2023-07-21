@@ -148,3 +148,4 @@ from sother.detectors.erc.erc20.revert_on_total_supply import RevertOnTotalSuppl
 from sother.detectors.statements.incorrect_deadline import IncorrectDeadline
 from sother.detectors.reentrancy.reentrancy_transfer import ReentrancyTransfer
 from sother.detectors.statements.use_concat import UseConcatOnString, UseConcatOnBytes
+from sother.detectors.operations.division_by_zero import DivisionByZero
