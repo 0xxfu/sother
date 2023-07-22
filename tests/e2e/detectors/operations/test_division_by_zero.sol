@@ -38,7 +38,7 @@ contract DivisionByZero {
     }
 
     function notBad2(uint256 a, uint256 b) external pure {
-        10 / a + 1;
+        10 / (a + 1);
 
         f0() / a - 1;
 

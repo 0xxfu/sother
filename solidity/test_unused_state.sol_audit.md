@@ -255,8 +255,8 @@ Removing those variables can save deployment and called gas. and improve code qu
 **There are `2` instances of this issue:**
 
 - The local variables in [UnusedLocalVar.bad0()](solidity/test_unused_state.sol#L66-L71) are unused.
-	- [UnusedLocalVar.bad0().c](solidity/test_unused_state.sol#L69)
 	- [UnusedLocalVar.bad0().b](solidity/test_unused_state.sol#L68)
+	- [UnusedLocalVar.bad0().c](solidity/test_unused_state.sol#L69)
 
 - The local variables in [UnusedStruct.f1(uint256)](solidity/test_unused_state.sol#L106-L108) are unused.
 	- [UnusedStruct.f1(uint256).localB](solidity/test_unused_state.sol#L107)

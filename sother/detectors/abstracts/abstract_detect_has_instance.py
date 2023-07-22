@@ -5,6 +5,7 @@
 """
 import unittest
 from abc import ABC, abstractmethod
+from enum import Enum
 from typing import List, Optional
 
 from loguru import logger
@@ -55,6 +56,10 @@ class AbstractDetectHasInstance(AbstractDetector, ABC):
 
 
 class AbstractVariableInNodes(ABC):
+    class TraverseType(Enum):
+        SONS = 0
+        FATHERS = 1
+
     @classmethod
     @abstractmethod
     def is_variable_checked_instance(cls, var: Variable, ir: Operation) -> bool:
@@ -62,7 +67,11 @@ class AbstractVariableInNodes(ABC):
 
     @classmethod
     def is_variable_in_nodes(
-        cls, var: Variable, nodes: list[Node], visited: list[Node] = None
+        cls,
+        var: Variable,
+        nodes: list[Node],
+        visited: list[Node] = None,
+        traverse_type: TraverseType = TraverseType.SONS,
     ) -> bool:
         if visited is None:
             visited = list()
@@ -75,9 +84,16 @@ class AbstractVariableInNodes(ABC):
                 if cls.is_variable_checked_instance(var, ir):
                     return True
                 elif isinstance(ir, InternalCall) and ir.function:
-                    if cls.is_variable_in_nodes(var, ir.function.nodes, visited):
+                    if cls.is_variable_in_nodes(
+                        var, [ir.function.entry_point], visited
+                    ):
                         return True
-            if cls.is_variable_in_nodes(var, node.sons, visited):
+            if cls.is_variable_in_nodes(
+                var,
+                node.sons if traverse_type == cls.TraverseType.SONS else node.fathers,
+                visited,
+                traverse_type,
+            ):
                 return True
         return False
 

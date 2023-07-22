@@ -6,8 +6,10 @@
 import unittest
 
 from loguru import logger
+from slither.analyses.data_dependency.data_dependency import is_dependent
 from slither.core.cfg.node import Node
-from slither.core.variables import StateVariable
+from slither.core.solidity_types.elementary_type import Uint, Int
+from slither.core.variables import StateVariable, Variable
 from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.slithir.operations import Operation, Binary, BinaryType
@@ -15,10 +17,41 @@ from slither.slithir.variables import TemporaryVariable
 
 from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
+    AbstractVariableInNodes,
 )
 from sother.detectors.detector_settings import DetectorSettings
 
-# todo impl
+
+class VariableZeroValidation(AbstractVariableInNodes):
+    checking_variable_types = Uint + Int
+
+    @classmethod
+    def is_variable_checked_instance(cls, var: Variable, ir: Operation) -> bool:
+        if str(var.type) not in cls.checking_variable_types:
+            return False
+        if (
+            ir.node.contains_if()
+            and isinstance(ir, Binary)
+            and ir.type == BinaryType.EQUAL
+        ) or (
+            ir.node.contains_require_or_assert()
+            and isinstance(ir, Binary)
+            and ir.type
+            in [
+                BinaryType.LESS,
+                BinaryType.GREATER,
+                BinaryType.LESS_EQUAL,
+                BinaryType.GREATER_EQUAL,
+                BinaryType.NOT_EQUAL,
+            ]
+        ):
+            if is_dependent(var, ir.variable_left, ir.node) or is_dependent(
+                var, ir.variable_left, ir.node
+            ):
+                return True
+        return False
+
+
 class DivisionByZero(AbstractDetectHasInstance):
     ARGUMENT = "division-by-zero"
     HELP = "Division by zero not prevented"
@@ -55,15 +88,21 @@ amount is zero or not.
                 ir.variable_right, (StateVariable, LocalVariable, TemporaryVariable)
             )
         ):
-            return True
+            # todo variable contains `*+1` statement
+            if not VariableZeroValidation.is_variable_in_nodes(
+                ir.variable_right,
+                ir.node.fathers,
+                [],
+                VariableZeroValidation.TraverseType.FATHERS,
+            ):
+                return True
+
         return False
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
-        if ir.node.function.name != "bad0":
-            return False
         if cls._is_division_by_var(ir):
-            logger.debug(f"ir: {ir.expression} type: {type(ir)}")
+            return True
         return False
 
     @classmethod
