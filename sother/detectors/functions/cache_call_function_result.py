@@ -74,11 +74,8 @@ Using local variable to cache function called result if the same function called
                     and isinstance(ir.function, Function)
                     and len(ir.arguments) > 0
                 ):
-                    function_called_name = (
-                        ir.function.canonical_name
-                        if ir.function.canonical_name
-                        else ir.function.name
-                    )
+                    function_called_name = ir.function.canonical_name
+
                     if function_called_name not in function_called_counts:
                         function_called_counts[function_called_name] = set()
                     function_called_counts[function_called_name].add(node)
