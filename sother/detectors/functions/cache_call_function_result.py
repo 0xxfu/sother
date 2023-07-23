@@ -69,7 +69,9 @@ Using local variable to cache function called result if the same function called
         function_called_counts: dict[str, set[Node]] = dict()
         for node in function.nodes:
             for ir in node.irs:
-                if not isinstance(ir, (HighLevelCall, InternalCall)):
+                if not isinstance(ir, (HighLevelCall, InternalCall)) and not isinstance(
+                    ir.function, Function
+                ):
                     continue
                 if len(ir.arguments) > 0:
                     continue
