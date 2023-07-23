@@ -69,25 +69,24 @@ Using local variable to cache function called result if the same function called
         function_called_counts: dict[str, set[Node]] = dict()
         for node in function.nodes:
             for ir in node.irs:
-                if not isinstance(ir, (HighLevelCall, InternalCall)) and not isinstance(
-                    ir.function, Function
+                if (
+                    isinstance(ir, (HighLevelCall, InternalCall))
+                    and isinstance(ir.function, Function)
+                    and len(ir.arguments) > 0
                 ):
-                    continue
-                if len(ir.arguments) > 0:
-                    continue
-                function_called_name = (
-                    ir.function.canonical_name
-                    if ir.function.canonical_name
-                    else ir.function.name
-                )
-                if function_called_name not in function_called_counts:
-                    function_called_counts[function_called_name] = set()
-                function_called_counts[function_called_name].add(node)
+                    function_called_name = (
+                        ir.function.canonical_name
+                        if ir.function.canonical_name
+                        else ir.function.name
+                    )
+                    if function_called_name not in function_called_counts:
+                        function_called_counts[function_called_name] = set()
+                    function_called_counts[function_called_name].add(node)
 
-                if len(function_called_counts[function_called_name]) > 1:
-                    result_nodes[function_called_name] = function_called_counts[
-                        function_called_name
-                    ]
+                    if len(function_called_counts[function_called_name]) > 1:
+                        result_nodes[function_called_name] = function_called_counts[
+                            function_called_name
+                        ]
 
         return result_nodes
 
