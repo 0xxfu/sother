@@ -76,7 +76,7 @@ class AbstractVariableInNodes(ABC):
         if visited is None:
             visited = list()
         for node in nodes:
-            if node in visited:
+            if node in visited or node is None:
                 continue
             visited.append(node)
 
