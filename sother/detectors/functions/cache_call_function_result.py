@@ -73,7 +73,11 @@ Using local variable to cache function called result if the same function called
                     continue
                 if len(ir.arguments) > 0:
                     continue
-                function_called_name = ir.function.canonical_name
+                function_called_name = (
+                    ir.function.canonical_name
+                    if ir.function.canonical_name
+                    else ir.function.name
+                )
                 if function_called_name not in function_called_counts:
                     function_called_counts[function_called_name] = set()
                 function_called_counts[function_called_name].add(node)
