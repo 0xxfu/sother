@@ -419,19 +419,19 @@ files = [
 
 [[package]]
 name = "crytic-compile"
-version = "0.3.2"
+version = "0.3.3"
 description = "Util to facilitate smart contracts compilation."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "crytic-compile-0.3.2.tar.gz", hash = "sha256:adb580d1c79eb6241723a6f1d0f2c6b0d2714b65f07771116b727bed95b48065"},
-    {file = "crytic_compile-0.3.2-py3-none-any.whl", hash = "sha256:2fbf6b8b1d8c745ae0e8393831e3c7303e89c98503b29f086108d2db72adc9c5"},
+    {file = "crytic-compile-0.3.3.tar.gz", hash = "sha256:b0461ecff11e4be40013e4267a8e20221ebe25c3226e446e60e7c103baf7efaf"},
+    {file = "crytic_compile-0.3.3-py3-none-any.whl", hash = "sha256:91b22af155d1ff3047533ab57b9346e36af637b611b8c1dd7a33aae1e54c6e52"},
 ]
 
 [package.dependencies]
 cbor2 = "*"
 pycryptodome = ">=3.4.6"
-solc-select = ">=v1.0.2"
+solc-select = ">=v1.0.4"
 
 [package.extras]
 dev = ["crytic-compile[doc,lint,test]"]
@@ -1427,15 +1427,15 @@ testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (
 
 [[package]]
 name = "slither-analyzer"
-version = "0.9.5"
-description = "Slither is a Solidity static analysis framework written in Python 3."
+version = "0.9.6"
+description = ""
 optional = false
 python-versions = ">=3.8"
 files = []
 develop = false
 
 [package.dependencies]
-crytic-compile = ">=0.3.2,<0.4.0"
+crytic-compile = ">=0.3.3,<0.4.0"
 eth-abi = ">=4.0.0"
 eth-typing = ">=3.0.0"
 eth-utils = ">=2.1.0"
@@ -1448,13 +1448,13 @@ web3 = ">=6.0.0"
 dev = ["openai", "slither-analyzer[doc,lint,test]"]
 doc = ["pdoc"]
 lint = ["black (==22.3.0)", "pylint (==2.13.4)"]
-test = ["coverage[toml]", "deepdiff", "filelock", "numpy", "pytest", "pytest-cov", "pytest-insta", "pytest-xdist", "solc-select (>=1.0.4)"]
+test = ["coverage[toml]", "deepdiff", "filelock", "numpy", "pytest", "pytest-cov", "pytest-insta", "pytest-xdist"]
 
 [package.source]
 type = "git"
 url = "https://github.com/0xxfu/slither.git"
 reference = "master"
-resolved_reference = "f8bc94227deafb323c5946a4b75f26882aaca51f"
+resolved_reference = "9070a1ee704567885d5e5585bddeafeffb89ab52"
 
 [[package]]
 name = "solc-select"
