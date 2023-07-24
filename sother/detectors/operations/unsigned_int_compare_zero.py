@@ -35,7 +35,7 @@ class UnsignedIntCompareZero(AbstractDetector):
 
     WIKI = DetectorSettings.default_wiki
 
-    WIKI_TITLE = "`++i` costs less gas than `i++`, especially when it's used in for-loops (`--i/i--` too)"
+    WIKI_TITLE = "`!= 0` is less gas than `> 0` for unsigned integers"
 
     WIKI_DESCRIPTION = """
 `!= 0` costs less gas compared to `> 0` for unsigned integers in require statements 
