@@ -71,6 +71,7 @@ reentrancy risk and gas costs.
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
+        # todo except to address is `address(this)` ?
         if (
             isinstance(ir, HighLevelCall)
             and isinstance(ir.function, Function)

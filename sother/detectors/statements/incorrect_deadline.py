@@ -62,6 +62,7 @@ The current `blocktime` should less than or equal to `deadline`.
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
+        # todo should except `if (): return something` statement
         if (
             ir.node.contains_if()
             and isinstance(ir, Binary)

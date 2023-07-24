@@ -22,5 +22,10 @@ Not all `IERC20` implementations `revert()` when there's a failure in `transfer(
 """
 
 
+# todo impl
+class UnsafeTransfer:
+    pass
+
+
 if __name__ == "__main__":
     unittest.main()
