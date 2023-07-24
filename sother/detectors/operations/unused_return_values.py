@@ -30,8 +30,7 @@ class UnusedReturnValues(SlitherUnusedReturnValues):
         Returns:
             list(Node)
         """
-        # if f.name != "good":
-        #     return []
+
         values_returned = []
         nodes_origin = {}
         # pylint: disable=too-many-nested-blocks
