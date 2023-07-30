@@ -17,6 +17,7 @@ click = "^8.1.6"
 
 [tool.poetry.scripts]
 sother = "sother.main:start"
+sother_cli = "sother.main:cli"
 
 [tool.poetry.group.dev.dependencies]
 setuptools = "^68.0.0"

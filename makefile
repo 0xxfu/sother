@@ -3,4 +3,4 @@ local:
 s3:
 	sother ./solidity --print secure3
 stats:
-	sother --list-detectors
+	sother_cli list-detector

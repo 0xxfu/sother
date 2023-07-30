@@ -8,10 +8,12 @@ import sys
 import unittest
 from typing import Type, Tuple, List
 
+import click
 from loguru import logger
 from slither.__main__ import main_impl
 from slither.detectors.abstract_detector import AbstractDetector
 from slither.printers.abstract_printer import AbstractPrinter
+from slither.utils.command_line import output_detectors
 
 from sother.detectors import get_all_detectors
 from sother.printers import get_all_printers
@@ -41,6 +43,17 @@ def start() -> Tuple[List[Type[AbstractDetector]], List[Type[AbstractPrinter]]]:
 
     main_impl(all_detector_classes=detectors, all_printer_classes=printers)
     return detectors, printers
+
+
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
+def list_detector():
+    detectors, _ = get_detectors_and_printers()
+    output_detectors(detectors)
 
 
 class DetectorTestCase(unittest.TestCase):
