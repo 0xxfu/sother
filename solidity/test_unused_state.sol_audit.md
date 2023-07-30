@@ -76,6 +76,9 @@ High
 ### category:
 uninitialized-state
 
+### confidence:
+High
+
 ## [Low] Don't use `payable.transfer()`/`payable.send()`
 
 ### description:
@@ -121,6 +124,9 @@ Low
 ### category:
 payable-calls
 
+### confidence:
+High
+
 ## [Informational] Incorrect versions of Solidity
 
 ### description:
@@ -156,6 +162,9 @@ Informational
 ### category:
 solc-version
 
+### confidence:
+High
+
 ## [Informational] Conformance to Solidity naming conventions
 
 ### description:
@@ -181,6 +190,9 @@ Informational
 
 ### category:
 naming-convention
+
+### confidence:
+High
 
 ## [Optimization] Remove or replace unused state variables
 
@@ -213,6 +225,9 @@ Optimization
 
 ### category:
 unused-state-variables
+
+### confidence:
+High
 
 ## [Optimization] Not using the named return variables anywhere in the function is confusing
 
@@ -251,6 +266,9 @@ Optimization
 
 ### category:
 unused-named-return-variables
+
+### confidence:
+High
 
 ## [Optimization] Remove unused parameter variables
 
@@ -291,6 +309,9 @@ Optimization
 ### category:
 unused-parameter
 
+### confidence:
+High
+
 ## [Optimization] Remove unused local variables
 
 ### description:
@@ -326,6 +347,9 @@ Optimization
 ### category:
 unused-local-var
 
+### confidence:
+High
+
 ## [Optimization] Remove unused struct declaration
 
 ### description:
@@ -355,6 +379,9 @@ Optimization
 ### category:
 unused-struct
 
+### confidence:
+High
+
 ## [Optimization] Remove unused error definition
 
 ### description:
@@ -383,6 +410,9 @@ Optimization
 
 ### category:
 unused-error
+
+### confidence:
+High
 
 ## [Optimization] Empty blocks should be removed or emit something
 
@@ -414,6 +444,9 @@ Optimization
 
 ### category:
 empty-block
+
+### confidence:
+High
 
 ## [Optimization] Use `delete` to Clear Variables
 
@@ -458,6 +491,9 @@ Optimization
 ### category:
 use-delete-statement
 
+### confidence:
+High
+
 ## [Optimization] State variables that could be declared constant
 
 ### description:
@@ -482,3 +518,6 @@ Optimization
 
 ### category:
 constable-states
+
+### confidence:
+High

@@ -50,6 +50,9 @@ Informational
 ### category:
 solc-version
 
+### confidence:
+High
+
 ## [Optimization] Not using the named return variables anywhere in the function is confusing
 
 ### description:
@@ -88,3 +91,6 @@ Optimization
 
 ### category:
 unused-named-return-variables
+
+### confidence:
+High

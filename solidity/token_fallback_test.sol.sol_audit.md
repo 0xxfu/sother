@@ -90,6 +90,9 @@ High
 ### category:
 pess-token-fallback
 
+### confidence:
+Low
+
 ## [Medium] Return values of `transfer()/transferFrom()` not checked
 
 ### description:
@@ -129,6 +132,9 @@ Medium
 
 ### category:
 unchecked-transfer
+
+### confidence:
+Medium
 
 ## [Medium] Incompatibility with transfer-on-fee or deflationary tokens
 
@@ -172,6 +178,9 @@ Medium
 
 ### category:
 fee-on-transfer
+
+### confidence:
+Medium
 
 ## [Low] Lack of a double-step `transferOwnership()` pattern
 
@@ -241,6 +250,9 @@ Low
 ### category:
 deprecated-ownable
 
+### confidence:
+High
+
 ## [Low] Double type casts create complexity within the code
 
 ### description:
@@ -274,6 +286,9 @@ Low
 
 ### category:
 unsafe-double-cast
+
+### confidence:
+High
 
 ## [Low] Unsafe to use floating pragma
 
@@ -320,6 +335,9 @@ Low
 ### category:
 unsafe-floating-pragma
 
+### confidence:
+High
+
 ## [Low] Events are missing sender information
 
 ### description:
@@ -349,6 +367,9 @@ Low
 
 ### category:
 missing-sender-in-event
+
+### confidence:
+High
 
 ## [Low] Functions calling contracts/addresses with transfer hooks are missing reentrancy guards
 
@@ -381,6 +402,9 @@ Low
 ### category:
 reentrancy-transfer
 
+### confidence:
+High
+
 ## [Low] Dubious Typecast
 
 ### description:
@@ -404,6 +428,9 @@ Low
 
 ### category:
 pess-dubious-typecast
+
+### confidence:
+Low
 
 ## [Informational] Incorrect versions of Solidity
 
@@ -458,6 +485,9 @@ Informational
 ### category:
 solc-version
 
+### confidence:
+High
+
 ## [Informational] Magic Number
 
 ### description:
@@ -484,6 +514,9 @@ Informational
 
 ### category:
 pess-magic-number
+
+### confidence:
+High
 
 ## [Informational] Different pragma directives are used
 
@@ -514,6 +547,9 @@ Informational
 ### category:
 pragma
 
+### confidence:
+High
+
 ## [Informational] Low-level calls
 
 ### description:
@@ -536,6 +572,9 @@ Informational
 
 ### category:
 low-level-calls
+
+### confidence:
+High
 
 ## [Informational] Conformance to Solidity naming conventions
 
@@ -562,6 +601,9 @@ Informational
 
 ### category:
 naming-convention
+
+### confidence:
+High
 
 ## [Informational] Too many digits
 
@@ -603,6 +645,9 @@ Informational
 ### category:
 too-many-digits
 
+### confidence:
+Medium
+
 ## [Optimization] Should use latest solidity version `0.8.20` for gas reduction and improved security.
 
 ### description:
@@ -635,6 +680,9 @@ Optimization
 ### category:
 upgrade-to-latest
 
+### confidence:
+High
+
 ## [Optimization] `<x> += <y>` costs more gas than `<x> = <x> + <y>` for state variables
 
 ### description:
@@ -660,6 +708,9 @@ Optimization
 ### category:
 assignment-left-operation
 
+### confidence:
+High
+
 ## [Optimization] `internal` functions only called once can be inlined to save gas
 
 ### description:
@@ -684,6 +735,9 @@ Optimization
 
 ### category:
 internal-function-to-inline
+
+### confidence:
+High
 
 ## [Optimization] Using custom errors replace `require` or `assert`
 
@@ -737,6 +791,9 @@ Optimization
 ### category:
 use-custom-error
 
+### confidence:
+High
+
 ## [Optimization] Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead
 
 ### description:
@@ -770,6 +827,9 @@ Optimization
 ### category:
 smaller-uint-int
 
+### confidence:
+High
+
 ## [Optimization] Remove unused parameter variables
 
 ### description:
@@ -791,12 +851,12 @@ Removing those variables can save deployment and called gas. and improve code qu
 	- [IERC20.transfer(address,uint256).amount](solidity/token_fallback_test.sol.sol#L21)
 
 - The param variables in [IERC20.allowance(address,address)](solidity/token_fallback_test.sol.sol#L22) are unused.
-	- [IERC20.allowance(address,address).owner](solidity/token_fallback_test.sol.sol#L22)
 	- [IERC20.allowance(address,address).spender](solidity/token_fallback_test.sol.sol#L22)
+	- [IERC20.allowance(address,address).owner](solidity/token_fallback_test.sol.sol#L22)
 
 - The param variables in [IERC20.approve(address,uint256)](solidity/token_fallback_test.sol.sol#L23) are unused.
-	- [IERC20.approve(address,uint256).spender](solidity/token_fallback_test.sol.sol#L23)
 	- [IERC20.approve(address,uint256).amount](solidity/token_fallback_test.sol.sol#L23)
+	- [IERC20.approve(address,uint256).spender](solidity/token_fallback_test.sol.sol#L23)
 
 - The param variables in [IERC20.transferFrom(address,address,uint256)](solidity/token_fallback_test.sol.sol#L24-L28) are unused.
 	- [IERC20.transferFrom(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L27)
@@ -809,9 +869,9 @@ Removing those variables can save deployment and called gas. and improve code qu
 	- [ERC20._beforeTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L170)
 
 - The param variables in [ERC20._afterTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L174-L178) are unused.
+	- [ERC20._afterTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L177)
 	- [ERC20._afterTokenTransfer(address,address,uint256).from](solidity/token_fallback_test.sol.sol#L175)
 	- [ERC20._afterTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L176)
-	- [ERC20._afterTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L177)
 
 
 ### recommendation:
@@ -833,6 +893,9 @@ Optimization
 
 ### category:
 unused-parameter
+
+### confidence:
+High
 
 ## [Optimization] Remove unused local variables
 
@@ -863,6 +926,9 @@ Optimization
 
 ### category:
 unused-local-var
+
+### confidence:
+High
 
 ## [Optimization] The result of function calls should be cached rather than re-calling the function
 
@@ -902,6 +968,9 @@ Optimization
 ### category:
 cache-call-function-result
 
+### confidence:
+High
+
 ## [Optimization] Dead-code: functions not used should be removed to save deployment gas
 
 ### description:
@@ -923,6 +992,9 @@ Optimization
 
 ### category:
 dead-code
+
+### confidence:
+High
 
 ## [Optimization] Use indexed events for value types as they are less costly compared to non-indexed ones
 
@@ -959,6 +1031,9 @@ Optimization
 ### category:
 unindexed-event
 
+### confidence:
+High
+
 ## [Optimization] Use `calldata` instead of `memory` for function parameters
 
 ### description:
@@ -990,6 +1065,9 @@ Optimization
 ### category:
 memory-in-parameters
 
+### confidence:
+High
+
 ## [Optimization] Amounts should be checked for `0` before calling a `transfer`
 
 ### description:
@@ -1018,6 +1096,9 @@ Optimization
 
 ### category:
 zero-check-with-transfer
+
+### confidence:
+High
 
 ## [Optimization] Use assembly to check for `address(0)`
 
@@ -1069,6 +1150,9 @@ Optimization
 ### category:
 zero-address-optimization
 
+### confidence:
+High
+
 ## [Optimization] Setting the constructor to `payable`
 
 ### description:
@@ -1103,6 +1187,9 @@ Optimization
 
 ### category:
 payable-constructor
+
+### confidence:
+High
 
 ## [Optimization] Shortening revert strings to fit in 32 `bytes`
 
@@ -1156,6 +1243,9 @@ Optimization
 ### category:
 revert-long-strings
 
+### confidence:
+High
+
 ## [Optimization] Use `assembly` to write address storage values
 
 ### description:
@@ -1197,6 +1287,9 @@ Optimization
 ### category:
 assembly-update-address
 
+### confidence:
+High
+
 ## [Optimization] Empty blocks should be removed or emit something
 
 ### description:
@@ -1230,6 +1323,9 @@ Optimization
 
 ### category:
 empty-block
+
+### confidence:
+High
 
 ## [Optimization] Use `selfbalance()` instead of `address(this).balance`
 
@@ -1273,6 +1369,9 @@ Optimization
 ### category:
 use-self-balance
 
+### confidence:
+High
+
 ## [Optimization] Use `delete` to Clear Variables
 
 ### description:
@@ -1310,6 +1409,9 @@ Optimization
 ### category:
 use-delete-statement
 
+### confidence:
+High
+
 ## [Optimization] State variables that could be declared constant
 
 ### description:
@@ -1331,3 +1433,6 @@ Optimization
 
 ### category:
 constable-states
+
+### confidence:
+High

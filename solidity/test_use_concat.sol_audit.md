@@ -53,6 +53,9 @@ Informational
 ### category:
 solc-version
 
+### confidence:
+High
+
 ## [Optimization] Pre-calculate the results into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime.
 
 ### description:
@@ -80,6 +83,9 @@ Optimization
 
 ### category:
 keccak-constant-in-function
+
+### confidence:
+High
 
 ## [Optimization] Expression `""` is cheaper than `new bytes(0)`
 
@@ -119,6 +125,9 @@ Optimization
 ### category:
 inefficient-new-bytes
 
+### confidence:
+High
+
 ## [Optimization] Use `string.concat()` on string instead of `abi.encodePacked()` to save gas
 
 ### description:
@@ -148,6 +157,9 @@ Optimization
 
 ### category:
 use-concat-on-string
+
+### confidence:
+High
 
 ## [Optimization] Use `bytes.concat()` on mixing bytes and strings instead of `abi.encodePacked()` to save gas
 
@@ -181,3 +193,6 @@ Optimization
 
 ### category:
 use-concat-on-bytes
+
+### confidence:
+High

@@ -83,6 +83,9 @@ Low
 ### category:
 division-by-zero
 
+### confidence:
+High
+
 ## [Informational] Incorrect versions of Solidity
 
 ### description:
@@ -117,6 +120,9 @@ Informational
 
 ### category:
 solc-version
+
+### confidence:
+High
 
 ## [Informational] Magic Number
 
@@ -154,6 +160,9 @@ Informational
 ### category:
 pess-magic-number
 
+### confidence:
+High
+
 ## [Optimization] Using custom errors replace `require` or `assert`
 
 ### description:
@@ -185,6 +194,9 @@ Optimization
 ### category:
 use-custom-error
 
+### confidence:
+High
+
 ## [Optimization] Using `x >> constant(uint)` with the right shift operator is a more gas-efficient
 
 ### description:
@@ -215,6 +227,9 @@ Optimization
 ### category:
 divide-by-constant
 
+### confidence:
+High
+
 ## [Optimization] The result of function calls should be cached rather than re-calling the function
 
 ### description:
@@ -225,10 +240,10 @@ The instances below point to the second+ call of the function within a single fu
 **There are `3` instances of this issue:**
 
 - `DivisionByZero.f0()` called result should be cached with local variable in [DivisionByZero.bad0(uint256,uint256)](solidity/division_by_zero.sol#L2-L14), It is called more than once:
-	- [f0() / a - 1](solidity/division_by_zero.sol#L13)
 	- [10 / (f0() * a)](solidity/division_by_zero.sol#L9)
-	- [10 / (f0() * a - 100)](solidity/division_by_zero.sol#L11)
+	- [f0() / a - 1](solidity/division_by_zero.sol#L13)
 	- [f0() / a](solidity/division_by_zero.sol#L5)
+	- [10 / (f0() * a - 100)](solidity/division_by_zero.sol#L11)
 
 - `DivisionByZero.f0()` called result should be cached with local variable in [DivisionByZero.notBad0(uint256,uint256)](solidity/division_by_zero.sol#L16-L30), It is called more than once:
 	- [f0() / a](solidity/division_by_zero.sol#L25)
@@ -254,3 +269,6 @@ Optimization
 
 ### category:
 cache-call-function-result
+
+### confidence:
+High

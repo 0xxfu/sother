@@ -3,26 +3,19 @@
 @email: angerpeanut@gmail.com
 @date: 2023-06
 """
-import argparse
-import json
 import unittest
-from collections import OrderedDict
 from enum import Enum
 from logging import Logger
-from typing import Tuple, Type
+from typing import Tuple
 
-from loguru import logger
 from slither.detectors.abstract_detector import (
     classification_txt,
     DetectorClassification,
 )
 from slither.printers.abstract_printer import AbstractPrinter
 from slither.utils import output
-from slither.utils.output import Output
 
 from sother.core.models import (
-    OutputSourceMapping,
-    OutputElement,
     OutputResult,
     DetectorWiki,
 )
@@ -85,6 +78,10 @@ def _to_markdown(
     markdown += f"{detector_impact}\n"
     markdown += f"\n### category:\n"
     markdown += f"{detector_wiki.argument}\n"
+
+    markdown += f"\n### confidence:\n"
+    markdown += f"{classification_txt[detector_wiki.confidence]}\n"
+
     return markdown, detector_wiki.argument
 
 
