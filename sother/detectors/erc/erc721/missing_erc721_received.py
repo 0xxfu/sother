@@ -138,7 +138,7 @@ class UncheckedErc721Received(Erc721OnReceived, AbstractDetector):
 The ERC721 implementation used by the contract does not properly call the
 corresponding callback when new tokens are minted or transferred.
 
-The ERC721 standard states that the onERC721Received callback must be called when a
+The [ERC721 standard](https://eips.ethereum.org/EIPS/eip-721) states that the onERC721Received callback must be called when a
 mint or transfer operation occurs.
 
 However, the smart contracts interacting as users of the contracts will not be

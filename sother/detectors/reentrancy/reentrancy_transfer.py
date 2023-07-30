@@ -16,6 +16,7 @@ from sother.detectors.abstracts.abstract_detect_has_instance import (
 from sother.detectors.detector_settings import DetectorSettings
 
 
+# @todo should except the `token` variable is state
 class ReentrancyTransfer(AbstractDetectHasInstance):
     ARGUMENT = "reentrancy-transfer"
     HELP = "Functions calling contracts/addresses with transfer hooks are missing reentrancy guards"
