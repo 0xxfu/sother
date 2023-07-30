@@ -9,10 +9,10 @@ readme = "README.md"
 python = "^3.10"
 #slither-analyzer = "^0.9.3"
 # updated: May 17, 2023
-slither-analyzer = { git = "https://github.com/0xxfu/slither.git",  branch = "master"}
+slither-analyzer = { git = "https://github.com/0xxfu/slither.git", branch = "master" }
 pydantic = "^1.10.9"
 loguru = "^0.7.0"
-slither-pess = { git = "https://github.com/0xxfu/slitherin.git",  branch = "master"}
+slither-pess = { git = "https://github.com/0xxfu/slitherin.git", branch = "master" }
 
 [tool.poetry.scripts]
 sother = "sother.main:start"

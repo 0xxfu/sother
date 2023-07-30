@@ -12,6 +12,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 1 |
+| [N-1] | Magic Number | 5 |
 
 
 ### Gas Optimizations
@@ -117,6 +118,42 @@ Informational
 ### category:
 solc-version
 
+## [Informational] Magic Number
+
+### description:
+Values should be assigned to variables
+
+**There are `5` instances of this issue:**
+
+- Function [DivisionByZero.bad0(uint256,uint256)](solidity/division_by_zero.sol#L2-L14) contains magic numbers: 10, 10, 10, 10
+
+- Function [DivisionByZero.notBad0(uint256,uint256)](solidity/division_by_zero.sol#L16-L30) contains magic numbers: 10, 10, 10
+
+- Function [DivisionByZero.notBad1(uint256,uint256)](solidity/division_by_zero.sol#L32-L42) contains magic numbers: 10, 10, 10
+
+- Function [DivisionByZero.notBad2(uint256,uint256)](solidity/division_by_zero.sol#L44-L52) contains magic numbers: 10, 10
+
+- Function [DivisionByZero.f0()](solidity/division_by_zero.sol#L54-L56) contains magic number: 10
+
+#### Exploit scenario
+-
+
+### recommendation:
+Assign values to variables
+
+### locations:
+- solidity/division_by_zero.sol#L2-L14
+- solidity/division_by_zero.sol#L16-L30
+- solidity/division_by_zero.sol#L32-L42
+- solidity/division_by_zero.sol#L44-L52
+- solidity/division_by_zero.sol#L54-L56
+
+### severity:
+Informational
+
+### category:
+pess-magic-number
+
 ## [Optimization] The result of function calls should be cached rather than re-calling the function
 
 ### description:
@@ -127,14 +164,14 @@ The instances below point to the second+ call of the function within a single fu
 **There are `3` instances of this issue:**
 
 - `DivisionByZero.f0()` called result should be cached with local variable in [DivisionByZero.bad0(uint256,uint256)](solidity/division_by_zero.sol#L2-L14), It is called more than once:
-	- [f0() / a - 1](solidity/division_by_zero.sol#L13)
-	- [10 / (f0() * a)](solidity/division_by_zero.sol#L9)
 	- [10 / (f0() * a - 100)](solidity/division_by_zero.sol#L11)
+	- [10 / (f0() * a)](solidity/division_by_zero.sol#L9)
 	- [f0() / a](solidity/division_by_zero.sol#L5)
+	- [f0() / a - 1](solidity/division_by_zero.sol#L13)
 
 - `DivisionByZero.f0()` called result should be cached with local variable in [DivisionByZero.notBad0(uint256,uint256)](solidity/division_by_zero.sol#L16-L30), It is called more than once:
-	- [10 / (f0() * a)](solidity/division_by_zero.sol#L29)
 	- [f0() / a](solidity/division_by_zero.sol#L25)
+	- [10 / (f0() * a)](solidity/division_by_zero.sol#L29)
 
 - `DivisionByZero.f0()` called result should be cached with local variable in [DivisionByZero.notBad1(uint256,uint256)](solidity/division_by_zero.sol#L32-L42), It is called more than once:
 	- [f0() / a](solidity/division_by_zero.sol#L37)

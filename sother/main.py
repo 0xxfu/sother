@@ -45,8 +45,10 @@ def start() -> Tuple[List[Type[AbstractDetector]], List[Type[AbstractPrinter]]]:
 
 class DetectorTestCase(unittest.TestCase):
     def test_get_detectors(self):
-        for item in get_all_detectors():
-            print(item.ARGUMENT)
+        detectors = get_all_detectors()
+        for item in detectors:
+            logger.debug(item.ARGUMENT)
+        logger.debug(f"detector amount: {len(detectors)}")
 
 
 if __name__ == "__main__":
