@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sother"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["xfu <angerpeanut@gmail.com>"]
 readme = "README.md"
