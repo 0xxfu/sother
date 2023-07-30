@@ -13,6 +13,7 @@ slither-analyzer = { git = "https://github.com/0xxfu/slither.git", branch = "mas
 pydantic = "^1.10.9"
 loguru = "^0.7.0"
 slither-pess = { git = "https://github.com/0xxfu/slitherin.git", branch = "master" }
+click = "^8.1.6"
 
 [tool.poetry.scripts]
 sother = "sother.main:start"

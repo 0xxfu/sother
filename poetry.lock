@@ -407,6 +407,20 @@ files = [
 ]
 
 [[package]]
+name = "click"
+version = "8.1.6"
+description = "Composable command line interface toolkit"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "click-8.1.6-py3-none-any.whl", hash = "sha256:fa244bb30b3b5ee2cae3da8f55c9e5e0c0e86093306301fb418eb9dc40fbded5"},
+    {file = "click-8.1.6.tar.gz", hash = "sha256:48ee849951919527a045bfe3bf7baa8a959c423134e1a5b98c05c20ba75a1cbd"},
+]
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -1457,6 +1471,24 @@ reference = "master"
 resolved_reference = "9070a1ee704567885d5e5585bddeafeffb89ab52"
 
 [[package]]
+name = "slither-pess"
+version = "0.1"
+description = "Some pessimistic detectors"
+optional = false
+python-versions = ">=3.8"
+files = []
+develop = false
+
+[package.dependencies]
+slither-analyzer = ">=0.8.3"
+
+[package.source]
+type = "git"
+url = "https://github.com/0xxfu/slitherin.git"
+reference = "master"
+resolved_reference = "6e37ee816decd54e5c3bebd74bcdbcb81c45e84e"
+
+[[package]]
 name = "solc-select"
 version = "1.0.4"
 description = "Manage multiple Solidity compiler versions."
@@ -1737,4 +1769,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "4fdf4b01d9c404ac3f547f81a91ba46588705bdbf447ea3a0a8ef80b9565b061"
+content-hash = "36c373db74b72f6ca9574d590f7cc74ea34409c6f221d9b6960071a832778222"
