@@ -1486,7 +1486,7 @@ slither-analyzer = ">=0.8.3"
 type = "git"
 url = "https://github.com/0xxfu/slitherin.git"
 reference = "master"
-resolved_reference = "6e37ee816decd54e5c3bebd74bcdbcb81c45e84e"
+resolved_reference = "28078396ce1db4b8b778f0bfd4ad4c93e6ad79e8"
 
 [[package]]
 name = "solc-select"
