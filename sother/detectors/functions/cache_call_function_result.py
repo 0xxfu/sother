@@ -72,7 +72,7 @@ Using local variable to cache function called result if the same function called
                 if (
                     isinstance(ir, (HighLevelCall, InternalCall))
                     and isinstance(ir.function, Function)
-                    and len(ir.arguments) > 0
+                    and len(ir.arguments) <= 0
                 ):
                     function_called_name = ir.function.canonical_name
 
