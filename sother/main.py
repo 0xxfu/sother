@@ -3,6 +3,7 @@
 @email: angerpeanut@gmail.com
 @date: 2023-06
 """
+import importlib.metadata
 import os
 import sys
 import unittest
@@ -54,6 +55,12 @@ def cli():
 def list_detector():
     detectors, _ = get_detectors_and_printers()
     output_detectors(detectors)
+
+
+@cli.command()
+def version():
+    __version__ = importlib.metadata.version(__package__ or __name__)
+    print(f"version: {__version__}")
 
 
 class DetectorTestCase(unittest.TestCase):
