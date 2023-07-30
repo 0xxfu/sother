@@ -11,10 +11,10 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Expression `""` is cheaper than `new bytes(0)` | 5 |
-| [G-1] | Pre-calculate the results into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime. | 1 |
-| [G-2] | Use `bytes.concat()` on mixing bytes and strings instead of `abi.encodePacked()` to save gas | 2 |
-| [G-3] | Use `string.concat()` on string instead of `abi.encodePacked()` to save gas | 1 |
+| [G-0] | Pre-calculate the results into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime. | 1 |
+| [G-1] | Expression `""` is cheaper than `new bytes(0)` | 5 |
+| [G-2] | Use `string.concat()` on string instead of `abi.encodePacked()` to save gas | 1 |
+| [G-3] | Use `bytes.concat()` on mixing bytes and strings instead of `abi.encodePacked()` to save gas | 2 |
 
 
 
@@ -52,6 +52,34 @@ Informational
 
 ### category:
 solc-version
+
+## [Optimization] Pre-calculate the results into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime.
+
+### description:
+
+It should be saved to an `constant` variable, and the `constant` used instead. 
+If the hash is being used as a part of a function selector, 
+the cast to bytes4 should only be Pre-calculated
+
+
+**There is `1` instance of this issue:**
+
+- [abi.encodePacked(a)](solidity/test_use_concat.sol#L4) should use pre-calculate results instead of calculation in runtime.
+
+
+### recommendation:
+
+Pre-calculate the results(hardcode) into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime.
+
+
+### locations:
+- solidity/test_use_concat.sol#L4
+
+### severity:
+Optimization
+
+### category:
+keccak-constant-in-function
 
 ## [Optimization] Expression `""` is cheaper than `new bytes(0)`
 
@@ -91,23 +119,25 @@ Optimization
 ### category:
 inefficient-new-bytes
 
-## [Optimization] Pre-calculate the results into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime.
+## [Optimization] Use `string.concat()` on string instead of `abi.encodePacked()` to save gas
 
 ### description:
 
-It should be saved to an `constant` variable, and the `constant` used instead. 
-If the hash is being used as a part of a function selector, 
-the cast to bytes4 should only be Pre-calculated
+Starting with version 0.8.12, 
+Solidity has the `string.concat()` function, 
+which allows one to concatenate a list of strings, without extra padding. 
+Using this function rather than `abi.encodePacked()` makes the intended operation more clear, 
+leading to less reviewer confusion and saving more gas.
 
 
 **There is `1` instance of this issue:**
 
-- [abi.encodePacked(a)](solidity/test_use_concat.sol#L4) should use pre-calculate results instead of calculation in runtime.
+- should use `string.concat()` on string instead of [abi.encodePacked(a)](solidity/test_use_concat.sol#L4)
 
 
 ### recommendation:
 
-Pre-calculate the results(hardcode) into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime.
+Use `string.concat()` on string instead of `abi.encodePacked()`
 
 
 ### locations:
@@ -117,7 +147,7 @@ Pre-calculate the results(hardcode) into `constant` instead of calculate `keccak
 Optimization
 
 ### category:
-keccak-constant-in-function
+use-concat-on-string
 
 ## [Optimization] Use `bytes.concat()` on mixing bytes and strings instead of `abi.encodePacked()` to save gas
 
@@ -151,33 +181,3 @@ Optimization
 
 ### category:
 use-concat-on-bytes
-
-## [Optimization] Use `string.concat()` on string instead of `abi.encodePacked()` to save gas
-
-### description:
-
-Starting with version 0.8.12, 
-Solidity has the `string.concat()` function, 
-which allows one to concatenate a list of strings, without extra padding. 
-Using this function rather than `abi.encodePacked()` makes the intended operation more clear, 
-leading to less reviewer confusion and saving more gas.
-
-
-**There is `1` instance of this issue:**
-
-- should use `string.concat()` on string instead of [abi.encodePacked(a)](solidity/test_use_concat.sol#L4)
-
-
-### recommendation:
-
-Use `string.concat()` on string instead of `abi.encodePacked()`
-
-
-### locations:
-- solidity/test_use_concat.sol#L4
-
-### severity:
-Optimization
-
-### category:
-use-concat-on-string

@@ -4,15 +4,16 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [H-0] | Token Fallback | 1 |
+| [H-0] | Strange Setter | 1 |
+| [H-1] | Token Fallback | 1 |
 
 
 ### Medium Risk Issues
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [M-0] | Incompatibility with transfer-on-fee or deflationary tokens | 1 |
-| [M-1] | Return values of `transfer()/transferFrom()` not checked | 1 |
+| [M-0] | Return values of `transfer()/transferFrom()` not checked | 1 |
+| [M-1] | Incompatibility with transfer-on-fee or deflationary tokens | 1 |
 
 
 ### Low Risk Issues
@@ -20,10 +21,10 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [L-0] | Lack of a double-step `transferOwnership()` pattern | 1 |
-| [L-1] | Events are missing sender information | 1 |
-| [L-2] | Functions calling contracts/addresses with transfer hooks are missing reentrancy guards | 1 |
-| [L-3] | Double type casts create complexity within the code | 1 |
-| [L-4] | Unsafe to use floating pragma | 5 |
+| [L-1] | Double type casts create complexity within the code | 1 |
+| [L-2] | Unsafe to use floating pragma | 5 |
+| [L-3] | Events are missing sender information | 1 |
+| [L-4] | Functions calling contracts/addresses with transfer hooks are missing reentrancy guards | 1 |
 | [L-5] | Dubious Typecast | 1 |
 
 
@@ -43,28 +44,52 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Use `assembly` to write address storage values | 1 |
+| [G-0] | Should use latest solidity version `0.8.20` for gas reduction and improved security. | 5 |
 | [G-1] | `<x> += <y>` costs more gas than `<x> = <x> + <y>` for state variables | 3 |
-| [G-2] | The result of function calls should be cached rather than re-calling the function | 3 |
-| [G-3] | Dead-code: functions not used should be removed to save deployment gas | 1 |
-| [G-4] | Empty blocks should be removed or emit something | 2 |
-| [G-5] | `internal` functions only called once can be inlined to save gas | 1 |
-| [G-6] | Use `calldata` instead of `memory` for function parameters | 1 |
-| [G-7] | Setting the constructor to `payable` | 3 |
-| [G-8] | Shortening revert strings to fit in 32 `bytes` | 8 |
-| [G-9] | Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead | 2 |
-| [G-10] | Use indexed events for value types as they are less costly compared to non-indexed ones | 2 |
-| [G-11] | Remove unused local variables | 1 |
-| [G-12] | Remove unused parameter variables | 7 |
-| [G-13] | Should use latest solidity version `0.8.20` for gas reduction and improved security. | 5 |
-| [G-14] | Use `delete` to Clear Variables | 1 |
-| [G-15] | Use `selfbalance()` instead of `address(this).balance` | 2 |
-| [G-16] | Using custom errors replace `require` or `assert` | 9 |
-| [G-17] | Use assembly to check for `address(0)` | 5 |
-| [G-18] | Amounts should be checked for `0` before calling a `transfer` | 1 |
+| [G-2] | `internal` functions only called once can be inlined to save gas | 1 |
+| [G-3] | Using custom errors replace `require` or `assert` | 9 |
+| [G-4] | Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead | 2 |
+| [G-5] | Remove unused parameter variables | 7 |
+| [G-6] | Remove unused local variables | 1 |
+| [G-7] | The result of function calls should be cached rather than re-calling the function | 3 |
+| [G-8] | Dead-code: functions not used should be removed to save deployment gas | 1 |
+| [G-9] | Use indexed events for value types as they are less costly compared to non-indexed ones | 2 |
+| [G-10] | Use `calldata` instead of `memory` for function parameters | 1 |
+| [G-11] | Amounts should be checked for `0` before calling a `transfer` | 1 |
+| [G-12] | Use assembly to check for `address(0)` | 5 |
+| [G-13] | Setting the constructor to `payable` | 3 |
+| [G-14] | Shortening revert strings to fit in 32 `bytes` | 8 |
+| [G-15] | Use `assembly` to write address storage values | 1 |
+| [G-16] | Empty blocks should be removed or emit something | 2 |
+| [G-17] | Use `selfbalance()` instead of `address(this).balance` | 2 |
+| [G-18] | Use `delete` to Clear Variables | 1 |
 | [G-19] | State variables that could be declared constant | 1 |
 
 
+
+## [High] Strange Setter
+
+### description:
+Setter must write to storage variables
+
+**There is `1` instance of this issue:**
+
+- Function [AmazoniumToken.constructor()](solidity/token_fallback_test.sol.sol#L207-L211) is a strange setter. Nothing is set in constructor or set in a function without using function parameters
+
+#### Exploit scenario
+-
+
+### recommendation:
+Make sure that your setter actually sets something
+
+### locations:
+- solidity/token_fallback_test.sol.sol#L207-L211
+
+### severity:
+High
+
+### category:
+pess-strange-setter
 
 ## [High] Token Fallback
 
@@ -89,6 +114,46 @@ High
 
 ### category:
 pess-token-fallback
+
+## [Medium] Return values of `transfer()/transferFrom()` not checked
+
+### description:
+
+Not all `IERC20` implementations `revert()` when there's a failure in `transfer()`/`transferFrom()`. The function signature has a `boolean` return value and they indicate errors that way instead. By not checking the return value, operations that should have marked as failed, may potentially go through without actually making a payment.
+
+
+**There is `1` instance of this issue:**
+
+- [AmazoniumToken.purgeBadToken(IERC20)](solidity/token_fallback_test.sol.sol#L219-L222) ignores return value by [badToken.transfer(distAddr,BadTokenBalance)](solidity/token_fallback_test.sol.sol#L221)
+
+#### Exploit scenario
+
+```solidity
+contract Token {
+    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
+}
+contract MyBank{  
+    mapping(address => uint) balances;
+    Token token;
+    function deposit(uint amount) public{
+        token.transferFrom(msg.sender, address(this), amount);
+        balances[msg.sender] += amount;
+    }
+}
+```
+Several tokens do not revert in case of failure and return false. If one of these tokens is used in `MyBank`, `deposit` will not revert if the transfer fails, and an attacker can call `deposit` for free..
+
+### recommendation:
+Use `SafeERC20`, or ensure that the transfer/transferFrom return value is checked.
+
+### locations:
+- solidity/token_fallback_test.sol.sol#L219-L222
+
+### severity:
+Medium
+
+### category:
+unchecked-transfer
 
 ## [Medium] Incompatibility with transfer-on-fee or deflationary tokens
 
@@ -132,46 +197,6 @@ Medium
 
 ### category:
 fee-on-transfer
-
-## [Medium] Return values of `transfer()/transferFrom()` not checked
-
-### description:
-
-Not all `IERC20` implementations `revert()` when there's a failure in `transfer()`/`transferFrom()`. The function signature has a `boolean` return value and they indicate errors that way instead. By not checking the return value, operations that should have marked as failed, may potentially go through without actually making a payment.
-
-
-**There is `1` instance of this issue:**
-
-- [AmazoniumToken.purgeBadToken(IERC20)](solidity/token_fallback_test.sol.sol#L219-L222) ignores return value by [badToken.transfer(distAddr,BadTokenBalance)](solidity/token_fallback_test.sol.sol#L221)
-
-#### Exploit scenario
-
-```solidity
-contract Token {
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
-}
-contract MyBank{  
-    mapping(address => uint) balances;
-    Token token;
-    function deposit(uint amount) public{
-        token.transferFrom(msg.sender, address(this), amount);
-        balances[msg.sender] += amount;
-    }
-}
-```
-Several tokens do not revert in case of failure and return false. If one of these tokens is used in `MyBank`, `deposit` will not revert if the transfer fails, and an attacker can call `deposit` for free..
-
-### recommendation:
-Use `SafeERC20`, or ensure that the transfer/transferFrom return value is checked.
-
-### locations:
-- solidity/token_fallback_test.sol.sol#L219-L222
-
-### severity:
-Medium
-
-### category:
-unchecked-transfer
 
 ## [Low] Lack of a double-step `transferOwnership()` pattern
 
@@ -240,67 +265,6 @@ Low
 
 ### category:
 deprecated-ownable
-
-## [Low] Events are missing sender information
-
-### description:
-
-When an action is triggered based on a user's action, not being able to filter based on 
-who triggered the action makes event processing a lot more cumbersome. 
-Including the `msg.sender` the events of these types of action will make events much more 
-useful to end users.
-
-
-
-**There is `1` instance of this issue:**
-
-- [Transfer(address(0),account,amount)](solidity/token_fallback_test.sol.sol#L151) should add `msg.sender` to event.
-
-
-### recommendation:
-
-Adding `msg.sender` to event.
-
-
-### locations:
-- solidity/token_fallback_test.sol.sol#L151
-
-### severity:
-Low
-
-### category:
-missing-sender-in-event
-
-## [Low] Functions calling contracts/addresses with transfer hooks are missing reentrancy guards
-
-### description:
-
-Even if the function follows the best practice of check-effects-interaction, 
-not using a reentrancy guard when there may be transfer hooks will open the 
-users of this protocol up to 
-[read-only reentrancies](https://chainsecurity.com/curve-lp-oracle-manipulation-post-mortem/) 
-with no way to protect against it, except by block-listing the whole protocol.
-
-
-**There is `1` instance of this issue:**
-
-- [badToken.transfer(distAddr,BadTokenBalance)](solidity/token_fallback_test.sol.sol#L221) should use Reentrancy-Guard.
-
-
-### recommendation:
-
-Using [Reentrancy-Guard](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/bfff03c0d2a59bcd8e2ead1da9aed9edf0080d05/contracts/security/ReentrancyGuard.sol#L50C5-L62) 
-when calling contracts/addresses with transfer hooks.
-
-
-### locations:
-- solidity/token_fallback_test.sol.sol#L221
-
-### severity:
-Low
-
-### category:
-reentrancy-transfer
 
 ## [Low] Double type casts create complexity within the code
 
@@ -380,6 +344,67 @@ Low
 
 ### category:
 unsafe-floating-pragma
+
+## [Low] Events are missing sender information
+
+### description:
+
+When an action is triggered based on a user's action, not being able to filter based on 
+who triggered the action makes event processing a lot more cumbersome. 
+Including the `msg.sender` the events of these types of action will make events much more 
+useful to end users.
+
+
+
+**There is `1` instance of this issue:**
+
+- [Transfer(address(0),account,amount)](solidity/token_fallback_test.sol.sol#L151) should add `msg.sender` to event.
+
+
+### recommendation:
+
+Adding `msg.sender` to event.
+
+
+### locations:
+- solidity/token_fallback_test.sol.sol#L151
+
+### severity:
+Low
+
+### category:
+missing-sender-in-event
+
+## [Low] Functions calling contracts/addresses with transfer hooks are missing reentrancy guards
+
+### description:
+
+Even if the function follows the best practice of check-effects-interaction, 
+not using a reentrancy guard when there may be transfer hooks will open the 
+users of this protocol up to 
+[read-only reentrancies](https://chainsecurity.com/curve-lp-oracle-manipulation-post-mortem/) 
+with no way to protect against it, except by block-listing the whole protocol.
+
+
+**There is `1` instance of this issue:**
+
+- [badToken.transfer(distAddr,BadTokenBalance)](solidity/token_fallback_test.sol.sol#L221) should use Reentrancy-Guard.
+
+
+### recommendation:
+
+Using [Reentrancy-Guard](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/bfff03c0d2a59bcd8e2ead1da9aed9edf0080d05/contracts/security/ReentrancyGuard.sol#L50C5-L62) 
+when calling contracts/addresses with transfer hooks.
+
+
+### locations:
+- solidity/token_fallback_test.sol.sol#L221
+
+### severity:
+Low
+
+### category:
+reentrancy-transfer
 
 ## [Low] Dubious Typecast
 
@@ -603,46 +628,37 @@ Informational
 ### category:
 too-many-digits
 
-## [Optimization] Use `assembly` to write address storage values
+## [Optimization] Should use latest solidity version `0.8.20` for gas reduction and improved security.
 
 ### description:
 
-Where it does not affect readability, 
-using assembly for simple setters allows to save gas not only on deployment, 
-but also on function calls.
+[Solidity v0.8.20](https://blog.soliditylang.org/2023/05/10/solidity-0.8.20-release-announcement/) has many optimization with compiler and bugfixes, 
+please upgrade Solidity to the latest version(0.8.20) for gas reduction and improved security.
 
 
-**There is `1` instance of this issue:**
+**There are `5` instances of this issue:**
 
-- [_owner = msg.sender](solidity/token_fallback_test.sol.sol#L187) should use `assembly` update address to save gas.
-
+- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L3) should upgrade to the latest version: 0.8.20
+- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L15) should upgrade to the latest version: 0.8.20
+- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L33) should upgrade to the latest version: 0.8.20
+- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L42) should upgrade to the latest version: 0.8.20
+- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L181) should upgrade to the latest version: 0.8.20
 
 ### recommendation:
-
-Using `assembly` update address to save gas.
-
-For example:
-```
-contract Contract1 {
-    address owner;
-
-    function assemblyUpdateOwner(address newOwner) public {
-        assembly {
-            sstore(owner.slot, newOwner)
-        }
-    }
-}
-```
-
+Upgrade solidity version to the latest version: 0.8.20
 
 ### locations:
-- solidity/token_fallback_test.sol.sol#L187
+- solidity/token_fallback_test.sol.sol#L3
+- solidity/token_fallback_test.sol.sol#L15
+- solidity/token_fallback_test.sol.sol#L33
+- solidity/token_fallback_test.sol.sol#L42
+- solidity/token_fallback_test.sol.sol#L181
 
 ### severity:
 Optimization
 
 ### category:
-assembly-update-address
+upgrade-to-latest
 
 ## [Optimization] `<x> += <y>` costs more gas than `<x> = <x> + <y>` for state variables
 
@@ -669,6 +685,210 @@ Optimization
 ### category:
 assignment-left-operation
 
+## [Optimization] `internal` functions only called once can be inlined to save gas
+
+### description:
+
+Not inlining costs **20 to 40 gas** because of two extra `JUMP` instructions and additional stack operations needed for function calls.
+more detail see [this](https://docs.soliditylang.org/en/v0.8.20/internals/optimizer.html#function-inlining) and [this](https://blog.soliditylang.org/2021/03/02/saving-gas-with-simple-inliner/)
+        
+
+**There is `1` instance of this issue:**
+
+- [ERC20._mint(address,uint256)](solidity/token_fallback_test.sol.sol#L144-L154) could be inlined to save gas.
+
+
+### recommendation:
+Using inlining replace `internal` function which only called once
+
+### locations:
+- solidity/token_fallback_test.sol.sol#L144-L154
+
+### severity:
+Optimization
+
+### category:
+internal-function-to-inline
+
+## [Optimization] Using custom errors replace `require` or `assert`
+
+### description:
+
+Using a custom error instance will usually be much cheaper than a string description, because you can use the name of the error to describe it, which is encoded in only four bytes. A longer description can be supplied via NatSpec which does not incur any costs.
+
+More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d97a215) and [this](https://docs.soliditylang.org/en/latest/control-structures.html#revert).
+
+
+**There are `9` instances of this issue:**
+
+- [require(bool,string)(currentAllowance >= amount,ERC20: transfer amount exceeds allowance)](solidity/token_fallback_test.sol.sol#L99) should use custom error to save gas.
+
+- [require(bool,string)(currentAllowance >= subtractedValue,ERC20: decreased allowance below zero)](solidity/token_fallback_test.sol.sol#L114) should use custom error to save gas.
+
+- [require(bool,string)(sender != address(0),ERC20: transfer from the zero address)](solidity/token_fallback_test.sol.sol#L127) should use custom error to save gas.
+
+- [require(bool,string)(recipient != address(0),ERC20: transfer to the zero address)](solidity/token_fallback_test.sol.sol#L128) should use custom error to save gas.
+
+- [require(bool,string)(senderBalance >= amount,ERC20: transfer amount exceeds balance)](solidity/token_fallback_test.sol.sol#L133) should use custom error to save gas.
+
+- [require(bool,string)(account != address(0),ERC20: mint to the zero address)](solidity/token_fallback_test.sol.sol#L145) should use custom error to save gas.
+
+- [require(bool,string)(owner != address(0),ERC20: approve from the zero address)](solidity/token_fallback_test.sol.sol#L161) should use custom error to save gas.
+
+- [require(bool,string)(spender != address(0),ERC20: approve to the zero address)](solidity/token_fallback_test.sol.sol#L162) should use custom error to save gas.
+
+- [require(bool,string)(sent,Failed!)](solidity/token_fallback_test.sol.sol#L216) should use custom error to save gas.
+
+
+### recommendation:
+
+Using custom errors replace `require` or `assert`.
+
+
+### locations:
+- solidity/token_fallback_test.sol.sol#L99
+- solidity/token_fallback_test.sol.sol#L114
+- solidity/token_fallback_test.sol.sol#L127
+- solidity/token_fallback_test.sol.sol#L128
+- solidity/token_fallback_test.sol.sol#L133
+- solidity/token_fallback_test.sol.sol#L145
+- solidity/token_fallback_test.sol.sol#L161
+- solidity/token_fallback_test.sol.sol#L162
+- solidity/token_fallback_test.sol.sol#L216
+
+### severity:
+Optimization
+
+### category:
+use-custom-error
+
+## [Optimization] Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead
+
+### description:
+
+> When using elements that are smaller than 32 bytes, your contract’s gas usage may be higher. This is because the EVM operates on 32 bytes at a time. Therefore, if the element is smaller than that, the EVM must use more operations in order to reduce the size of the element from 32 bytes to the desired size.
+
+More detail see [this.](https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html)
+
+Each operation involving a `uint8` costs an extra [**22-28 gas**](https://gist.github.com/0xxfu/3672fec07eb3031cd5da14ac015e04a1) (depending on whether the other operand is also a variable of type `uint8`) as compared to ones involving `uint256`, due to the compiler having to clear the higher bits of the memory word before operating on the `uint8`, as well as the associated stack operations of doing so. Use a larger size then downcast where needed
+
+
+**There are `2` instances of this issue:**
+
+- `uint8 `[IERC20Metadata.decimals().](solidity/token_fallback_test.sol.sol#L39) should be used `uint256/int256`.
+
+- `uint8 `[ERC20.decimals().](solidity/token_fallback_test.sol.sol#L65) should be used `uint256/int256`.
+
+
+### recommendation:
+
+Using `uint256/int256` replace `uint128/uint64/uint32/uint16/uint8` or `int128/int64/int32/int16/int8`
+
+
+### locations:
+- solidity/token_fallback_test.sol.sol#L39
+- solidity/token_fallback_test.sol.sol#L65
+
+### severity:
+Optimization
+
+### category:
+smaller-uint-int
+
+## [Optimization] Remove unused parameter variables
+
+### description:
+
+Unused parameters variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
+
+
+
+**There are `7` instances of this issue:**
+
+- The param variables in [IERC20.balanceOf(address)](solidity/token_fallback_test.sol.sol#L20) are unused.
+	- [IERC20.balanceOf(address).account](solidity/token_fallback_test.sol.sol#L20)
+
+- The param variables in [IERC20.transfer(address,uint256)](solidity/token_fallback_test.sol.sol#L21) are unused.
+	- [IERC20.transfer(address,uint256).recipient](solidity/token_fallback_test.sol.sol#L21)
+	- [IERC20.transfer(address,uint256).amount](solidity/token_fallback_test.sol.sol#L21)
+
+- The param variables in [IERC20.allowance(address,address)](solidity/token_fallback_test.sol.sol#L22) are unused.
+	- [IERC20.allowance(address,address).owner](solidity/token_fallback_test.sol.sol#L22)
+	- [IERC20.allowance(address,address).spender](solidity/token_fallback_test.sol.sol#L22)
+
+- The param variables in [IERC20.approve(address,uint256)](solidity/token_fallback_test.sol.sol#L23) are unused.
+	- [IERC20.approve(address,uint256).spender](solidity/token_fallback_test.sol.sol#L23)
+	- [IERC20.approve(address,uint256).amount](solidity/token_fallback_test.sol.sol#L23)
+
+- The param variables in [IERC20.transferFrom(address,address,uint256)](solidity/token_fallback_test.sol.sol#L24-L28) are unused.
+	- [IERC20.transferFrom(address,address,uint256).recipient](solidity/token_fallback_test.sol.sol#L26)
+	- [IERC20.transferFrom(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L27)
+	- [IERC20.transferFrom(address,address,uint256).sender](solidity/token_fallback_test.sol.sol#L25)
+
+- The param variables in [ERC20._beforeTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L168-L172) are unused.
+	- [ERC20._beforeTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L171)
+	- [ERC20._beforeTokenTransfer(address,address,uint256).from](solidity/token_fallback_test.sol.sol#L169)
+	- [ERC20._beforeTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L170)
+
+- The param variables in [ERC20._afterTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L174-L178) are unused.
+	- [ERC20._afterTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L177)
+	- [ERC20._afterTokenTransfer(address,address,uint256).from](solidity/token_fallback_test.sol.sol#L175)
+	- [ERC20._afterTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L176)
+
+
+### recommendation:
+
+Remove the unused parameter variables.
+
+
+### locations:
+- solidity/token_fallback_test.sol.sol#L20
+- solidity/token_fallback_test.sol.sol#L21
+- solidity/token_fallback_test.sol.sol#L22
+- solidity/token_fallback_test.sol.sol#L23
+- solidity/token_fallback_test.sol.sol#L24-L28
+- solidity/token_fallback_test.sol.sol#L168-L172
+- solidity/token_fallback_test.sol.sol#L174-L178
+
+### severity:
+Optimization
+
+### category:
+unused-parameter
+
+## [Optimization] Remove unused local variables
+
+### description:
+
+Unused local variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
+
+
+**There is `1` instance of this issue:**
+
+- The local variables in [AmazoniumToken.Distribute()](solidity/token_fallback_test.sol.sol#L212-L217) are unused.
+	- [AmazoniumToken.Distribute().ownerBalance](solidity/token_fallback_test.sol.sol#L213)
+
+
+### recommendation:
+
+Remove the unused local variables.
+
+
+### locations:
+- solidity/token_fallback_test.sol.sol#L212-L217
+
+### severity:
+Optimization
+
+### category:
+unused-local-var
+
 ## [Optimization] The result of function calls should be cached rather than re-calling the function
 
 ### description:
@@ -683,8 +903,8 @@ The instances below point to the second+ call of the function within a single fu
 	- [currentAllowance = _allowances[sender][_msgSender()]](solidity/token_fallback_test.sol.sol#L98)
 
 - `Context._msgSender()` called result should be cached with local variable in [ERC20.decreaseAllowance(address,uint256)](solidity/token_fallback_test.sol.sol#L112-L120), It is called more than once:
-	- [_approve(_msgSender(),spender,currentAllowance - subtractedValue)](solidity/token_fallback_test.sol.sol#L116)
 	- [currentAllowance = _allowances[_msgSender()][spender]](solidity/token_fallback_test.sol.sol#L113)
+	- [_approve(_msgSender(),spender,currentAllowance - subtractedValue)](solidity/token_fallback_test.sol.sol#L116)
 
 - `ERC20.totalSupply()` called result should be cached with local variable in [AmazoniumToken.constructor()](solidity/token_fallback_test.sol.sol#L207-L211), It is called more than once:
 	- [_transfer(address(this),msg.sender,totalSupply())](solidity/token_fallback_test.sol.sol#L210)
@@ -729,64 +949,40 @@ Optimization
 ### category:
 dead-code
 
-## [Optimization] Empty blocks should be removed or emit something
+## [Optimization] Use indexed events for value types as they are less costly compared to non-indexed ones
 
 ### description:
 
-The code should be refactored such that they no longer exist, or the block should do 
-something useful, such as emitting an event or reverting. 
-If the contract is meant to be extended, the contract should be `abstract` and the function 
-signatures be added without any default implementation.
+Using the `indexed` keyword for [value types](https://docs.soliditylang.org/en/v0.8.20/types.html#value-types) (`bool/int/address/string/bytes`) saves gas costs, as seen in [this example](https://gist.github.com/0xxfu/c292a65ecb61cae6fd2090366ea0877e).
+
+However, this is only the case for value types, whereas indexing [reference types](https://docs.soliditylang.org/en/v0.8.20/types.html#reference-types) (`array/struct`) are more expensive than their unindexed version.
 
 
 **There are `2` instances of this issue:**
 
-- [ERC20._beforeTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L168-L172) should removed or do something
+- The following variables should be indexed in [IERC20.Transfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L29):
 
-- [ERC20._afterTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L174-L178) should removed or do something
+	- [value](solidity/token_fallback_test.sol.sol#L29)
+
+- The following variables should be indexed in [IERC20.Approval(address,address,uint256)](solidity/token_fallback_test.sol.sol#L30):
+
+	- [value](solidity/token_fallback_test.sol.sol#L30)
 
 
 ### recommendation:
 
-Empty blocks should emit an event, or revert. 
-If not, they can simply be removed to save gas upon deployment. 
-This is valid for `receive()` functions, but also `constructors()`
+Using the `indexed` keyword for values types `bool/int/address/string/bytes` in event
 
 
 ### locations:
-- solidity/token_fallback_test.sol.sol#L168-L172
-- solidity/token_fallback_test.sol.sol#L174-L178
+- solidity/token_fallback_test.sol.sol#L29
+- solidity/token_fallback_test.sol.sol#L30
 
 ### severity:
 Optimization
 
 ### category:
-empty-block
-
-## [Optimization] `internal` functions only called once can be inlined to save gas
-
-### description:
-
-Not inlining costs **20 to 40 gas** because of two extra `JUMP` instructions and additional stack operations needed for function calls.
-more detail see [this](https://docs.soliditylang.org/en/v0.8.20/internals/optimizer.html#function-inlining) and [this](https://blog.soliditylang.org/2021/03/02/saving-gas-with-simple-inliner/)
-        
-
-**There is `1` instance of this issue:**
-
-- [ERC20._mint(address,uint256)](solidity/token_fallback_test.sol.sol#L144-L154) could be inlined to save gas.
-
-
-### recommendation:
-Using inlining replace `internal` function which only called once
-
-### locations:
-- solidity/token_fallback_test.sol.sol#L144-L154
-
-### severity:
-Optimization
-
-### category:
-internal-function-to-inline
+unindexed-event
 
 ## [Optimization] Use `calldata` instead of `memory` for function parameters
 
@@ -818,6 +1014,85 @@ Optimization
 
 ### category:
 memory-in-parameters
+
+## [Optimization] Amounts should be checked for `0` before calling a `transfer`
+
+### description:
+
+According to the fact that EIP-20 [states](https://github.com/ethereum/EIPs/blob/46b9b698815abbfa628cd1097311deee77dd45c5/EIPS/eip-20.md?plain=1#L116) that zero-valued transfers must be accepted.
+
+Checking non-zero transfer values can avoid an expensive external call and save gas.
+While this is done at some places, it’s not consistently done in the solution.
+
+
+**There is `1` instance of this issue:**
+
+- Adding a non-zero-value check for [badToken.transfer(distAddr,BadTokenBalance)](solidity/token_fallback_test.sol.sol#L221) at the beginning of [AmazoniumToken.purgeBadToken(IERC20)](solidity/token_fallback_test.sol.sol#L219-L222)
+
+
+### recommendation:
+
+Consider adding a non-zero-value check at the beginning of function.
+
+
+### locations:
+- solidity/token_fallback_test.sol.sol#L221
+
+### severity:
+Optimization
+
+### category:
+zero-check-with-transfer
+
+## [Optimization] Use assembly to check for `address(0)`
+
+### description:
+
+[Inline Assembly](https://docs.soliditylang.org/en/latest/assembly.html) more gas efficient and [Saving Gas with Simple Inlining](https://blog.soliditylang.org/2021/03/02/saving-gas-with-simple-inliner/).
+
+
+
+**There are `5` instances of this issue:**
+
+- [require(bool,string)(sender != address(0),ERC20: transfer from the zero address)](solidity/token_fallback_test.sol.sol#L127) should use assembly to check for `address(0)`
+
+- [require(bool,string)(recipient != address(0),ERC20: transfer to the zero address)](solidity/token_fallback_test.sol.sol#L128) should use assembly to check for `address(0)`
+
+- [require(bool,string)(account != address(0),ERC20: mint to the zero address)](solidity/token_fallback_test.sol.sol#L145) should use assembly to check for `address(0)`
+
+- [require(bool,string)(owner != address(0),ERC20: approve from the zero address)](solidity/token_fallback_test.sol.sol#L161) should use assembly to check for `address(0)`
+
+- [require(bool,string)(spender != address(0),ERC20: approve to the zero address)](solidity/token_fallback_test.sol.sol#L162) should use assembly to check for `address(0)`
+
+
+### recommendation:
+
+Use assembly to check for `address(0)`:
+
+```
+function addrNotZero(address _addr) public pure {
+        assembly {
+            if iszero(_addr) {
+                mstore(0x00, "zero address")
+                revert(0x00, 0x20)
+            }
+        }
+}
+```
+
+
+### locations:
+- solidity/token_fallback_test.sol.sol#L127
+- solidity/token_fallback_test.sol.sol#L128
+- solidity/token_fallback_test.sol.sol#L145
+- solidity/token_fallback_test.sol.sol#L161
+- solidity/token_fallback_test.sol.sol#L162
+
+### severity:
+Optimization
+
+### category:
+zero-address-optimization
 
 ## [Optimization] Setting the constructor to `payable`
 
@@ -906,159 +1181,72 @@ Optimization
 ### category:
 revert-long-strings
 
-## [Optimization] Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead
+## [Optimization] Use `assembly` to write address storage values
 
 ### description:
 
-> When using elements that are smaller than 32 bytes, your contract’s gas usage may be higher. This is because the EVM operates on 32 bytes at a time. Therefore, if the element is smaller than that, the EVM must use more operations in order to reduce the size of the element from 32 bytes to the desired size.
-
-More detail see [this.](https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html)
-
-Each operation involving a `uint8` costs an extra [**22-28 gas**](https://gist.github.com/0xxfu/3672fec07eb3031cd5da14ac015e04a1) (depending on whether the other operand is also a variable of type `uint8`) as compared to ones involving `uint256`, due to the compiler having to clear the higher bits of the memory word before operating on the `uint8`, as well as the associated stack operations of doing so. Use a larger size then downcast where needed
-
-
-**There are `2` instances of this issue:**
-
-- `uint8 `[IERC20Metadata.decimals().](solidity/token_fallback_test.sol.sol#L39) should be used `uint256/int256`.
-
-- `uint8 `[ERC20.decimals().](solidity/token_fallback_test.sol.sol#L65) should be used `uint256/int256`.
-
-
-### recommendation:
-
-Using `uint256/int256` replace `uint128/uint64/uint32/uint16/uint8` or `int128/int64/int32/int16/int8`
-
-
-### locations:
-- solidity/token_fallback_test.sol.sol#L39
-- solidity/token_fallback_test.sol.sol#L65
-
-### severity:
-Optimization
-
-### category:
-smaller-uint-int
-
-## [Optimization] Use indexed events for value types as they are less costly compared to non-indexed ones
-
-### description:
-
-Using the `indexed` keyword for [value types](https://docs.soliditylang.org/en/v0.8.20/types.html#value-types) (`bool/int/address/string/bytes`) saves gas costs, as seen in [this example](https://gist.github.com/0xxfu/c292a65ecb61cae6fd2090366ea0877e).
-
-However, this is only the case for value types, whereas indexing [reference types](https://docs.soliditylang.org/en/v0.8.20/types.html#reference-types) (`array/struct`) are more expensive than their unindexed version.
-
-
-**There are `2` instances of this issue:**
-
-- The following variables should be indexed in [IERC20.Transfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L29):
-
-	- [value](solidity/token_fallback_test.sol.sol#L29)
-
-- The following variables should be indexed in [IERC20.Approval(address,address,uint256)](solidity/token_fallback_test.sol.sol#L30):
-
-	- [value](solidity/token_fallback_test.sol.sol#L30)
-
-
-### recommendation:
-
-Using the `indexed` keyword for values types `bool/int/address/string/bytes` in event
-
-
-### locations:
-- solidity/token_fallback_test.sol.sol#L29
-- solidity/token_fallback_test.sol.sol#L30
-
-### severity:
-Optimization
-
-### category:
-unindexed-event
-
-## [Optimization] Remove unused local variables
-
-### description:
-
-Unused local variables are gas consuming, 
-since the initial value assignment costs gas. 
-And are a bad code practice. 
-Removing those variables can save deployment and called gas. and improve code quality. 
+Where it does not affect readability, 
+using assembly for simple setters allows to save gas not only on deployment, 
+but also on function calls.
 
 
 **There is `1` instance of this issue:**
 
-- The local variables in [AmazoniumToken.Distribute()](solidity/token_fallback_test.sol.sol#L212-L217) are unused.
-	- [AmazoniumToken.Distribute().ownerBalance](solidity/token_fallback_test.sol.sol#L213)
+- [_owner = msg.sender](solidity/token_fallback_test.sol.sol#L187) should use `assembly` update address to save gas.
 
 
 ### recommendation:
 
-Remove the unused local variables.
+Using `assembly` update address to save gas.
+
+For example:
+```
+contract Contract1 {
+    address owner;
+
+    function assemblyUpdateOwner(address newOwner) public {
+        assembly {
+            sstore(owner.slot, newOwner)
+        }
+    }
+}
+```
 
 
 ### locations:
-- solidity/token_fallback_test.sol.sol#L212-L217
+- solidity/token_fallback_test.sol.sol#L187
 
 ### severity:
 Optimization
 
 ### category:
-unused-local-var
+assembly-update-address
 
-## [Optimization] Remove unused parameter variables
+## [Optimization] Empty blocks should be removed or emit something
 
 ### description:
 
-Unused parameters variables are gas consuming, 
-since the initial value assignment costs gas. 
-And are a bad code practice. 
-Removing those variables can save deployment and called gas. and improve code quality. 
+The code should be refactored such that they no longer exist, or the block should do 
+something useful, such as emitting an event or reverting. 
+If the contract is meant to be extended, the contract should be `abstract` and the function 
+signatures be added without any default implementation.
 
 
+**There are `2` instances of this issue:**
 
-**There are `7` instances of this issue:**
+- [ERC20._beforeTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L168-L172) should removed or do something
 
-- The param variables in [IERC20.balanceOf(address)](solidity/token_fallback_test.sol.sol#L20) are unused.
-	- [IERC20.balanceOf(address).account](solidity/token_fallback_test.sol.sol#L20)
-
-- The param variables in [IERC20.transfer(address,uint256)](solidity/token_fallback_test.sol.sol#L21) are unused.
-	- [IERC20.transfer(address,uint256).amount](solidity/token_fallback_test.sol.sol#L21)
-	- [IERC20.transfer(address,uint256).recipient](solidity/token_fallback_test.sol.sol#L21)
-
-- The param variables in [IERC20.allowance(address,address)](solidity/token_fallback_test.sol.sol#L22) are unused.
-	- [IERC20.allowance(address,address).spender](solidity/token_fallback_test.sol.sol#L22)
-	- [IERC20.allowance(address,address).owner](solidity/token_fallback_test.sol.sol#L22)
-
-- The param variables in [IERC20.approve(address,uint256)](solidity/token_fallback_test.sol.sol#L23) are unused.
-	- [IERC20.approve(address,uint256).spender](solidity/token_fallback_test.sol.sol#L23)
-	- [IERC20.approve(address,uint256).amount](solidity/token_fallback_test.sol.sol#L23)
-
-- The param variables in [IERC20.transferFrom(address,address,uint256)](solidity/token_fallback_test.sol.sol#L24-L28) are unused.
-	- [IERC20.transferFrom(address,address,uint256).sender](solidity/token_fallback_test.sol.sol#L25)
-	- [IERC20.transferFrom(address,address,uint256).recipient](solidity/token_fallback_test.sol.sol#L26)
-	- [IERC20.transferFrom(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L27)
-
-- The param variables in [ERC20._beforeTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L168-L172) are unused.
-	- [ERC20._beforeTokenTransfer(address,address,uint256).from](solidity/token_fallback_test.sol.sol#L169)
-	- [ERC20._beforeTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L170)
-	- [ERC20._beforeTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L171)
-
-- The param variables in [ERC20._afterTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L174-L178) are unused.
-	- [ERC20._afterTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L177)
-	- [ERC20._afterTokenTransfer(address,address,uint256).from](solidity/token_fallback_test.sol.sol#L175)
-	- [ERC20._afterTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L176)
+- [ERC20._afterTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L174-L178) should removed or do something
 
 
 ### recommendation:
 
-Remove the unused parameter variables.
+Empty blocks should emit an event, or revert. 
+If not, they can simply be removed to save gas upon deployment. 
+This is valid for `receive()` functions, but also `constructors()`
 
 
 ### locations:
-- solidity/token_fallback_test.sol.sol#L20
-- solidity/token_fallback_test.sol.sol#L21
-- solidity/token_fallback_test.sol.sol#L22
-- solidity/token_fallback_test.sol.sol#L23
-- solidity/token_fallback_test.sol.sol#L24-L28
 - solidity/token_fallback_test.sol.sol#L168-L172
 - solidity/token_fallback_test.sol.sol#L174-L178
 
@@ -1066,76 +1254,7 @@ Remove the unused parameter variables.
 Optimization
 
 ### category:
-unused-parameter
-
-## [Optimization] Should use latest solidity version `0.8.20` for gas reduction and improved security.
-
-### description:
-
-[Solidity v0.8.20](https://blog.soliditylang.org/2023/05/10/solidity-0.8.20-release-announcement/) has many optimization with compiler and bugfixes, 
-please upgrade Solidity to the latest version(0.8.20) for gas reduction and improved security.
-
-
-**There are `5` instances of this issue:**
-
-- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L3) should upgrade to the latest version: 0.8.20
-- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L15) should upgrade to the latest version: 0.8.20
-- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L33) should upgrade to the latest version: 0.8.20
-- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L42) should upgrade to the latest version: 0.8.20
-- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L181) should upgrade to the latest version: 0.8.20
-
-### recommendation:
-Upgrade solidity version to the latest version: 0.8.20
-
-### locations:
-- solidity/token_fallback_test.sol.sol#L3
-- solidity/token_fallback_test.sol.sol#L15
-- solidity/token_fallback_test.sol.sol#L33
-- solidity/token_fallback_test.sol.sol#L42
-- solidity/token_fallback_test.sol.sol#L181
-
-### severity:
-Optimization
-
-### category:
-upgrade-to-latest
-
-## [Optimization] Use `delete` to Clear Variables
-
-### description:
-
-delete a assigns the initial value for the type to a. i.e. 
-for integers it is equivalent to a = 0, but it can also be used on arrays, 
-where it assigns a dynamic array of length zero or a static array of the same 
-length with all elements reset. For structs, it assigns a struct with all members reset. 
-Similarly, it can also be used to set an address to zero address. 
-It has no effect on whole mappings though (as the keys of mappings may be arbitrary 
-and are generally unknown). However, individual keys and what they map to can be deleted: 
-If a is a mapping, then delete a[x] will delete the value stored at x.
-
-The delete key better conveys the intention and is also more idiomatic. 
-Consider replacing assignments of zero with delete statements.
-
-
-**There is `1` instance of this issue:**
-
-- Should use `delete` statement instead of [ownerBalance = 0](solidity/token_fallback_test.sol.sol#L215)
-
-
-### recommendation:
-
-Replacing assignments of zero with delete statements.
-
-
-
-### locations:
-- solidity/token_fallback_test.sol.sol#L215
-
-### severity:
-Optimization
-
-### category:
-use-delete-statement
+empty-block
 
 ## [Optimization] Use `selfbalance()` instead of `address(this).balance`
 
@@ -1179,136 +1298,42 @@ Optimization
 ### category:
 use-self-balance
 
-## [Optimization] Using custom errors replace `require` or `assert`
+## [Optimization] Use `delete` to Clear Variables
 
 ### description:
 
-Using a custom error instance will usually be much cheaper than a string description, because you can use the name of the error to describe it, which is encoded in only four bytes. A longer description can be supplied via NatSpec which does not incur any costs.
+delete a assigns the initial value for the type to a. i.e. 
+for integers it is equivalent to a = 0, but it can also be used on arrays, 
+where it assigns a dynamic array of length zero or a static array of the same 
+length with all elements reset. For structs, it assigns a struct with all members reset. 
+Similarly, it can also be used to set an address to zero address. 
+It has no effect on whole mappings though (as the keys of mappings may be arbitrary 
+and are generally unknown). However, individual keys and what they map to can be deleted: 
+If a is a mapping, then delete a[x] will delete the value stored at x.
 
-More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d97a215) and [this](https://docs.soliditylang.org/en/latest/control-structures.html#revert).
-
-
-**There are `9` instances of this issue:**
-
-- [require(bool,string)(currentAllowance >= amount,ERC20: transfer amount exceeds allowance)](solidity/token_fallback_test.sol.sol#L99) should use custom error to save gas.
-
-- [require(bool,string)(currentAllowance >= subtractedValue,ERC20: decreased allowance below zero)](solidity/token_fallback_test.sol.sol#L114) should use custom error to save gas.
-
-- [require(bool,string)(sender != address(0),ERC20: transfer from the zero address)](solidity/token_fallback_test.sol.sol#L127) should use custom error to save gas.
-
-- [require(bool,string)(recipient != address(0),ERC20: transfer to the zero address)](solidity/token_fallback_test.sol.sol#L128) should use custom error to save gas.
-
-- [require(bool,string)(senderBalance >= amount,ERC20: transfer amount exceeds balance)](solidity/token_fallback_test.sol.sol#L133) should use custom error to save gas.
-
-- [require(bool,string)(account != address(0),ERC20: mint to the zero address)](solidity/token_fallback_test.sol.sol#L145) should use custom error to save gas.
-
-- [require(bool,string)(owner != address(0),ERC20: approve from the zero address)](solidity/token_fallback_test.sol.sol#L161) should use custom error to save gas.
-
-- [require(bool,string)(spender != address(0),ERC20: approve to the zero address)](solidity/token_fallback_test.sol.sol#L162) should use custom error to save gas.
-
-- [require(bool,string)(sent,Failed!)](solidity/token_fallback_test.sol.sol#L216) should use custom error to save gas.
-
-
-### recommendation:
-
-Using custom errors replace `require` or `assert`.
-
-
-### locations:
-- solidity/token_fallback_test.sol.sol#L99
-- solidity/token_fallback_test.sol.sol#L114
-- solidity/token_fallback_test.sol.sol#L127
-- solidity/token_fallback_test.sol.sol#L128
-- solidity/token_fallback_test.sol.sol#L133
-- solidity/token_fallback_test.sol.sol#L145
-- solidity/token_fallback_test.sol.sol#L161
-- solidity/token_fallback_test.sol.sol#L162
-- solidity/token_fallback_test.sol.sol#L216
-
-### severity:
-Optimization
-
-### category:
-use-custom-error
-
-## [Optimization] Use assembly to check for `address(0)`
-
-### description:
-
-[Inline Assembly](https://docs.soliditylang.org/en/latest/assembly.html) more gas efficient and [Saving Gas with Simple Inlining](https://blog.soliditylang.org/2021/03/02/saving-gas-with-simple-inliner/).
-
-
-
-**There are `5` instances of this issue:**
-
-- [require(bool,string)(sender != address(0),ERC20: transfer from the zero address)](solidity/token_fallback_test.sol.sol#L127) should use assembly to check for `address(0)`
-
-- [require(bool,string)(recipient != address(0),ERC20: transfer to the zero address)](solidity/token_fallback_test.sol.sol#L128) should use assembly to check for `address(0)`
-
-- [require(bool,string)(account != address(0),ERC20: mint to the zero address)](solidity/token_fallback_test.sol.sol#L145) should use assembly to check for `address(0)`
-
-- [require(bool,string)(owner != address(0),ERC20: approve from the zero address)](solidity/token_fallback_test.sol.sol#L161) should use assembly to check for `address(0)`
-
-- [require(bool,string)(spender != address(0),ERC20: approve to the zero address)](solidity/token_fallback_test.sol.sol#L162) should use assembly to check for `address(0)`
-
-
-### recommendation:
-
-Use assembly to check for `address(0)`:
-
-```
-function addrNotZero(address _addr) public pure {
-        assembly {
-            if iszero(_addr) {
-                mstore(0x00, "zero address")
-                revert(0x00, 0x20)
-            }
-        }
-}
-```
-
-
-### locations:
-- solidity/token_fallback_test.sol.sol#L127
-- solidity/token_fallback_test.sol.sol#L128
-- solidity/token_fallback_test.sol.sol#L145
-- solidity/token_fallback_test.sol.sol#L161
-- solidity/token_fallback_test.sol.sol#L162
-
-### severity:
-Optimization
-
-### category:
-zero-address-optimization
-
-## [Optimization] Amounts should be checked for `0` before calling a `transfer`
-
-### description:
-
-According to the fact that EIP-20 [states](https://github.com/ethereum/EIPs/blob/46b9b698815abbfa628cd1097311deee77dd45c5/EIPS/eip-20.md?plain=1#L116) that zero-valued transfers must be accepted.
-
-Checking non-zero transfer values can avoid an expensive external call and save gas.
-While this is done at some places, it’s not consistently done in the solution.
+The delete key better conveys the intention and is also more idiomatic. 
+Consider replacing assignments of zero with delete statements.
 
 
 **There is `1` instance of this issue:**
 
-- Adding a non-zero-value check for [badToken.transfer(distAddr,BadTokenBalance)](solidity/token_fallback_test.sol.sol#L221) at the beginning of [AmazoniumToken.purgeBadToken(IERC20)](solidity/token_fallback_test.sol.sol#L219-L222)
+- Should use `delete` statement instead of [ownerBalance = 0](solidity/token_fallback_test.sol.sol#L215)
 
 
 ### recommendation:
 
-Consider adding a non-zero-value check at the beginning of function.
+Replacing assignments of zero with delete statements.
+
 
 
 ### locations:
-- solidity/token_fallback_test.sol.sol#L221
+- solidity/token_fallback_test.sol.sol#L215
 
 ### severity:
 Optimization
 
 ### category:
-zero-check-with-transfer
+use-delete-statement
 
 ## [Optimization] State variables that could be declared constant
 

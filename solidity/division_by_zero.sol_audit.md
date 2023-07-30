@@ -19,9 +19,9 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | The result of function calls should be cached rather than re-calling the function | 3 |
+| [G-0] | Using custom errors replace `require` or `assert` | 2 |
 | [G-1] | Using `x >> constant(uint)` with the right shift operator is a more gas-efficient | 1 |
-| [G-2] | Using custom errors replace `require` or `assert` | 2 |
+| [G-2] | The result of function calls should be cached rather than re-calling the function | 3 |
 
 
 
@@ -154,6 +154,67 @@ Informational
 ### category:
 pess-magic-number
 
+## [Optimization] Using custom errors replace `require` or `assert`
+
+### description:
+
+Using a custom error instance will usually be much cheaper than a string description, because you can use the name of the error to describe it, which is encoded in only four bytes. A longer description can be supplied via NatSpec which does not incur any costs.
+
+More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d97a215) and [this](https://docs.soliditylang.org/en/latest/control-structures.html#revert).
+
+
+**There are `2` instances of this issue:**
+
+- [require(bool)(a != 0)](solidity/division_by_zero.sol#L33) should use custom error to save gas.
+
+- [require(bool)(b != 0)](solidity/division_by_zero.sol#L34) should use custom error to save gas.
+
+
+### recommendation:
+
+Using custom errors replace `require` or `assert`.
+
+
+### locations:
+- solidity/division_by_zero.sol#L33
+- solidity/division_by_zero.sol#L34
+
+### severity:
+Optimization
+
+### category:
+use-custom-error
+
+## [Optimization] Using `x >> constant(uint)` with the right shift operator is a more gas-efficient
+
+### description:
+
+`<x> / 2` is the same as `<x> >> 1`. While the compiler uses the `SHR` opcode to accomplish both, 
+the version that uses division incurs an overhead of [**20 gas**](https://gist.github.com/0xxfu/84e3727f28e01f9b628836d5bf55d0cc) 
+due to `JUMP`s to and from a compiler utility function that introduces checks which can 
+be avoided by using `unchecked {}` around the division by two
+
+
+
+**There is `1` instance of this issue:**
+
+- [a / 1](solidity/division_by_zero.sol#L49) should use right shift `>>` operator to save gas.
+
+
+### recommendation:
+
+Using bit shifting (`>>` operator) replace division divided by constant.
+
+
+### locations:
+- solidity/division_by_zero.sol#L49
+
+### severity:
+Optimization
+
+### category:
+divide-by-constant
+
 ## [Optimization] The result of function calls should be cached rather than re-calling the function
 
 ### description:
@@ -193,64 +254,3 @@ Optimization
 
 ### category:
 cache-call-function-result
-
-## [Optimization] Using `x >> constant(uint)` with the right shift operator is a more gas-efficient
-
-### description:
-
-`<x> / 2` is the same as `<x> >> 1`. While the compiler uses the `SHR` opcode to accomplish both, 
-the version that uses division incurs an overhead of [**20 gas**](https://gist.github.com/0xxfu/84e3727f28e01f9b628836d5bf55d0cc) 
-due to `JUMP`s to and from a compiler utility function that introduces checks which can 
-be avoided by using `unchecked {}` around the division by two
-
-
-
-**There is `1` instance of this issue:**
-
-- [a / 1](solidity/division_by_zero.sol#L49) should use right shift `>>` operator to save gas.
-
-
-### recommendation:
-
-Using bit shifting (`>>` operator) replace division divided by constant.
-
-
-### locations:
-- solidity/division_by_zero.sol#L49
-
-### severity:
-Optimization
-
-### category:
-divide-by-constant
-
-## [Optimization] Using custom errors replace `require` or `assert`
-
-### description:
-
-Using a custom error instance will usually be much cheaper than a string description, because you can use the name of the error to describe it, which is encoded in only four bytes. A longer description can be supplied via NatSpec which does not incur any costs.
-
-More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d97a215) and [this](https://docs.soliditylang.org/en/latest/control-structures.html#revert).
-
-
-**There are `2` instances of this issue:**
-
-- [require(bool)(a != 0)](solidity/division_by_zero.sol#L33) should use custom error to save gas.
-
-- [require(bool)(b != 0)](solidity/division_by_zero.sol#L34) should use custom error to save gas.
-
-
-### recommendation:
-
-Using custom errors replace `require` or `assert`.
-
-
-### locations:
-- solidity/division_by_zero.sol#L33
-- solidity/division_by_zero.sol#L34
-
-### severity:
-Optimization
-
-### category:
-use-custom-error

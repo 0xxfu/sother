@@ -26,13 +26,13 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Empty blocks should be removed or emit something | 1 |
-| [G-1] | Remove unused error definition | 1 |
-| [G-2] | Remove unused local variables | 2 |
-| [G-3] | Not using the named return variables anywhere in the function is confusing | 3 |
-| [G-4] | Remove unused parameter variables | 3 |
-| [G-5] | Remove or replace unused state variables | 2 |
-| [G-6] | Remove unused struct declaration | 1 |
+| [G-0] | Remove or replace unused state variables | 2 |
+| [G-1] | Not using the named return variables anywhere in the function is confusing | 3 |
+| [G-2] | Remove unused parameter variables | 3 |
+| [G-3] | Remove unused local variables | 2 |
+| [G-4] | Remove unused struct declaration | 1 |
+| [G-5] | Remove unused error definition | 1 |
+| [G-6] | Empty blocks should be removed or emit something | 1 |
 | [G-7] | Use `delete` to Clear Variables | 3 |
 | [G-8] | State variables that could be declared constant | 2 |
 
@@ -182,100 +182,37 @@ Informational
 ### category:
 naming-convention
 
-## [Optimization] Empty blocks should be removed or emit something
+## [Optimization] Remove or replace unused state variables
 
 ### description:
 
-The code should be refactored such that they no longer exist, or the block should do 
-something useful, such as emitting an event or reverting. 
-If the contract is meant to be extended, the contract should be `abstract` and the function 
-signatures be added without any default implementation.
-
-
-**There is `1` instance of this issue:**
-
-- [UnusedStruct.f0(UnusedStruct.StructUsedA)](solidity/test_unused_state.sol#L104) should removed or do something
-
-
-### recommendation:
-
-Empty blocks should emit an event, or revert. 
-If not, they can simply be removed to save gas upon deployment. 
-This is valid for `receive()` functions, but also `constructors()`
-
-
-### locations:
-- solidity/test_unused_state.sol#L104
-
-### severity:
-Optimization
-
-### category:
-empty-block
-
-## [Optimization] Remove unused error definition
-
-### description:
-
-Unused  error definition are gas consuming. 
-And are a bad code practice. 
-Removing those errors save deployment and improve code quality. 
-
-
-**There is `1` instance of this issue:**
-
-- The error definition in [UnusedError](solidity/test_unused_state.sol#L111-L118) are unused.
-	- `error ErrorUnused()`
-
-
-### recommendation:
-
-Remove unused error definition.
-
-
-### locations:
-- solidity/test_unused_state.sol#L111-L118
-
-### severity:
-Optimization
-
-### category:
-unused-error
-
-## [Optimization] Remove unused local variables
-
-### description:
-
-Unused local variables are gas consuming, 
-since the initial value assignment costs gas. 
-And are a bad code practice. 
-Removing those variables can save deployment and called gas. and improve code quality. 
+Saves a storage slot. If the variable is assigned a non-zero value, 
+saves Gsset (20000 gas). If it's assigned a zero value, saves Gsreset (2900 gas). 
+If the variable remains unassigned, there is no gas savings unless the variable is public, 
+in which case the compiler-generated non-payable getter deployment cost is saved. 
+If the state variable is overriding an interface's public function, 
+mark the variable as constant or immutable so that it does not use a storage slot
 
 
 **There are `2` instances of this issue:**
 
-- The local variables in [UnusedLocalVar.bad0()](solidity/test_unused_state.sol#L66-L71) are unused.
-	- [UnusedLocalVar.bad0().c](solidity/test_unused_state.sol#L69)
-	- [UnusedLocalVar.bad0().b](solidity/test_unused_state.sol#L68)
-
-- The local variables in [UnusedStruct.f1(uint256)](solidity/test_unused_state.sol#L106-L108) are unused.
-	- [UnusedStruct.f1(uint256).localB](solidity/test_unused_state.sol#L107)
-
+- [UnUsedState.unusedState](solidity/test_unused_state.sol#L4) is never used.
+- [UnusedStruct.stateC](solidity/test_unused_state.sol#L102) is never used.
 
 ### recommendation:
 
-Remove the unused local variables.
+Remove or replace the unused state variables
 
 
 ### locations:
-- solidity/test_unused_state.sol#L66-L71
-- solidity/test_unused_state.sol#L106-L108
+- solidity/test_unused_state.sol#L4
+- solidity/test_unused_state.sol#L102
 
 ### severity:
 Optimization
 
 ### category:
-unused-local-var
+unused-state-variables
 
 ## [Optimization] Not using the named return variables anywhere in the function is confusing
 
@@ -354,37 +291,40 @@ Optimization
 ### category:
 unused-parameter
 
-## [Optimization] Remove or replace unused state variables
+## [Optimization] Remove unused local variables
 
 ### description:
 
-Saves a storage slot. If the variable is assigned a non-zero value, 
-saves Gsset (20000 gas). If it's assigned a zero value, saves Gsreset (2900 gas). 
-If the variable remains unassigned, there is no gas savings unless the variable is public, 
-in which case the compiler-generated non-payable getter deployment cost is saved. 
-If the state variable is overriding an interface's public function, 
-mark the variable as constant or immutable so that it does not use a storage slot
+Unused local variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
 
 
 **There are `2` instances of this issue:**
 
-- [UnUsedState.unusedState](solidity/test_unused_state.sol#L4) is never used.
-- [UnusedStruct.stateC](solidity/test_unused_state.sol#L102) is never used.
+- The local variables in [UnusedLocalVar.bad0()](solidity/test_unused_state.sol#L66-L71) are unused.
+	- [UnusedLocalVar.bad0().c](solidity/test_unused_state.sol#L69)
+	- [UnusedLocalVar.bad0().b](solidity/test_unused_state.sol#L68)
+
+- The local variables in [UnusedStruct.f1(uint256)](solidity/test_unused_state.sol#L106-L108) are unused.
+	- [UnusedStruct.f1(uint256).localB](solidity/test_unused_state.sol#L107)
+
 
 ### recommendation:
 
-Remove or replace the unused state variables
+Remove the unused local variables.
 
 
 ### locations:
-- solidity/test_unused_state.sol#L4
-- solidity/test_unused_state.sol#L102
+- solidity/test_unused_state.sol#L66-L71
+- solidity/test_unused_state.sol#L106-L108
 
 ### severity:
 Optimization
 
 ### category:
-unused-state-variables
+unused-local-var
 
 ## [Optimization] Remove unused struct declaration
 
@@ -414,6 +354,66 @@ Optimization
 
 ### category:
 unused-struct
+
+## [Optimization] Remove unused error definition
+
+### description:
+
+Unused  error definition are gas consuming. 
+And are a bad code practice. 
+Removing those errors save deployment and improve code quality. 
+
+
+**There is `1` instance of this issue:**
+
+- The error definition in [UnusedError](solidity/test_unused_state.sol#L111-L118) are unused.
+	- `error ErrorUnused()`
+
+
+### recommendation:
+
+Remove unused error definition.
+
+
+### locations:
+- solidity/test_unused_state.sol#L111-L118
+
+### severity:
+Optimization
+
+### category:
+unused-error
+
+## [Optimization] Empty blocks should be removed or emit something
+
+### description:
+
+The code should be refactored such that they no longer exist, or the block should do 
+something useful, such as emitting an event or reverting. 
+If the contract is meant to be extended, the contract should be `abstract` and the function 
+signatures be added without any default implementation.
+
+
+**There is `1` instance of this issue:**
+
+- [UnusedStruct.f0(UnusedStruct.StructUsedA)](solidity/test_unused_state.sol#L104) should removed or do something
+
+
+### recommendation:
+
+Empty blocks should emit an event, or revert. 
+If not, they can simply be removed to save gas upon deployment. 
+This is valid for `receive()` functions, but also `constructors()`
+
+
+### locations:
+- solidity/test_unused_state.sol#L104
+
+### severity:
+Optimization
+
+### category:
+empty-block
 
 ## [Optimization] Use `delete` to Clear Variables
 
