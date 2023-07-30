@@ -11,10 +11,13 @@ make local
 ```
 
 print default markdown:
+
 ```shell
 sother ./solidity --print markdown
 ```
+
 print secure3 markdown:
+
 ```shell
 sother ./solidity --print secure3
 ```
@@ -29,3 +32,6 @@ poetry update slither-analyzer
 sother file.sol --print slithir
 ```
 
+## Awesome
+
+- https://github.com/pessimistic-io/slitherin
