@@ -88,6 +88,9 @@ from sother.detectors.permissions.deprecated_ownable import DeprecatedOwnable
 from sother.detectors.pragma.unsafe_assembly import UnsafeAssembly
 from sother.detectors.pragma.unsafe_floating_pragma import UnsafeFloatingPragma
 from sother.detectors.pragma.upgrade_to_latest import UpgradeToLatest
+from sother.detectors.press.double_entry_token_possibility import (
+    DoubleEntryTokenPossiblity,
+)
 from sother.detectors.press.nft_approve_warning import NftApproveWarning
 from sother.detectors.reentrancy.reentrancy_send_value import ReentrancySendValue
 from sother.detectors.reentrancy.reentrancy_transfer import ReentrancyTransfer
@@ -313,6 +316,7 @@ def get_detectors() -> list[Type[AbstractDetector]]:
         DivisionByZero,
         # press
         NftApproveWarning,
+        DoubleEntryTokenPossiblity,
     ]
 
 
