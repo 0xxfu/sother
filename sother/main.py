@@ -50,6 +50,12 @@ class DetectorTestCase(unittest.TestCase):
             logger.debug(item.ARGUMENT)
         logger.debug(f"detector amount: {len(detectors)}")
 
+    def test_get_printers(self):
+        detectors = get_all_printers()
+        for item in detectors:
+            logger.debug(item.ARGUMENT)
+        logger.debug(f"printer amount: {len(detectors)}")
+
 
 if __name__ == "__main__":
     unittest.main()
