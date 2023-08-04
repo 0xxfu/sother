@@ -18,6 +18,7 @@ from slither.utils.command_line import output_detectors
 
 from sother.detectors import get_all_detectors
 from sother.printers import get_all_printers
+from sother.utils.command_line import output_detector_stats
 
 
 def get_detectors_and_printers() -> (
@@ -52,8 +53,14 @@ def cli():
 
 
 @cli.command()
+def detector_stats():
+    detectors = get_all_detectors()
+    output_detector_stats(detectors)
+
+
+@cli.command()
 def list_detector():
-    detectors, _ = get_detectors_and_printers()
+    detectors = get_all_detectors()
     output_detectors(detectors)
 
 
