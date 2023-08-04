@@ -14,9 +14,10 @@ from loguru import logger
 from slither.__main__ import main_impl
 from slither.detectors.abstract_detector import AbstractDetector
 from slither.printers.abstract_printer import AbstractPrinter
+from slither.utils.colors import blue
 from slither.utils.command_line import output_detectors
 
-from sother.detectors import get_all_detectors
+from sother.detectors import get_all_detectors, get_detectors
 from sother.printers import get_all_printers
 from sother.utils.command_line import output_detector_stats
 
@@ -54,7 +55,12 @@ def cli():
 
 @cli.command()
 def detector_stats():
+    print(blue("------ All ------"))
     detectors = get_all_detectors()
+    output_detector_stats(detectors)
+
+    print(blue("------ Sother ------"))
+    detectors = get_detectors()
     output_detector_stats(detectors)
 
 
