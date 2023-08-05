@@ -7,7 +7,7 @@ import unittest
 
 
 class DetectorSettings:
-    latest_version = "0.8.20"
+    latest_version = "0.8.21"
     default_wiki = "https://github.com/0xxfu"
 
 

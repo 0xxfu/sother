@@ -6,7 +6,6 @@
 import unittest
 from typing import List, Optional
 
-from loguru import logger
 from packaging import version
 from slither.core.declarations import Pragma
 from slither.detectors.abstract_detector import (
@@ -28,9 +27,9 @@ class UpgradeToLatest(AbstractDetector):
     WIKI = DetectorSettings.default_wiki
 
     WIKI_TITLE = f"Should use latest solidity version `{DetectorSettings.latest_version}` for gas reduction and improved security."
-    WIKI_DESCRIPTION = """
-[Solidity v0.8.20](https://blog.soliditylang.org/2023/05/10/solidity-0.8.20-release-announcement/) has many optimization with compiler and bugfixes, 
-please upgrade Solidity to the latest version(0.8.20) for gas reduction and improved security.
+    WIKI_DESCRIPTION = f"""
+[Solidity `{DetectorSettings.latest_version}`](https://soliditylang.org/blog/2023/07/19/solidity-0.8.21-release-announcement) has many optimization with compiler and bugfixes, 
+please upgrade Solidity to the latest version(`{DetectorSettings.latest_version}`) for gas reduction and improved security.
 """
     WIKI_RECOMMENDATION = f"Upgrade solidity version to the latest version: {DetectorSettings.latest_version}"
 
