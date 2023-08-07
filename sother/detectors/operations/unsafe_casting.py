@@ -5,7 +5,6 @@
 """
 import unittest
 
-from loguru import logger
 from slither.core.cfg.node import Node
 from slither.core.declarations import FunctionContract
 from slither.core.expressions import (
@@ -18,7 +17,6 @@ from slither.core.expressions import (
 from slither.core.expressions.expression import Expression
 from slither.core.solidity_types.elementary_type import Uint, Int
 from slither.core.variables import Variable
-from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import (
     AbstractDetector,
     DetectorClassification,
@@ -151,6 +149,12 @@ Just use `uint256/int256`, or use [OpenZeppelin SafeCast lib](https://github.com
                     and ir.variable.type.size > ir.lvalue.type.size
                     and ir.variable not in var_has_compare_max
                 ):
+                    # exclude `address(uint160(uint256))`
+                    if (
+                        "address(uint160" in str(ir.node.expression)
+                        and str(ir.variable.type) == "uint256"
+                    ):
+                        continue
                     result_nodes.add(node)
                 elif (
                     isinstance(ir, Assignment)

@@ -5,6 +5,7 @@ contract UnsafeDowncast {
 
     int256 i256;
     int8 i8;
+
     event Transmitted(uint32 ue);
 
     error SafeCastOverflowedUintDowncast(uint8 bits, uint256 value);
@@ -30,6 +31,10 @@ contract UnsafeDowncast {
 
     function notBad2(uint256 a) external {
         i256 = int256(a);
+    }
+
+    function notBad3(uint256 intAddr) external {
+        address addr = address(uint160(intAddr));
     }
 
     function toUint128(uint256 value) internal pure returns (uint128) {
