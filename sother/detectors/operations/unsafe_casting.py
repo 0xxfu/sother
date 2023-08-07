@@ -212,6 +212,11 @@ Consider using single casting instead of double casting.
                         str(ir.variable.type) in all_int,
                     ]
                 ):
+                    if "address(uint160(uint256" in str(ir.node.expression) or (
+                        "address(uint160" in str(ir.node.expression)
+                        and str(ir.variable.type) == "uint256"
+                    ):
+                        continue
                     cast_count += 1
 
             if cast_count >= 2:

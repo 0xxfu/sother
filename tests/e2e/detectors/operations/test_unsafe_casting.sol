@@ -35,6 +35,13 @@ contract UnsafeDowncast {
 
     function notBad3(uint256 intAddr) external {
         address addr = address(uint160(intAddr));
+        address predictedAddress = address(
+            uint160(
+                uint256(
+                    keccak256("a")
+                )
+            )
+        );
     }
 
     function toUint128(uint256 value) internal pure returns (uint128) {
