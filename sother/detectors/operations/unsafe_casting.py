@@ -150,7 +150,7 @@ Just use `uint256/int256`, or use [OpenZeppelin SafeCast lib](https://github.com
                     and ir.variable not in var_has_compare_max
                 ):
                     # exclude `address(uint160(uint256))`
-                    if (
+                    if "address(uint160(uint256" in str(ir.node.expression) or (
                         "address(uint160" in str(ir.node.expression)
                         and str(ir.variable.type) == "uint256"
                     ):
