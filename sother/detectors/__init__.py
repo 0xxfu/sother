@@ -61,6 +61,9 @@ from sother.detectors.operations.division_by_zero import DivisionByZero
 from sother.detectors.operations.encode_packed import EncodePackedCollision
 from sother.detectors.operations.external_calls_in_loop import ExternalCallsInLoop
 from sother.detectors.operations.fee_on_transfer import FeeOnTransfer
+from sother.detectors.operations.missing_zero_address_validation import (
+    MissingZeroAddressValidation,
+)
 from sother.detectors.operations.payable_calls import PayableCalls
 from sother.detectors.operations.pre_plusplus import PrePlusPlus
 from sother.detectors.operations.unchecked_low_level_return_values import (
@@ -310,6 +313,7 @@ def get_detectors() -> list[Type[AbstractDetector]]:
         UseConcatOnString,
         UseConcatOnBytes,
         DivisionByZero,
+        MissingZeroAddressValidation,
     ]
 
 
