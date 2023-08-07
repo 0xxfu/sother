@@ -109,6 +109,7 @@ from sother.detectors.statements.susceptible_ecrecover import (
     SusceptibleEcrecover,
     UncheckedEcrecover,
 )
+from sother.detectors.statements.too_many_digits import TooManyDigits
 from sother.detectors.statements.unchecked_array_length import UncheckedArrayLength
 from sother.detectors.statements.unchecked_in_loop import UncheckedInLoop
 from sother.detectors.statements.use_concat import UseConcatOnString, UseConcatOnBytes
@@ -316,6 +317,7 @@ def get_detectors() -> list[Type[AbstractDetector]]:
         DivisionByZero,
         MissingZeroAddressValidation,
         MultipleCallsInLoop,
+        TooManyDigits,
     ]
 
 
