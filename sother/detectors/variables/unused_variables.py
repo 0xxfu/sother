@@ -3,10 +3,8 @@
 @email: angerpeanut@gmail.com
 @date: 2023-06
 """
-import unittest
 from typing import List
 
-from loguru import logger
 from slither.core.declarations import StructureContract, CustomErrorContract
 from slither.core.expressions import CallExpression, Identifier
 from slither.core.solidity_types import UserDefinedType
@@ -98,7 +96,11 @@ Remove the unused named return variables.
     def _detect(self) -> List[Output]:
         results = []
         for contract in self.compilation_unit.contracts_derived:
+            if contract.is_interface:
+                continue
             for function in contract.functions:
+                if not function.is_implemented:
+                    continue
                 result_vars: set[LocalVariable] = set()
                 for return_var in function.returns:
                     if return_var.name and return_var not in function.variables_written:
@@ -140,7 +142,11 @@ Remove the unused parameter variables.
     def _detect(self) -> List[Output]:
         results = []
         for contract in self.compilation_unit.contracts_derived:
+            if contract.is_interface:
+                continue
             for function in contract.functions:
+                if not function.is_implemented:
+                    continue
                 result_vars: set[LocalVariable] = set()
                 for param_var in function.parameters:
                     if param_var not in function.variables_read:
@@ -181,7 +187,11 @@ Remove the unused local variables.
     def _detect(self) -> List[Output]:
         results = []
         for contract in self.compilation_unit.contracts_derived:
+            if contract.is_interface:
+                continue
             for function in contract.functions:
+                if not function.is_implemented:
+                    continue
                 result_vars: set[LocalVariable] = set()
                 for param_var in function.local_variables:
                     if param_var not in function.variables_read:
