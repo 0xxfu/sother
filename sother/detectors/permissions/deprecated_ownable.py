@@ -17,6 +17,7 @@ from slither.utils.output import Output
 from sother.detectors.detector_settings import DetectorSettings
 
 
+# todo except `abstract` contract
 class DeprecatedOwnable(AbstractDetector):
     ARGUMENT = "deprecated-ownable"
     HELP = "Lack of a double-step `transferOwnership()` pattern"
@@ -98,14 +99,18 @@ abstract contract Ownable2Step is Ownable {
         deprecated_ownables: list[str] = ["Ownable", "OwnableUpgradeable"]
         for contract in self.compilation_unit.contracts:
             # inherit owneable
-            if any(
-                inherit.name in deprecated_ownables for inherit in contract.inheritance
+            if (
+                any(
+                    inherit.name in deprecated_ownables
+                    for inherit in contract.inheritance
+                )
+                and contract.is_fully_implemented
             ):
                 result_contracts.add(contract)
 
             # self implement ownership
             result = self._detect_owner_ship(contract)
-            if result:
+            if result and contract.is_fully_implemented:
                 result_contracts.add(contract)
 
         for result in result_contracts:
