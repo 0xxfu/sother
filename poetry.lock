@@ -1561,7 +1561,7 @@ test = ["coverage[toml]", "deepdiff", "filelock", "numpy", "pytest", "pytest-cov
 type = "git"
 url = "https://github.com/0xxfu/slither.git"
 reference = "master"
-resolved_reference = "9070a1ee704567885d5e5585bddeafeffb89ab52"
+resolved_reference = "55f75be35a7daa9eaea116c9308494a752de7cfe"
 
 [[package]]
 name = "slither-pess"
