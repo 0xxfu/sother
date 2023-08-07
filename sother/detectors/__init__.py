@@ -97,6 +97,7 @@ from sother.detectors.source.open_todos import OpenTodos
 from sother.detectors.source.safe_math_lib import SafeMathLib
 from sother.detectors.statements.array_length_in_loop import ArrayLengthInLoop
 from sother.detectors.statements.boolean_constant_equality import BooleanEquality
+from sother.detectors.statements.calls_in_loop import MultipleCallsInLoop
 from sother.detectors.statements.deprecated_assert import DeprecatedAssert
 from sother.detectors.statements.empty_block import EmptyBlock
 from sother.detectors.statements.fetch_storage_to_memory import FetchStorageToMemory
@@ -314,6 +315,7 @@ def get_detectors() -> list[Type[AbstractDetector]]:
         UseConcatOnBytes,
         DivisionByZero,
         MissingZeroAddressValidation,
+        MultipleCallsInLoop,
     ]
 
 
