@@ -4,65 +4,21 @@
 @date: 2023-06
 """
 import unittest
-from typing import List, Optional
+from typing import List
 
 from loguru import logger
-from slither.core.cfg.node import Node, NodeType
-from slither.core.declarations import FunctionContract
 from slither.detectors.abstract_detector import (
-    AbstractDetector,
     DetectorClassification,
 )
-from slither.slithir.operations import InternalCall, Length
+from slither.slithir.operations import Length, Operation
 from slither.utils.output import Output
 
+from sother.detectors.abstracts.abstract_detect_in_loop import AbstractDetectInLoop
 from sother.detectors.detector_settings import DetectorSettings
 from sother.utils.gas_utils import GasUtils
 
 
-def detect_array_length_loop(functions: list[FunctionContract]) -> list[Node]:
-    ret: List[Node] = []
-    for func in functions:
-        array_length_in_loop(func.entry_point, 0, [], ret)
-    return ret
-
-
-def array_length_in_loop(
-    node: Optional[Node],
-    in_loop_counter: int,
-    visited: List[Node],
-    ret: List[Node],
-) -> None:
-    if node is None:
-        return
-
-    if node in visited:
-        return
-    # shared visited
-    visited.append(node)
-
-    # check loop start and end
-    if node.type == NodeType.STARTLOOP:
-        in_loop_counter += 1
-    elif node.type == NodeType.ENDLOOP:
-        in_loop_counter -= 1
-
-    if in_loop_counter > 0:
-        for ir in node.all_slithir_operations():
-            # check length in loop
-            if isinstance(ir, Length):
-                ret.append(ir.node)
-                break
-            if isinstance(ir, (InternalCall)) and ir.function:
-                array_length_in_loop(
-                    ir.function.entry_point, in_loop_counter, visited, ret
-                )
-
-    for son in node.sons:
-        array_length_in_loop(son, in_loop_counter, visited, ret)
-
-
-class ArrayLengthInLoop(AbstractDetector):
+class ArrayLengthInLoop(AbstractDetectInLoop):
     ARGUMENT = "array-length-in-loop"
     HELP = "Cache the `<array>.length` for the loop condition"
     IMPACT = DetectorClassification.OPTIMIZATION
@@ -97,17 +53,19 @@ function loopArray_cached(uint256[] calldata ns) public returns (uint256 sum) {
 ```
 """
 
+    @classmethod
+    def _is_instance(cls, ir: Operation) -> bool:
+        return isinstance(ir, Length)
+
     def _detect(self) -> List[Output]:
         results = []
 
-        result_nodes = detect_array_length_loop(
+        result_nodes = self.detect_loop_in_function(
             GasUtils.get_available_functions(self.compilation_unit)
         )
         for node in result_nodes:
             logger.debug(f"length in loop: {str(node)}")
-            res = self.generate_result(
-                [node, " `<array>.length` should be cached.\n"]
-            )
+            res = self.generate_result([node, " `<array>.length` should be cached.\n"])
             results.append(res)
 
         return results
