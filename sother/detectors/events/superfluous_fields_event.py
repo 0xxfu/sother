@@ -18,7 +18,6 @@ from sother.detectors.detector_settings import DetectorSettings
 from sother.utils.gas_utils import GasUtils
 
 
-# todo bug: except binary operation: block.number - request.blockNumber
 class SuperfluousFieldsEvent(AbstractDetector):
     ARGUMENT = "superfluous-fields-event"
     HELP = "Superfluous fields in event"

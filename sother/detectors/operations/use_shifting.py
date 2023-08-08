@@ -17,7 +17,6 @@ from sother.detectors.detector_settings import DetectorSettings
 from sother.utils.gas_utils import GasUtils
 
 
-# todo detect except function
 class DivideByConstant(AbstractDetector):
     ARGUMENT = "divide-by-constant"
     HELP = "Using `x >> constant(uint)` with the right shift operator is a more gas-efficient"
