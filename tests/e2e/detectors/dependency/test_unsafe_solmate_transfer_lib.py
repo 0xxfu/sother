@@ -9,12 +9,6 @@ from sother.core.models import OutputResult
 from sother.detectors.dependency.unsafe_solmate_transfer_lib import (
     UnsafeSolmateTransferLib,
 )
-from sother.detectors.functions.cache_call_function_result import (
-    CacheCallFunctionResult,
-)
-from sother.detectors.functions.internal_function_to_inline import (
-    InternalFunctionToInline,
-)
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 

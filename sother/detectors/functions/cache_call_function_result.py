@@ -9,12 +9,9 @@ from typing import List
 from loguru import logger
 from slither.core.cfg.node import Node
 from slither.core.declarations import FunctionContract, Function
-from slither.core.variables import Variable
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 from slither.slithir.operations import (
     HighLevelCall,
-    LowLevelCall,
-    LibraryCall,
     InternalCall,
 )
 from slither.utils.output import Output
@@ -72,7 +69,8 @@ Using local variable to cache function called result if the same function called
                 if (
                     isinstance(ir, (HighLevelCall, InternalCall))
                     and isinstance(ir.function, Function)
-                    and len(ir.arguments) <= 0
+                    and any([ir.function.view, ir.function.pure])
+                    and len(ir.function.parameters) <= 0
                 ):
                     function_called_name = ir.function.canonical_name
 

@@ -10,6 +10,8 @@ contract CallFunctionResult {
     }
 
     function notBad(uint a) external {
+        internalViewPassParam(a);
+        internalViewPassParam(a);
         a = a + internalViewPassParam(a);
         a = a + internalViewPassParam(a);
         state = a + 1;
