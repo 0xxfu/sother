@@ -35,6 +35,13 @@ contract UnsafeErc721Transfer {
         t.transferFrom(from, to, tokenId);
     }
 
+    function notBad(
+        address from,
+        uint256 tokenId
+    ) public {
+        t.transferFrom(from, address(this), tokenId);
+    }
+
     function good0(
         address from,
         address to,

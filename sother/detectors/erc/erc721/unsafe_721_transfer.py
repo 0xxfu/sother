@@ -4,20 +4,17 @@
 @date: 2023-06
 """
 import unittest
-from typing import List
 
 from slither.core.cfg.node import Node
-from slither.core.declarations import Function
 from slither.detectors.abstract_detector import (
-    AbstractDetector,
     DetectorClassification,
     DETECTOR_INFO,
 )
-from slither.slithir.operations import Operation, HighLevelCall
-from slither.utils.output import Output
+from slither.slithir.operations import Operation
 
 from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
+    AbstractTransferInstance,
 )
 from sother.detectors.detector_settings import DetectorSettings
 
@@ -71,12 +68,12 @@ reentrancy risk and gas costs.
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
-        # todo except to address is `address(this)` ?
         if (
-            isinstance(ir, HighLevelCall)
-            and isinstance(ir.function, Function)
+            AbstractTransferInstance.is_erc721_transfer_instance(ir)
             and ir.function.solidity_signature
             in ["transferFrom(address,address,uint256)"]
+            # except to address is `address(this)`
+            and ",address(this)," not in str(ir.expression)
         ):
             (name, parameters, returnVars) = ir.function.signature
             # returnVars == ["bool"] is erc20
