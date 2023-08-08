@@ -7,7 +7,6 @@ import unittest
 from typing import List
 
 from loguru import logger
-from slither.analyses.data_dependency.data_dependency import is_dependent
 from slither.core.cfg.node import Node
 from slither.core.declarations import SolidityVariableComposed
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
@@ -44,13 +43,11 @@ Remove default fields(`block.timestamp` or `block.number`) in event.
                     if not isinstance(ir, EventCall):
                         continue
                     for var_read in ir.read:
-                        if is_dependent(
-                            var_read, SolidityVariableComposed("block.timestamp"), node
-                        ):
-                            result_nodes.add(node)
-                        if is_dependent(
-                            var_read, SolidityVariableComposed("block.number"), node
-                        ):
+                        # only detect read block.timestamp and block.number directly
+                        if var_read in [
+                            SolidityVariableComposed("block.timestamp"),
+                            SolidityVariableComposed("block.number"),
+                        ]:
                             result_nodes.add(node)
 
         for node in result_nodes:

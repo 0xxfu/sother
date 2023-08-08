@@ -17,5 +17,12 @@ contract SuperfluousFieldsEvent {
         emit GoodEvent(abc);
         emit BlockNumberEvent(abc + 1);
         emit BlockTimestampEvent(abc + 1);
+        emit GoodEvent(_timestampToWeek(block.timestamp));
+    }
+
+    function _timestampToWeek(
+        uint256 timestamp
+    ) internal view returns (uint256) {
+        return timestamp + 1;
     }
 }
