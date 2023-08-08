@@ -7,9 +7,6 @@ import unittest
 
 from sother.core.models import OutputResult
 from sother.detectors.events.unindexed_event import UnindexedEvent
-from sother.detectors.events.superfluous_fields_event import SuperfluousFieldsEvent
-from sother.detectors.operations.use_shifting import DivideByConstant
-from sother.detectors.variables.bool_state_variables import BoolStateVariables
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 

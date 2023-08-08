@@ -6,11 +6,7 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.operations.use_shifting import DivideByConstant
-from sother.detectors.operations.payable_calls import PayableCalls
 from sother.detectors.operations.pre_plusplus import PrePlusPlus
-from sother.detectors.operations.unused_return_values import UnusedReturnValues
-from sother.detectors.variables.bool_state_variables import BoolStateVariables
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 
