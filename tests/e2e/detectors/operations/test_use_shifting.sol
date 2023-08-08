@@ -37,6 +37,7 @@ contract DivVsShr {
 
 contract MulPower {
     uint256 state;
+    uint256 constant DIST_PRECISION = 2 ** 128;
 
     function bad(uint256 x) external {
         uint256 a = 2 ** 10;

@@ -17,6 +17,8 @@ class GasUtils:
         result_functions: list["FunctionContract"] = []
         for contract in compilation_unit.contracts_derived:
             for function in contract.functions:
+                if function.is_constructor_variables:
+                    continue
                 result_functions.append(function)
         return result_functions
 
