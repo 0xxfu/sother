@@ -67,6 +67,14 @@ contract FeeOnTransfer {
         tokens[0].safeTransferFrom(address(this), to, amount);
     }
 
+    function notBad3(address to, uint256 amount, uint256 tokenId) external {
+        IERC20 _token = tokens[tokenId];
+        _token.transfer(to, amount);
+        _token.transferFrom(address(this), to, amount);
+        _token.safeTransfer(to, amount);
+        _token.safeTransferFrom(address(this), to, amount);
+    }
+
     function good0(IERC20 _token, address to, uint256 amount) external {
         uint256 beforeBalance = _token.balanceOf(to);
         _token.transfer(to, amount);

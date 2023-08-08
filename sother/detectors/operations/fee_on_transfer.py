@@ -6,12 +6,13 @@
 import unittest
 from typing import Optional
 
+from loguru import logger
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function, Contract
-from slither.core.variables import Variable, StateVariable
+from slither.core.variables import Variable
+from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.slithir.operations import Operation, HighLevelCall, LibraryCall
-from slither.slithir.variables import ReferenceVariable
 
 from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
@@ -58,29 +59,27 @@ i.e. Fee-on-transfer scenario:
         if not cls.is_erc20_transfer_instance(ir):
             return False
 
-        # except destination is state variable
-        if isinstance(ir.destination, StateVariable) or ():
-            return False
-        # except destination is state array
-        if isinstance(ir.destination, ReferenceVariable) and isinstance(
-            ir.destination.points_to, StateVariable
+        if (
+            isinstance(ir.destination, LocalVariable)
+            and ir.destination in ir.node.function.parameters
         ):
-            return False
-
-        # called function from Library
-        # `using SafeERC20 for IERC20;`
-        if isinstance(ir, LibraryCall) and isinstance(ir.destination, Contract):
+            return not cls.is_check_balance_in_function(
+                ir.node.function, cls.get_erc20_transfer_to(ir)
+            )
+        elif isinstance(ir, LibraryCall) and isinstance(ir.destination, Contract):
+            # called function from Library
+            # `using SafeERC20 for IERC20;`
             if len(ir.arguments) > 0:
-                if isinstance(ir.arguments[0], StateVariable):
-                    return False
-                if isinstance(ir.arguments[0], ReferenceVariable) and isinstance(
-                    ir.arguments[0].points_to, StateVariable
+                logger.debug(f"arg: {ir.arguments[0]} type: {type(ir.arguments[0])}")
+                if (
+                    isinstance(ir.arguments[0], LocalVariable)
+                    and ir.arguments[0] in ir.node.function.parameters
                 ):
-                    return False
+                    return not cls.is_check_balance_in_function(
+                        ir.node.function, cls.get_erc20_transfer_to(ir)
+                    )
 
-        return not cls.is_check_balance_in_function(
-            ir.node.function, cls.get_erc20_transfer_to(ir)
-        )
+        return False
 
     @classmethod
     def is_check_balance_in_function(
