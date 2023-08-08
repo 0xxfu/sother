@@ -21,12 +21,15 @@ contract IncorrectDeadline {
         require(deadline > blocktime, "err");
     }
 
-    function notBbad(uint256 deadline) external view {
+    function notBad(uint256 deadline) external view {
         if (deadline < block.timestamp) {
             revert("err");
         }
         if (block.timestamp > deadline) {
             revert("err");
+        }
+        if (block.timestamp >= deadline) {
+            return;
         }
 
         uint256 blocktime = block.timestamp;

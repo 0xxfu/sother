@@ -5,7 +5,6 @@
 """
 import unittest
 
-from loguru import logger
 from slither.analyses.data_dependency.data_dependency import is_dependent
 from slither.core.cfg.node import Node
 from slither.core.declarations import SolidityVariableComposed
@@ -15,6 +14,7 @@ from slither.slithir.operations import Operation, Binary, BinaryType
 from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
 )
+from sother.detectors.abstracts.abstract_detect_in_if import DetectRevertInIf
 from sother.detectors.detector_settings import DetectorSettings
 
 
@@ -62,7 +62,6 @@ The current `blocktime` should less than or equal to `deadline`.
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
-        # todo should except `if (): return something` statement
         if (
             ir.node.contains_if()
             and isinstance(ir, Binary)
@@ -75,11 +74,15 @@ The current `blocktime` should less than or equal to `deadline`.
             if ir.type == BinaryType.LESS_EQUAL and is_dependent(
                 ir.variable_right, SolidityVariableComposed("block.timestamp"), ir.node
             ):
-                return True
+                # except `if (): return something` statement
+                result: set[Node] = DetectRevertInIf.detect_start_with_if_node(ir.node)
+                return len(result) > 0
             elif ir.type == BinaryType.GREATER_EQUAL and is_dependent(
                 ir.variable_left, SolidityVariableComposed("block.timestamp"), ir.node
             ):
-                return True
+                # except `if (): return something` statement
+                result: set[Node] = DetectRevertInIf.detect_start_with_if_node(ir.node)
+                return len(result) > 0
         elif (
             ir.node.contains_require_or_assert()
             and isinstance(ir, Binary)
