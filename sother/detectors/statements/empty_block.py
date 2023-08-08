@@ -5,13 +5,10 @@
 """
 import unittest
 
-from loguru import logger
-from slither.core.declarations import FunctionContract
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 from slither.utils.output import Output
 
 from sother.detectors.detector_settings import DetectorSettings
-from sother.utils.gas_utils import GasUtils
 
 
 class EmptyBlock(AbstractDetector):
@@ -43,7 +40,7 @@ This is valid for `receive()` functions, but also `constructors()`
             if not contract.is_fully_implemented:
                 continue
             for function in contract.functions:
-                if function.is_empty:
+                if function.is_empty and not function.is_constructor:
                     json = self.generate_result(
                         [
                             function,
