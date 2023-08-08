@@ -5,7 +5,6 @@
 """
 import unittest
 
-from loguru import logger
 from slither.analyses.data_dependency.data_dependency import is_dependent
 from slither.core.cfg.node import Node
 from slither.core.solidity_types.elementary_type import Uint, Int
@@ -88,6 +87,13 @@ amount is zero or not.
                 ir.variable_right, (StateVariable, LocalVariable, TemporaryVariable)
             )
         ):
+            # except denominator is `Constant`
+            if (
+                isinstance(ir.variable_right, StateVariable)
+                and ir.variable_right.is_constant
+            ):
+                return False
+
             # todo variable contains `*+1` statement
             if not VariableZeroValidation.is_variable_in_nodes(
                 ir.variable_right,

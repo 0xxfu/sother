@@ -1,4 +1,6 @@
 contract DivisionByZero {
+    uint256 constant x = 1;
+
     function bad0(uint256 a, uint256 b) external pure {
         10 / a;
 
@@ -23,6 +25,8 @@ contract DivisionByZero {
         10 / (a * b);
 
         10 / (f0() * a);
+
+        a / x;
     }
 
     function notBad1(uint256 a, uint256 b) external pure {
