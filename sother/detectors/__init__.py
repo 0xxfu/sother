@@ -102,6 +102,9 @@ from sother.detectors.statements.deprecated_assert import DeprecatedAssert
 from sother.detectors.statements.empty_block import EmptyBlock
 from sother.detectors.statements.fetch_storage_to_memory import FetchStorageToMemory
 from sother.detectors.statements.incorrect_deadline import IncorrectDeadline
+from sother.detectors.statements.incorrect_strict_equality import (
+    IncorrectStrictEquality,
+)
 from sother.detectors.statements.inefficient_new_bytes import InefficientNewBytes
 from sother.detectors.statements.operator_and_in_require import OperatorAndInRequire
 from sother.detectors.statements.revert_long_strings import RevertLongStrings
@@ -318,6 +321,7 @@ def get_detectors() -> list[Type[AbstractDetector]]:
         MissingZeroAddressValidation,
         MultipleCallsInLoop,
         TooManyDigits,
+        IncorrectStrictEquality,
     ]
 
 
