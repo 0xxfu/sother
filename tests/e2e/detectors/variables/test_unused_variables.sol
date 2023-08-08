@@ -58,6 +58,21 @@ contract UnusedParameter {
     function notBad1(uint256 a, uint256 b) external pure returns (uint256) {
         return notBad0(a) + b;
     }
+
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes calldata
+    ) external pure returns (bytes4) {
+        return
+            bytes4(
+            keccak256(
+                "onERC1155Received(address,address,uint256,uint256,bytes)"
+            )
+        );
+    }
 }
 
 contract UnusedLocalVar {
@@ -92,9 +107,11 @@ contract UnusedStruct {
     struct StructUsedA {
         uint256 a;
     }
+
     struct StructUsedB {
         uint256 a;
     }
+
     struct StructUsedC {
         uint256 a;
     }

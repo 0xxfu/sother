@@ -141,11 +141,12 @@ Remove the unused parameter variables.
 
     def _detect(self) -> List[Output]:
         results = []
+        exclude_functions = ["onERC1155Received", "onERC721Received"]
         for contract in self.compilation_unit.contracts_derived:
             if contract.is_interface:
                 continue
             for function in contract.functions:
-                if not function.is_implemented:
+                if not function.is_implemented or function.name in exclude_functions:
                     continue
                 result_vars: set[LocalVariable] = set()
                 for param_var in function.parameters:
