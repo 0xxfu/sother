@@ -6,7 +6,7 @@
 import unittest
 from typing import List
 
-from loguru import logger
+from slither.core.cfg.node import NodeType
 from slither.detectors.abstract_detector import (
     DetectorClassification,
 )
@@ -55,7 +55,8 @@ function loopArray_cached(uint256[] calldata ns) public returns (uint256 sum) {
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
-        return isinstance(ir, Length)
+        # except `array.pop()`
+        return isinstance(ir, Length) and ir.node.type == NodeType.IFLOOP
 
     def _detect(self) -> List[Output]:
         results = []
@@ -64,7 +65,6 @@ function loopArray_cached(uint256[] calldata ns) public returns (uint256 sum) {
             GasUtils.get_available_functions(self.compilation_unit)
         )
         for node in result_nodes:
-            logger.debug(f"length in loop: {str(node)}")
             res = self.generate_result([node, " `<array>.length` should be cached.\n"])
             results.append(res)
 

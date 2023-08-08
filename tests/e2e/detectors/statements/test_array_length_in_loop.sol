@@ -1,11 +1,10 @@
-// SPDX-License-Identifier: MIT
-
 contract LoopArrayLength {
     uint state;
+    uint256[] public stateInts;
 
     function bad(uint256[] calldata ns) external {
         uint sum = 0;
-        for (uint256 i = 0; i < ns.length; ) {
+        for (uint256 i = 0; i < ns.length;) {
             sum += ns[i];
             unchecked {
                 i++;
@@ -14,10 +13,11 @@ contract LoopArrayLength {
         state = state + ns.length;
     }
 
-    function externalView(uint256[] calldata ns) external view returns (uint) {
+    function externalView(uint256[] calldata ns) external returns (uint) {
         uint sum = 0;
-        for (uint256 i = 0; i < ns.length; ) {
+        for (uint256 i = 0; i < ns.length;) {
             sum += ns[i];
+            stateInts.pop();
             unchecked {
                 i++;
             }
@@ -27,7 +27,7 @@ contract LoopArrayLength {
 
     function externalPure(uint256[] calldata ns) external pure returns (uint) {
         uint sum = 0;
-        for (uint256 i = 0; i < ns.length; ) {
+        for (uint256 i = 0; i < ns.length;) {
             sum += ns[i];
             unchecked {
                 i++;
@@ -38,7 +38,7 @@ contract LoopArrayLength {
 
     function internalView(uint256[] calldata ns) internal view returns (uint) {
         uint sum = 0;
-        for (uint256 i = 0; i < ns.length; ) {
+        for (uint256 i = 0; i < ns.length;) {
             sum += ns[i];
             unchecked {
                 i++;
@@ -50,7 +50,7 @@ contract LoopArrayLength {
     function good(uint256[] calldata ns) external {
         uint256 length = ns.length;
         uint sum = 0;
-        for (uint256 i = 0; i < length; ) {
+        for (uint256 i = 0; i < length;) {
             sum += ns[i];
             unchecked {
                 i++;
