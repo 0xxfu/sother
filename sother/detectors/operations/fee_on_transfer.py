@@ -11,6 +11,7 @@ from slither.core.declarations import Function, Contract
 from slither.core.variables import Variable, StateVariable
 from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.slithir.operations import Operation, HighLevelCall, LibraryCall
+from slither.slithir.variables import ReferenceVariable
 
 from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
@@ -58,13 +59,24 @@ i.e. Fee-on-transfer scenario:
             return False
 
         # except destination is state variable
-        if isinstance(ir.destination, StateVariable):
+        if isinstance(ir.destination, StateVariable) or ():
             return False
+        # except destination is state array
+        if isinstance(ir.destination, ReferenceVariable) and isinstance(
+            ir.destination.points_to, StateVariable
+        ):
+            return False
+
         # called function from Library
         # `using SafeERC20 for IERC20;`
         if isinstance(ir, LibraryCall) and isinstance(ir.destination, Contract):
-            if len(ir.arguments) > 0 and isinstance(ir.arguments[0], StateVariable):
-                return False
+            if len(ir.arguments) > 0:
+                if isinstance(ir.arguments[0], StateVariable):
+                    return False
+                if isinstance(ir.arguments[0], ReferenceVariable) and isinstance(
+                    ir.arguments[0].points_to, StateVariable
+                ):
+                    return False
 
         return not cls.is_check_balance_in_function(
             ir.node.function, cls.get_erc20_transfer_to(ir)

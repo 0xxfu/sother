@@ -40,6 +40,8 @@ interface IERC20 {
 contract FeeOnTransfer {
     using SafeERC20 for IERC20;
     IERC20 token;
+    IERC20[] tokens;
+
 
     function bad0(IERC20 _token, address to, uint256 amount) external {
         _token.transfer(to, amount);
@@ -56,6 +58,13 @@ contract FeeOnTransfer {
         token.transferFrom(address(this), to, amount);
         token.safeTransfer(to, amount);
         token.safeTransferFrom(address(this), to, amount);
+    }
+
+    function notBad2(address to, uint256 amount) external {
+        tokens[0].transfer(to, amount);
+        tokens[0].transferFrom(address(this), to, amount);
+        tokens[0].safeTransfer(to, amount);
+        tokens[0].safeTransferFrom(address(this), to, amount);
     }
 
     function good0(IERC20 _token, address to, uint256 amount) external {
