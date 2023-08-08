@@ -7,7 +7,6 @@ import unittest
 
 from sother.core.models import OutputResult
 from sother.detectors.source.safe_math_lib import SafeMathLib
-from sother.detectors.statements.array_length_in_loop import ArrayLengthInLoop
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 

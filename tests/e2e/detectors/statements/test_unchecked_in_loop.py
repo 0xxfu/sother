@@ -6,7 +6,6 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.statements.array_length_in_loop import ArrayLengthInLoop
 from sother.detectors.statements.unchecked_in_loop import UncheckedInLoop
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 

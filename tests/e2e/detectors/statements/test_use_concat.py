@@ -6,10 +6,7 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.statements.array_length_in_loop import ArrayLengthInLoop
 from sother.detectors.statements.use_concat import UseConcatOnString, UseConcatOnBytes
-from sother.detectors.statements.use_delete_statement import UseDeleteStatement
-from sother.detectors.statements.used_custom_error import UsedCustomError
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 
