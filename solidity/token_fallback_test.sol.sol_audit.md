@@ -20,11 +20,9 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [L-0] | Lack of a double-step `transferOwnership()` pattern | 1 |
-| [L-1] | Double type casts create complexity within the code | 1 |
-| [L-2] | Unsafe to use floating pragma | 5 |
-| [L-3] | Events are missing sender information | 1 |
-| [L-4] | Functions calling contracts/addresses with transfer hooks are missing reentrancy guards | 1 |
-| [L-5] | Dubious Typecast | 1 |
+| [L-1] | Unsafe to use floating pragma | 5 |
+| [L-2] | Events are missing sender information | 1 |
+| [L-3] | Functions calling contracts/addresses with transfer hooks are missing reentrancy guards | 1 |
 
 
 ### Non-critical Issues
@@ -32,23 +30,23 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 7 |
-| [N-1] | Magic Number | 2 |
-| [N-2] | Different pragma directives are used | 1 |
-| [N-3] | Low-level calls | 1 |
-| [N-4] | Conformance to Solidity naming conventions | 1 |
-| [N-5] | Too many digits | 1 |
+| [N-1] | Too many digits | 1 |
+| [N-2] | Magic Number | 2 |
+| [N-3] | Different pragma directives are used | 1 |
+| [N-4] | Low-level calls | 1 |
+| [N-5] | Conformance to Solidity naming conventions | 1 |
 
 
 ### Gas Optimizations
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Should use latest solidity version `0.8.20` for gas reduction and improved security. | 5 |
+| [G-0] | Should use latest solidity version `0.8.21` for gas reduction and improved security. | 5 |
 | [G-1] | `<x> += <y>` costs more gas than `<x> = <x> + <y>` for state variables | 3 |
 | [G-2] | `internal` functions only called once can be inlined to save gas | 1 |
 | [G-3] | Using custom errors replace `require` or `assert` | 9 |
 | [G-4] | Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead | 2 |
-| [G-5] | Remove unused parameter variables | 7 |
+| [G-5] | Remove unused parameter variables | 2 |
 | [G-6] | Remove unused local variables | 1 |
 | [G-7] | The result of function calls should be cached rather than re-calling the function | 3 |
 | [G-8] | Dead-code: functions not used should be removed to save deployment gas | 1 |
@@ -253,43 +251,6 @@ deprecated-ownable
 ### confidence:
 High
 
-## [Low] Double type casts create complexity within the code
-
-### description:
-
-Double type casting should be avoided in Solidity contracts to prevent unintended 
-consequences and ensure accurate data representation. 
-Performing multiple type casts in succession can lead to unexpected truncation, 
-rounding errors, or loss of precision, potentially compromising the contract's 
-functionality and reliability. Furthermore, double type casting can make the code 
-less readable and harder to maintain, increasing the likelihood of errors and 
-misunderstandings during development and debugging. To ensure precise and consistent 
-data handling, developers should use appropriate data types and avoid unnecessary 
-or excessive type casting, promoting a more robust and dependable contract execution.
-
-
-**There is `1` instance of this issue:**
-
-- [_mint(address(this),9000000 * (10 ** uint256(decimals())))](solidity/token_fallback_test.sol.sol#L208) should use single casting instead of double casting.
-
-
-### recommendation:
-
-Consider using single casting instead of double casting.
-
-
-### locations:
-- solidity/token_fallback_test.sol.sol#L208
-
-### severity:
-Low
-
-### category:
-unsafe-double-cast
-
-### confidence:
-High
-
 ## [Low] Unsafe to use floating pragma
 
 ### description:
@@ -405,33 +366,6 @@ reentrancy-transfer
 ### confidence:
 High
 
-## [Low] Dubious Typecast
-
-### description:
-Constant variables should not be typecasted more than once
-
-**There is `1` instance of this issue:**
-
-- Function [AmazoniumToken.Distribute()](solidity/token_fallback_test.sol.sol#L212-L217) has a dubious typecast: address<=address
-
-#### Exploit scenario
-Makes contract logic more complex, wich leads to error probability increment and make integration more difficult
-
-### recommendation:
-Use clear constants
-
-### locations:
-- solidity/token_fallback_test.sol.sol#L212-L217
-
-### severity:
-Low
-
-### category:
-pess-dubious-typecast
-
-### confidence:
-Low
-
 ## [Informational] Incorrect versions of Solidity
 
 ### description:
@@ -459,7 +393,7 @@ We also recommend avoiding complex `pragma` statement.
 ### recommendation:
 
 Deploy with any of the following Solidity versions:
-- 0.8.20
+- 0.8.21
 
 The recommendations take into account:
 - Risks related to recent releases
@@ -487,6 +421,49 @@ solc-version
 
 ### confidence:
 High
+
+## [Informational] Too many digits
+
+### description:
+
+Literals with many digits are difficult to read and review.
+
+
+**There is `1` instance of this issue:**
+
+- [AmazoniumToken.constructor()](solidity/token_fallback_test.sol.sol#L207-L211) uses literals with too many digits:
+	- [_mint(address(this),9000000 * (10 ** uint256(decimals())))](solidity/token_fallback_test.sol.sol#L208)
+
+#### Exploit scenario
+
+```solidity
+contract MyContract{
+    uint 1_ether = 10000000000000000000; 
+}
+```
+
+While `1_ether` looks like `1 ether`, it is `10 ether`. As a result, it's likely to be used incorrectly.
+
+
+### recommendation:
+
+Use:
+- [Ether suffix](https://solidity.readthedocs.io/en/latest/units-and-global-variables.html#ether-units),
+- [Time suffix](https://solidity.readthedocs.io/en/latest/units-and-global-variables.html#time-units), or
+- [The scientific notation](https://solidity.readthedocs.io/en/latest/types.html#rational-and-integer-literals)
+
+
+### locations:
+- solidity/token_fallback_test.sol.sol#L207-L211
+
+### severity:
+Informational
+
+### category:
+too-many-digits
+
+### confidence:
+Medium
 
 ## [Informational] Magic Number
 
@@ -605,67 +582,24 @@ naming-convention
 ### confidence:
 High
 
-## [Informational] Too many digits
+## [Optimization] Should use latest solidity version `0.8.21` for gas reduction and improved security.
 
 ### description:
 
-Literals with many digits are difficult to read and review.
-
-
-**There is `1` instance of this issue:**
-
-- [AmazoniumToken.constructor()](solidity/token_fallback_test.sol.sol#L207-L211) uses literals with too many digits:
-	- [_mint(address(this),9000000 * (10 ** uint256(decimals())))](solidity/token_fallback_test.sol.sol#L208)
-
-#### Exploit scenario
-
-```solidity
-contract MyContract{
-    uint 1_ether = 10000000000000000000; 
-}
-```
-
-While `1_ether` looks like `1 ether`, it is `10 ether`. As a result, it's likely to be used incorrectly.
-
-
-### recommendation:
-
-Use:
-- [Ether suffix](https://solidity.readthedocs.io/en/latest/units-and-global-variables.html#ether-units),
-- [Time suffix](https://solidity.readthedocs.io/en/latest/units-and-global-variables.html#time-units), or
-- [The scientific notation](https://solidity.readthedocs.io/en/latest/types.html#rational-and-integer-literals)
-
-
-### locations:
-- solidity/token_fallback_test.sol.sol#L207-L211
-
-### severity:
-Informational
-
-### category:
-too-many-digits
-
-### confidence:
-Medium
-
-## [Optimization] Should use latest solidity version `0.8.20` for gas reduction and improved security.
-
-### description:
-
-[Solidity v0.8.20](https://blog.soliditylang.org/2023/05/10/solidity-0.8.20-release-announcement/) has many optimization with compiler and bugfixes, 
-please upgrade Solidity to the latest version(0.8.20) for gas reduction and improved security.
+[Solidity `0.8.21`](https://soliditylang.org/blog/2023/07/19/solidity-0.8.21-release-announcement) has many optimization with compiler and bugfixes, 
+please upgrade Solidity to the latest version(`0.8.21`) for gas reduction and improved security.
 
 
 **There are `5` instances of this issue:**
 
-- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L3) should upgrade to the latest version: 0.8.20
-- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L15) should upgrade to the latest version: 0.8.20
-- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L33) should upgrade to the latest version: 0.8.20
-- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L42) should upgrade to the latest version: 0.8.20
-- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L181) should upgrade to the latest version: 0.8.20
+- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L3) should upgrade to the latest version: 0.8.21
+- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L15) should upgrade to the latest version: 0.8.21
+- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L33) should upgrade to the latest version: 0.8.21
+- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L42) should upgrade to the latest version: 0.8.21
+- pragma solidity version [^0.8.0](solidity/token_fallback_test.sol.sol#L181) should upgrade to the latest version: 0.8.21
 
 ### recommendation:
-Upgrade solidity version to the latest version: 0.8.20
+Upgrade solidity version to the latest version: 0.8.21
 
 ### locations:
 - solidity/token_fallback_test.sol.sol#L3
@@ -841,37 +775,17 @@ Removing those variables can save deployment and called gas. and improve code qu
 
 
 
-**There are `7` instances of this issue:**
-
-- The param variables in [IERC20.balanceOf(address)](solidity/token_fallback_test.sol.sol#L20) are unused.
-	- [IERC20.balanceOf(address).account](solidity/token_fallback_test.sol.sol#L20)
-
-- The param variables in [IERC20.transfer(address,uint256)](solidity/token_fallback_test.sol.sol#L21) are unused.
-	- [IERC20.transfer(address,uint256).recipient](solidity/token_fallback_test.sol.sol#L21)
-	- [IERC20.transfer(address,uint256).amount](solidity/token_fallback_test.sol.sol#L21)
-
-- The param variables in [IERC20.allowance(address,address)](solidity/token_fallback_test.sol.sol#L22) are unused.
-	- [IERC20.allowance(address,address).spender](solidity/token_fallback_test.sol.sol#L22)
-	- [IERC20.allowance(address,address).owner](solidity/token_fallback_test.sol.sol#L22)
-
-- The param variables in [IERC20.approve(address,uint256)](solidity/token_fallback_test.sol.sol#L23) are unused.
-	- [IERC20.approve(address,uint256).amount](solidity/token_fallback_test.sol.sol#L23)
-	- [IERC20.approve(address,uint256).spender](solidity/token_fallback_test.sol.sol#L23)
-
-- The param variables in [IERC20.transferFrom(address,address,uint256)](solidity/token_fallback_test.sol.sol#L24-L28) are unused.
-	- [IERC20.transferFrom(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L27)
-	- [IERC20.transferFrom(address,address,uint256).sender](solidity/token_fallback_test.sol.sol#L25)
-	- [IERC20.transferFrom(address,address,uint256).recipient](solidity/token_fallback_test.sol.sol#L26)
+**There are `2` instances of this issue:**
 
 - The param variables in [ERC20._beforeTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L168-L172) are unused.
-	- [ERC20._beforeTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L171)
 	- [ERC20._beforeTokenTransfer(address,address,uint256).from](solidity/token_fallback_test.sol.sol#L169)
 	- [ERC20._beforeTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L170)
+	- [ERC20._beforeTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L171)
 
 - The param variables in [ERC20._afterTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L174-L178) are unused.
-	- [ERC20._afterTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L177)
 	- [ERC20._afterTokenTransfer(address,address,uint256).from](solidity/token_fallback_test.sol.sol#L175)
 	- [ERC20._afterTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L176)
+	- [ERC20._afterTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L177)
 
 
 ### recommendation:
@@ -880,11 +794,6 @@ Remove the unused parameter variables.
 
 
 ### locations:
-- solidity/token_fallback_test.sol.sol#L20
-- solidity/token_fallback_test.sol.sol#L21
-- solidity/token_fallback_test.sol.sol#L22
-- solidity/token_fallback_test.sol.sol#L23
-- solidity/token_fallback_test.sol.sol#L24-L28
 - solidity/token_fallback_test.sol.sol#L168-L172
 - solidity/token_fallback_test.sol.sol#L174-L178
 

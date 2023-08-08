@@ -33,7 +33,7 @@ We also recommend avoiding complex `pragma` statement.
 ### recommendation:
 
 Deploy with any of the following Solidity versions:
-- 0.8.20
+- 0.8.21
 
 The recommendations take into account:
 - Risks related to recent releases

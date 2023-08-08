@@ -101,7 +101,7 @@ We also recommend avoiding complex `pragma` statement.
 ### recommendation:
 
 Deploy with any of the following Solidity versions:
-- 0.8.20
+- 0.8.21
 
 The recommendations take into account:
 - Risks related to recent releases
@@ -240,18 +240,18 @@ The instances below point to the second+ call of the function within a single fu
 **There are `3` instances of this issue:**
 
 - `DivisionByZero.f0()` called result should be cached with local variable in [DivisionByZero.bad0(uint256,uint256)](solidity/division_by_zero.sol#L2-L14), It is called more than once:
-	- [10 / (f0() * a)](solidity/division_by_zero.sol#L9)
-	- [f0() / a - 1](solidity/division_by_zero.sol#L13)
 	- [f0() / a](solidity/division_by_zero.sol#L5)
+	- [10 / (f0() * a)](solidity/division_by_zero.sol#L9)
 	- [10 / (f0() * a - 100)](solidity/division_by_zero.sol#L11)
+	- [f0() / a - 1](solidity/division_by_zero.sol#L13)
 
 - `DivisionByZero.f0()` called result should be cached with local variable in [DivisionByZero.notBad0(uint256,uint256)](solidity/division_by_zero.sol#L16-L30), It is called more than once:
 	- [f0() / a](solidity/division_by_zero.sol#L25)
 	- [10 / (f0() * a)](solidity/division_by_zero.sol#L29)
 
 - `DivisionByZero.f0()` called result should be cached with local variable in [DivisionByZero.notBad1(uint256,uint256)](solidity/division_by_zero.sol#L32-L42), It is called more than once:
-	- [10 / (f0() * a)](solidity/division_by_zero.sol#L41)
 	- [f0() / a](solidity/division_by_zero.sol#L37)
+	- [10 / (f0() * a)](solidity/division_by_zero.sol#L41)
 
 
 ### recommendation:
