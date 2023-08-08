@@ -6,10 +6,9 @@
 import unittest
 from typing import Optional
 
-from loguru import logger
 from slither.core.cfg.node import Node
-from slither.core.declarations import Function
-from slither.core.variables import Variable
+from slither.core.declarations import Function, Contract
+from slither.core.variables import Variable, StateVariable
 from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.slithir.operations import Operation, HighLevelCall, LibraryCall
 
@@ -58,6 +57,15 @@ i.e. Fee-on-transfer scenario:
         if not cls.is_erc20_transfer_instance(ir):
             return False
 
+        # except destination is state variable
+        if isinstance(ir.destination, StateVariable):
+            return False
+        # called function from Library
+        # `using SafeERC20 for IERC20;`
+        if isinstance(ir, LibraryCall) and isinstance(ir.destination, Contract):
+            if len(ir.arguments) > 0 and isinstance(ir.arguments[0], StateVariable):
+                return False
+
         return not cls.is_check_balance_in_function(
             ir.node.function, cls.get_erc20_transfer_to(ir)
         )
@@ -71,7 +79,7 @@ i.e. Fee-on-transfer scenario:
         get_balance_count = 0
         for node in function.nodes:
             for ir in node.irs:
-                # todo detect in internal call
+                # todo detect check balance in internal call
                 if not (
                     isinstance(ir, HighLevelCall)
                     and isinstance(ir.function, Function)

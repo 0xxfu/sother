@@ -1,5 +1,3 @@
-
-
 library SafeERC20 {
     function safeTransfer(
         IERC20 token,
@@ -43,27 +41,34 @@ contract FeeOnTransfer {
     using SafeERC20 for IERC20;
     IERC20 token;
 
-    function bad0(address to, uint256 amount) external {
-        token.transfer(to, amount);
-        token.transferFrom(address(this), to, amount);
+    function bad0(IERC20 _token, address to, uint256 amount) external {
+        _token.transfer(to, amount);
+        _token.transferFrom(address(this), to, amount);
     }
 
-    function bad1(address to, uint256 amount) external {
+    function bad1(IERC20 _token, address to, uint256 amount) external {
+        _token.safeTransfer(to, amount);
+        _token.safeTransferFrom(address(this), to, amount);
+    }
+
+    function notBad(address to, uint256 amount) external {
+        token.transfer(to, amount);
+        token.transferFrom(address(this), to, amount);
         token.safeTransfer(to, amount);
         token.safeTransferFrom(address(this), to, amount);
     }
 
-    function good0(address to, uint256 amount) external {
-        uint256 beforeBalance = token.balanceOf(to);
-        token.transfer(to, amount);
-        token.transferFrom(address(this), to, amount);
-        uint256 afterBalance = token.balanceOf(to);
+    function good0(IERC20 _token, address to, uint256 amount) external {
+        uint256 beforeBalance = _token.balanceOf(to);
+        _token.transfer(to, amount);
+        _token.transferFrom(address(this), to, amount);
+        uint256 afterBalance = _token.balanceOf(to);
     }
 
-    function good1(address to, uint256 amount) external {
-        uint256 beforeBalance = token.balanceOf(to);
-        token.safeTransfer(to, amount);
-        token.safeTransferFrom(address(this), to, amount);
-        uint256 afterBalance = token.balanceOf(to);
+    function good1(IERC20 _token, address to, uint256 amount) external {
+        uint256 beforeBalance = _token.balanceOf(to);
+        _token.safeTransfer(to, amount);
+        _token.safeTransferFrom(address(this), to, amount);
+        uint256 afterBalance = _token.balanceOf(to);
     }
 }
