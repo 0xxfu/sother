@@ -23,11 +23,11 @@ class AbstractDetectInLoop(AbstractDetector, ABC):
     def detect_loop_in_function(cls, functions: list[FunctionContract]) -> list[Node]:
         ret: List[Node] = []
         for func in functions:
-            cls.loop_in_node(func.entry_point, 0, [], ret)
+            cls.instance_in_loop(func.entry_point, 0, [], ret)
         return ret
 
     @classmethod
-    def loop_in_node(
+    def instance_in_loop(
         cls,
         node: Optional[Node],
         in_loop_counter: int,
@@ -55,12 +55,12 @@ class AbstractDetectInLoop(AbstractDetector, ABC):
                     ret.append(ir.node)
                     break
                 if isinstance(ir, (InternalCall)) and ir.function:
-                    cls.loop_in_node(
+                    cls.instance_in_loop(
                         ir.function.entry_point, in_loop_counter, visited, ret
                     )
 
         for son in node.sons:
-            cls.loop_in_node(son, in_loop_counter, visited, ret)
+            cls.instance_in_loop(son, in_loop_counter, visited, ret)
 
 
 if __name__ == "__main__":
