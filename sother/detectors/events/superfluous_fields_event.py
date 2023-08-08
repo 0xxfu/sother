@@ -41,7 +41,7 @@ Remove default fields(`block.timestamp` or `block.number`) in event.
         result_nodes: set[Node] = set()
         for function in GasUtils.get_available_functions(self.compilation_unit):
             for node in function.nodes:
-                for ir in node.all_slithir_operations():
+                for ir in node.irs:
                     if not isinstance(ir, EventCall):
                         continue
                     for var_read in ir.read:

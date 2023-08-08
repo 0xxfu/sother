@@ -6,18 +6,15 @@
 import unittest
 from typing import List
 
-from loguru import logger
 from slither.core.cfg.node import Node
 from slither.core.declarations import Contract
-from slither.core.expressions import CallExpression, BinaryOperation
 from slither.core.solidity_types import ElementaryType
-from slither.core.variables import Variable
 from slither.detectors.abstract_detector import (
     DetectorClassification,
     AbstractDetector,
     DETECTOR_INFO,
 )
-from slither.slithir.operations import SolidityCall, Binary, TypeConversion
+from slither.slithir.operations import Binary, TypeConversion
 from slither.utils.output import Output
 
 from sother.detectors.detector_settings import DetectorSettings
@@ -55,7 +52,7 @@ function addrNotZero(address _addr) public pure {
     @classmethod
     def _is_zero_address_in_binary_node(cls, node: Node) -> bool:
         zero_address_ir = None
-        for ir in node.all_slithir_operations():
+        for ir in node.irs:
             if (
                 isinstance(ir, TypeConversion)
                 and ir.type == ElementaryType("address")

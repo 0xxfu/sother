@@ -9,8 +9,7 @@ from typing import List
 from loguru import logger
 from slither.core.cfg.node import Node
 from slither.core.expressions import BinaryOperation, Literal, BinaryOperationType
-from slither.core.expressions.expression import Expression
-from slither.core.solidity_types.elementary_type import Int, Uint
+from slither.core.solidity_types.elementary_type import Uint
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 from slither.utils.output import Output
 
@@ -46,7 +45,7 @@ Using bit shifting (`>>` operator) replace division divided by constant.
         uint_list = Uint
         for function in GasUtils.get_available_functions(self.compilation_unit):
             for node in function.nodes:
-                for ir in node.all_slithir_operations():
+                for ir in node.irs:
                     ir_exp = ir.expression
                     # expression is `/` operator
                     if (
@@ -100,7 +99,7 @@ Using bit shifting (`<<` operator) replace multiplications of powers of 2 `(2**x
         uint_list = Uint
         for function in GasUtils.get_available_functions(self.compilation_unit):
             for node in function.nodes:
-                for ir in node.all_slithir_operations():
+                for ir in node.irs:
                     ir_exp = ir.expression
                     # expression is `**` operator
                     if (
