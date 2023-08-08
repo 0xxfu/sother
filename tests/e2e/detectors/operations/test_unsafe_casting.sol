@@ -86,7 +86,7 @@ contract UnsafeDoubleCast {
     uint32 ui32;
     int256 i256;
 
-    function bad00(uint256 a) external {
+    function bad0(uint256 a) external {
         ui128 = uint128(uint64(a));
 
         ui32 = uint32(uint64(block.timestamp));
@@ -98,6 +98,7 @@ contract UnsafeDoubleCast {
 
     function notBad(uint256 a) external {
         ui128 = toUint128(a);
+        ui128 = uint128(a) + uint128(a);
     }
 
     function notBad2(uint256 a) external {

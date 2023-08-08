@@ -3,6 +3,7 @@
 @email: angerpeanut@gmail.com
 @date: 2023-07
 """
+import re
 import unittest
 
 from slither.core.cfg.node import Node
@@ -203,23 +204,9 @@ Consider using single casting instead of double casting.
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
         if isinstance(ir, IrTypeConversion):
-            all_int = Uint + Int
-            cast_count = 0
-            for node_ir in ir.node.irs:
-                if isinstance(node_ir, IrTypeConversion) and all(
-                    [
-                        str(ir.lvalue.type) in all_int,
-                        str(ir.variable.type) in all_int,
-                    ]
-                ):
-                    if "address(uint160(uint256" in str(ir.node.expression) or (
-                        "address(uint160" in str(ir.node.expression)
-                        and str(ir.variable.type) == "uint256"
-                    ):
-                        continue
-                    cast_count += 1
-
-            if cast_count >= 2:
+            pattern = r"(u?)int([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|256)?\((u?)int"
+            matches = re.compile(pattern).findall(str(ir.node.expression))
+            if matches and "address(uint160" not in str(ir.node.expression):
                 return True
 
         return False
