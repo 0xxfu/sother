@@ -7,7 +7,7 @@ import unittest
 
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function, Contract
-from slither.core.variables import StateVariable
+from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.slithir.operations import Operation, HighLevelCall, LibraryCall
 
@@ -62,13 +62,18 @@ instead of the `type(uint256).max` amount.
             and "type()(uint256).max" in str(ir.node.expression)
         ):
             # except destination is state variable
-            if isinstance(ir.destination, StateVariable):
-                return False
-            if isinstance(ir, LibraryCall) and isinstance(ir.destination, Contract):
+            if (
+                isinstance(ir.destination, LocalVariable)
+                and ir.destination in ir.node.function.parameters
+            ):
+                return True
+            elif isinstance(ir, LibraryCall) and isinstance(ir.destination, Contract):
                 if len(ir.arguments) > 0:
-                    if isinstance(ir.arguments[0], StateVariable):
-                        return False
-            return True
+                    if (
+                        isinstance(ir.arguments[0], LocalVariable)
+                        and ir.arguments[0] in ir.node.function.parameters
+                    ):
+                        return True
         return False
 
     @classmethod
