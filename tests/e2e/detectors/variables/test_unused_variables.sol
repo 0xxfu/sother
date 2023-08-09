@@ -51,6 +51,9 @@ contract UnusedParameter {
         a = a + 1;
     }
 
+    function bad2(uint a, uint) external pure {
+    }
+
     function notBad0(uint256 a) internal pure returns (uint256) {
         return a + 1;
     }

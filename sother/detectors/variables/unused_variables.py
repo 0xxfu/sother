@@ -158,8 +158,13 @@ Remove the unused parameter variables.
                         function,
                         " are unused.\n",
                     ]
+
                     for var in result_vars:
-                        info += ["\t- ", var, "\n"]
+                        info += [
+                            "\t- ",
+                            var,
+                            f"{f'`.{str(var.type)}`' if not var.name else ''}\n",
+                        ]
                     results.append(self.generate_result(info))
         return results
 
