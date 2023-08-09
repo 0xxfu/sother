@@ -4,6 +4,8 @@ contract MemoryInParameters {
     bytes byt;
     bytes32 byt32;
 
+    constructor(uint256[] memory a){}
+
     function bad(
         uint256[] memory a,
         uint256[] memory b,
@@ -43,9 +45,9 @@ contract MemoryInParameters {
     }
 
     function notBad3(uint256[] memory a)
-        internal
-        pure
-        returns (uint256[] memory)
+    internal
+    pure
+    returns (uint256[] memory)
     {
         return a;
     }

@@ -6,10 +6,6 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.functions.internal_function_to_inline import (
-    InternalFunctionToInline,
-)
-from sother.detectors.functions.memory_in_parameters import MemoryInParameters
 from sother.detectors.functions.payable_functions import (
     PayableConstructor,
     PayableFunction,

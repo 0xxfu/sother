@@ -6,15 +6,14 @@
 import unittest
 from typing import List
 
-from loguru import logger
 from slither.core.declarations import FunctionContract, Structure
+from slither.core.declarations.function import FunctionType
 from slither.core.solidity_types import ArrayType, UserDefinedType, MappingType
 from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 from slither.utils.output import Output
 
 from sother.detectors.detector_settings import DetectorSettings
-from sother.utils.gas_utils import GasUtils
 
 
 # only detect in entrypoint function
@@ -44,6 +43,8 @@ More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-s
             if contract.is_interface:
                 continue
             for function in contract.functions_entry_points:
+                if function.function_type != FunctionType.NORMAL:
+                    continue
                 result_variables = self._detect_memory_variables(function)
                 if result_variables and len(result_variables) > 0:
                     result = [
