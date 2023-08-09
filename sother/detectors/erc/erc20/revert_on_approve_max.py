@@ -5,12 +5,11 @@
 """
 import unittest
 
-from loguru import logger
 from slither.core.cfg.node import Node
-from slither.core.declarations import Function
+from slither.core.declarations import Function, Contract
+from slither.core.variables import StateVariable
 from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
-from slither.slithir.operations import Operation, HighLevelCall
-from slither.slithir.variables import TemporaryVariable
+from slither.slithir.operations import Operation, HighLevelCall, LibraryCall
 
 from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
@@ -50,7 +49,7 @@ instead of the `type(uint256).max` amount.
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
-        return (
+        if (
             isinstance(ir, HighLevelCall)
             and isinstance(ir.function, Function)
             and ir.function.solidity_signature
@@ -61,7 +60,16 @@ instead of the `type(uint256).max` amount.
                 "safeIncreaseAllowance(address,address,uint256)",
             ]
             and "type()(uint256).max" in str(ir.node.expression)
-        )
+        ):
+            # except destination is state variable
+            if isinstance(ir.destination, StateVariable):
+                return False
+            if isinstance(ir, LibraryCall) and isinstance(ir.destination, Contract):
+                if len(ir.arguments) > 0:
+                    if isinstance(ir.arguments[0], StateVariable):
+                        return False
+            return True
+        return False
 
     @classmethod
     def _detect_node_info(cls, node: Node) -> DETECTOR_INFO:
