@@ -301,7 +301,7 @@ Remove unused error definition.
             if contract.is_library or contract.is_interface:
                 continue
             result_errors: list[CustomErrorContract] = contract.custom_errors_declared
-            for function in contract.functions:
+            for function in contract.functions_and_modifiers:
                 for node in function.nodes:
                     if (
                         isinstance(node.expression, CallExpression)

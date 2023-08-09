@@ -130,7 +130,15 @@ contract UnusedStruct {
 
 contract UnusedError {
     error ErrorUsed();
+    error ErrorUsed2();
     error ErrorUnused();
+
+    modifier moreThanZero(uint256 amount) {
+        if (amount == 0) {
+            revert ErrorUsed2();
+        }
+        _;
+    }
 
     function f0() external {
         revert ErrorUsed();
