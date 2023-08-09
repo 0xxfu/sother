@@ -19,6 +19,11 @@ contract UseDeleteStatement {
     }
 
     function notBad() external {
+        for (uint i = 0; i < 10;) {
+            unchecked{
+                ++i;
+            }
+        }
         delete ui256;
         delete i256;
         delete addr;

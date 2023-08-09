@@ -5,8 +5,7 @@
 """
 import unittest
 
-from loguru import logger
-from slither.core.cfg.node import Node
+from slither.core.cfg.node import Node, NodeType
 from slither.core.solidity_types import ElementaryType
 from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.slithir.operations import Operation, Assignment
@@ -51,6 +50,10 @@ Replacing assignments of zero with delete statements.
     def _is_instance(cls, ir: Operation) -> bool:
         if isinstance(ir, Assignment) and isinstance(ir.rvalue.type, ElementaryType):
             rvalue = ir.rvalue
+            # except declaration in loop `for (uint i = 0; i < 10;)`
+            for son in ir.node.sons:
+                if son.type == NodeType.STARTLOOP:
+                    return False
             if isinstance(rvalue, Constant) and rvalue.value in [0, False]:
                 return True
             elif str(rvalue.type) == "address" and "address(0)" in str(ir.expression):
