@@ -3,12 +3,12 @@ contract RevertLongString {
 
     function bad(uint256 a) external pure {
         if (a != 0) {
-            revert("long long long long long");
+            revert("long long long long long long long");
         }
     }
 
     function bad2(uint256 a) external pure {
-        require(a != 0, "long long long long long");
+        require(a != 0, "long long long long long long long");
     }
 
     function notBad(uint256 a) external pure {

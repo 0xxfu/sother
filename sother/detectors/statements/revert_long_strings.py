@@ -6,7 +6,6 @@
 import unittest
 from typing import List
 
-from loguru import logger
 from slither.core.cfg.node import Node
 from slither.core.declarations import FunctionContract
 from slither.core.expressions import CallExpression, Literal
@@ -56,7 +55,7 @@ Shortening revert strings to fit in 32 `bytes`
                 for arg in node_exp.arguments:
                     if not isinstance(arg, Literal):
                         continue
-                    if str(arg.type) == "string" and len(arg.value) > 16:
+                    if str(arg.type) == "string" and len(arg.value) > 32:
                         result_nodes.add(node)
         return result_nodes
 
