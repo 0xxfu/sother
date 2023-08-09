@@ -7,7 +7,7 @@ import unittest
 
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function
-from slither.core.variables import StateVariable
+from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.slithir.operations import Operation, HighLevelCall
 
@@ -56,8 +56,9 @@ replace `approve()/safeApprove()` with `safeIncreaseAllowance()` or `safeDecreas
             isinstance(ir, HighLevelCall)
             and isinstance(ir.function, Function)
             and ir.function.solidity_signature in ["approve(address,uint256)"]
-            # except destination state variable
-            and not isinstance(ir.destination, StateVariable)
+            # only include destination come from param
+            and isinstance(ir.destination, LocalVariable)
+            and ir.destination in ir.node.function.parameters
         ):
             return True
         return False
