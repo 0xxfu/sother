@@ -7,6 +7,7 @@ import unittest
 
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function
+from slither.core.variables import StateVariable
 from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.slithir.operations import Operation, HighLevelCall
 
@@ -51,11 +52,15 @@ replace `approve()/safeApprove()` with `safeIncreaseAllowance()` or `safeDecreas
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
-        return (
+        if (
             isinstance(ir, HighLevelCall)
             and isinstance(ir.function, Function)
             and ir.function.solidity_signature in ["approve(address,uint256)"]
-        )
+            # except destination state variable
+            and not isinstance(ir.destination, StateVariable)
+        ):
+            return True
+        return False
 
     @classmethod
     def _detect_node_info(cls, node: Node) -> DETECTOR_INFO:
