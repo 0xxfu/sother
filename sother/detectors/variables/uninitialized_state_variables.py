@@ -6,7 +6,6 @@
 import unittest
 from typing import List, Tuple
 
-from loguru import logger
 from slither.core.declarations import Contract, Function
 from slither.core.solidity_types import ElementaryType, UserDefinedType
 from slither.core.variables import Variable
@@ -15,6 +14,7 @@ from slither.detectors.variables.uninitialized_state_variables import (
 )
 
 
+# todo except `abstract` contract
 class UninitializedStateVarsDetection(SlitherUninitializedStateVarsDetection):
     def _detect_uninitialized(
         self, contract: Contract
