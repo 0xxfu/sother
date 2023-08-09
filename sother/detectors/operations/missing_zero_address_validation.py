@@ -10,6 +10,7 @@ from slither.detectors.operations.missing_zero_address_validation import (
 )
 
 
+# todo except `if (addr != address(0))` statement
 class MissingZeroAddressValidation(SlitherMissingZeroAddressValidation):
     WIKI_DESCRIPTION = "Missing zero address validation."
 
