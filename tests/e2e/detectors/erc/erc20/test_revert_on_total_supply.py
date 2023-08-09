@@ -6,7 +6,6 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.erc.erc20.revert_on_approve_max import RevertOnApproveMax
 from sother.detectors.erc.erc20.revert_on_total_supply import RevertOnTotalSupply
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 

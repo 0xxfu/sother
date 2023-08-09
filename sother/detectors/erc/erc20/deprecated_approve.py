@@ -52,6 +52,8 @@ replace `approve()/safeApprove()` with `safeIncreaseAllowance()` or `safeDecreas
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
+        if ir.node.function.is_constructor or ir.node.function.is_constructor_variables:
+            return False
         if (
             isinstance(ir, HighLevelCall)
             and isinstance(ir.function, Function)
