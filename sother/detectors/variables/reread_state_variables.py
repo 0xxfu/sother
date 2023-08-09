@@ -54,7 +54,8 @@ def detect_reread_state(
     return result_nodes
 
 
-# todo except `if()else` recount
+# todo exclude `if()else` recount
+# todo include state reading in loop
 class RereadStateVariables(AbstractDetector):
     ARGUMENT = "reread-state-variables"
     HELP = "Cache state variables instead of rereading"
