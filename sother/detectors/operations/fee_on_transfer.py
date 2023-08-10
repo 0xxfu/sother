@@ -57,11 +57,8 @@ i.e. Fee-on-transfer scenario:
     def _is_instance(cls, ir: Operation) -> bool:
         if not cls.is_erc20_transfer_instance(ir):
             return False
-
-        if (
-            # and ir.destination in ir.node.function.parameters
-            FunctionUtils.is_local_var_dependent_param(ir.destination, ir.node.function)
-        ):
+        # and ir.destination in ir.node.function.parameters
+        if FunctionUtils.is_local_var_dependent_param(ir.destination, ir.node.function):
             return not cls.is_check_balance_in_function(
                 ir.node.function, cls.get_erc20_transfer_to(ir)
             )
