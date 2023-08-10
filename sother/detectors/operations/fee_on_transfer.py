@@ -6,7 +6,7 @@
 import unittest
 from typing import Optional
 
-from loguru import logger
+from slither.analyses.data_dependency.data_dependency import is_dependent
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function, Contract
 from slither.core.variables import Variable
@@ -61,7 +61,13 @@ i.e. Fee-on-transfer scenario:
 
         if (
             isinstance(ir.destination, LocalVariable)
-            and ir.destination in ir.node.function.parameters
+            # and ir.destination in ir.node.function.parameters
+            and any(
+                [
+                    is_dependent(ir.destination, param, ir.node)
+                    for param in ir.node.function.parameters
+                ]
+            )
         ):
             return not cls.is_check_balance_in_function(
                 ir.node.function, cls.get_erc20_transfer_to(ir)
@@ -70,10 +76,11 @@ i.e. Fee-on-transfer scenario:
             # called function from Library
             # `using SafeERC20 for IERC20;`
             if len(ir.arguments) > 0:
-                logger.debug(f"arg: {ir.arguments[0]} type: {type(ir.arguments[0])}")
-                if (
-                    isinstance(ir.arguments[0], LocalVariable)
-                    and ir.arguments[0] in ir.node.function.parameters
+                if isinstance(ir.arguments[0], LocalVariable) and any(
+                    [
+                        is_dependent(ir.arguments[0], param, ir.node)
+                        for param in ir.node.function.parameters
+                    ]
                 ):
                     return not cls.is_check_balance_in_function(
                         ir.node.function, cls.get_erc20_transfer_to(ir)
@@ -89,8 +96,8 @@ i.e. Fee-on-transfer scenario:
             return False
         get_balance_count = 0
         for node in function.nodes:
-            for ir in node.irs:
-                # todo detect check balance in internal call
+            # detect check balance in internal call
+            for ir in node.all_slithir_operations():
                 if not (
                     isinstance(ir, HighLevelCall)
                     and isinstance(ir.function, Function)

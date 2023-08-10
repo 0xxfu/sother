@@ -53,6 +53,20 @@ contract FeeOnTransfer {
         _token.safeTransferFrom(address(this), to, amount);
     }
 
+    function bad2(address[] calldata _tokens, address to, uint256 amount) external {
+        uint256 len = _tokens.length;
+
+        unchecked {
+            for (uint256 i = 0; i < len; ++i) {
+                IERC20 _token = IERC20(_tokens[i]);
+                _token.safeTransfer(to, amount);
+                _token.safeTransferFrom(address(this), to, amount);
+                _token.transfer(to, amount);
+                _token.transferFrom(address(this), to, amount);
+            }
+        }
+    }
+
     function notBad(address to, uint256 amount) external {
         token.transfer(to, amount);
         token.transferFrom(address(this), to, amount);
