@@ -8,7 +8,6 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import List, Optional
 
-from loguru import logger
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function
 from slither.core.variables import Variable

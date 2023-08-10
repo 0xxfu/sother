@@ -5,7 +5,6 @@
 """
 import unittest
 
-from loguru import logger
 from slither.analyses.data_dependency.data_dependency import is_dependent
 from slither.core.cfg.node import Node
 from slither.core.declarations import SolidityVariableComposed
@@ -16,6 +15,7 @@ from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
 )
 from sother.detectors.detector_settings import DetectorSettings
+from sother.utils.function_utils import FunctionUtils
 
 
 class MissingSenderInEvent(AbstractDetectHasInstance):
@@ -43,6 +43,10 @@ Adding `msg.sender` to event.
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
+        if ir.node.function.is_constructor or ir.node.function.is_constructor_variables:
+            return False
+        if not FunctionUtils.is_entry_point_function(ir.node.function):
+            return False
         if isinstance(ir, EventCall):
             for var_read in ir.read:
                 if is_dependent(
