@@ -6,11 +6,9 @@
 import unittest
 from typing import Optional
 
-from slither.analyses.data_dependency.data_dependency import is_dependent
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function, Contract
 from slither.core.variables import Variable
-from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.slithir.operations import Operation, HighLevelCall, LibraryCall
 
@@ -19,6 +17,7 @@ from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractTransferInstance,
 )
 from sother.detectors.detector_settings import DetectorSettings
+from sother.utils.function_utils import FunctionUtils
 
 
 class FeeOnTransfer(AbstractTransferInstance, AbstractDetectHasInstance):
@@ -60,14 +59,8 @@ i.e. Fee-on-transfer scenario:
             return False
 
         if (
-            isinstance(ir.destination, LocalVariable)
             # and ir.destination in ir.node.function.parameters
-            and any(
-                [
-                    is_dependent(ir.destination, param, ir.node)
-                    for param in ir.node.function.parameters
-                ]
-            )
+            FunctionUtils.is_local_var_dependent_param(ir.destination, ir.node.function)
         ):
             return not cls.is_check_balance_in_function(
                 ir.node.function, cls.get_erc20_transfer_to(ir)
@@ -76,11 +69,8 @@ i.e. Fee-on-transfer scenario:
             # called function from Library
             # `using SafeERC20 for IERC20;`
             if len(ir.arguments) > 0:
-                if isinstance(ir.arguments[0], LocalVariable) and any(
-                    [
-                        is_dependent(ir.arguments[0], param, ir.node)
-                        for param in ir.node.function.parameters
-                    ]
+                if FunctionUtils.is_local_var_dependent_param(
+                    ir.arguments[0], ir.node.function
                 ):
                     return not cls.is_check_balance_in_function(
                         ir.node.function, cls.get_erc20_transfer_to(ir)
