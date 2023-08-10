@@ -7,7 +7,6 @@ import unittest
 
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function
-from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.slithir.operations import Operation, HighLevelCall
 
@@ -15,6 +14,7 @@ from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
 )
 from sother.detectors.detector_settings import DetectorSettings
+from sother.utils.function_utils import FunctionUtils
 
 
 class DeprecatedApprove(AbstractDetectHasInstance):
@@ -59,8 +59,9 @@ replace `approve()/safeApprove()` with `safeIncreaseAllowance()` or `safeDecreas
             and isinstance(ir.function, Function)
             and ir.function.solidity_signature in ["approve(address,uint256)"]
             # only include destination come from param
-            and isinstance(ir.destination, LocalVariable)
-            and ir.destination in ir.node.function.parameters
+            and FunctionUtils.is_local_var_dependent_param(
+                ir.destination, ir.node.function
+            )
         ):
             return True
         return False

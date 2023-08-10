@@ -7,7 +7,6 @@ import unittest
 
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function, Contract
-from slither.core.variables.local_variable import LocalVariable
 from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.slithir.operations import Operation, HighLevelCall, LibraryCall
 
@@ -15,6 +14,7 @@ from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
 )
 from sother.detectors.detector_settings import DetectorSettings
+from sother.utils.function_utils import FunctionUtils
 
 
 class RevertOnApproveMax(AbstractDetectHasInstance):
@@ -64,16 +64,14 @@ instead of the `type(uint256).max` amount.
             and "type()(uint256).max" in str(ir.node.expression)
         ):
             # except destination is state variable
-            if (
-                isinstance(ir.destination, LocalVariable)
-                and ir.destination in ir.node.function.parameters
+            if FunctionUtils.is_local_var_dependent_param(
+                ir.destination, ir.node.function
             ):
                 return True
             elif isinstance(ir, LibraryCall) and isinstance(ir.destination, Contract):
                 if len(ir.arguments) > 0:
-                    if (
-                        isinstance(ir.arguments[0], LocalVariable)
-                        and ir.arguments[0] in ir.node.function.parameters
+                    if FunctionUtils.is_local_var_dependent_param(
+                        ir.arguments[0], ir.node.function
                     ):
                         return True
         return False
