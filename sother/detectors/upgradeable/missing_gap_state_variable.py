@@ -38,7 +38,7 @@ state variable named `__gap`. This `__gap` state variable will be used as a
 reserved space for future upgrades. It allows adding new state variables
 freely in the future without compromising the storage compatibility with
 existing deployments.
-The size of the __gap array is usually calculated so that the amount of
+The size of the `__gap` array is usually calculated so that the amount of
 storage used by a contract always adds up to the same number (usually 50
 storage slots).
 

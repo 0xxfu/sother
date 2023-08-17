@@ -6,13 +6,9 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.upgradeable.missing_gap_state_variable import (
-    MissingGapStateVariable,
-)
 from sother.detectors.upgradeable.unused_upgradeable_counterparts import (
     UnusedUpgradeableCounterparts,
 )
-from sother.detectors.variables.bool_state_variables import BoolStateVariables
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 
