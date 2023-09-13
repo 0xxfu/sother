@@ -45,7 +45,7 @@ def _to_markdown(
     detector_impact = f"{classification_txt[detector_wiki.impact]}"
     markdown = f"\n## [{detector_impact}] {detector_wiki.wiki_title}\n"
     if detector_wiki.wiki_description or detector_wiki.wiki_exploit_scenario:
-        markdown += f"\n### description:\n"
+        markdown += f"\n### description\n"
     if detector_wiki.wiki_description:
         markdown += f"{detector_wiki.wiki_description}\n\n"
 
@@ -68,18 +68,18 @@ def _to_markdown(
         markdown += f"#### Exploit scenario\n"
         markdown += f"{detector_wiki.wiki_exploit_scenario}\n"
 
-    markdown += f"\n### recommendation:\n"
+    markdown += f"\n### recommendation\n"
     if detector_wiki.wiki_recommendation:
         markdown += f"{detector_wiki.wiki_recommendation}\n"
-    markdown += f"\n### locations:\n"
+    markdown += f"\n### locations\n"
     for result in output_results:
         markdown += f"- {result.first_markdown_element}\n"
-    markdown += f"\n### severity:\n"
+    markdown += f"\n### severity\n"
     markdown += f"{detector_impact}\n"
-    markdown += f"\n### category:\n"
+    markdown += f"\n### category\n"
     markdown += f"{detector_wiki.argument}\n"
 
-    markdown += f"\n### confidence:\n"
+    markdown += f"\n### confidence\n"
     markdown += f"{classification_txt[detector_wiki.confidence]}\n"
 
     return markdown, detector_wiki.argument
