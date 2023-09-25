@@ -9,7 +9,6 @@ from typing import Type
 
 from slither.detectors import all_detectors as slither_all_detectors
 from slither.detectors.abstract_detector import AbstractDetector
-from slither_pess import make_plugin as press_make_plugin
 
 from sother.core.models import DetectorWiki
 from sother.detectors.attributes.incorrect_solc import IncorrectSolc
@@ -164,6 +163,9 @@ from sother.detectors.variables.zero_initialized_state_variable import (
 )
 
 
+# from slither_pess import make_plugin as press_make_plugin
+
+
 def extend_detectors(
     original_detectors: list[Type[AbstractDetector]],
     new_detectors: list[Type[AbstractDetector]],
@@ -181,7 +183,7 @@ def extend_detectors(
 
 def get_all_detectors() -> list[Type[AbstractDetector]]:
     detectors_ = get_detectors()
-    detectors_ = extend_detectors(detectors_, press_make_plugin()[0])
+    # detectors_ = extend_detectors(detectors_, press_make_plugin()[0])
     detectors_ = extend_detectors(
         detectors_,
         [getattr(slither_all_detectors, name) for name in dir(slither_all_detectors)],
