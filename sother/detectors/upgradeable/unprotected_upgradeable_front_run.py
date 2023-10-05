@@ -41,10 +41,9 @@ More detail see [this OpenZeppelin docs](https://docs.openzeppelin.com/upgrades-
     WIKI_EXPLOIT_SCENARIO = """ """
 
     WIKI_RECOMMENDATION = """
-Use [disableInitializers](https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/blob/62e2b8811b3cd80eb189aee7ae6764e937f8647b/contracts/proxy/utils/Initializable.sol#L150-L165
-) to prevent front-running on the initialize func-tion,
-as it would make you deploy the smart contract again if someone
-initializes it before you.
+Use [disableInitializers](https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/blob/62e2b8811b3cd80eb189aee7ae6764e937f8647b/contracts/proxy/utils/Initializable.sol#L150-L165) 
+to prevent front-running on the initialize function, as it would make you deploy the smart contract 
+again if someone initializes it before you.
 
 ```
     constructor(){
