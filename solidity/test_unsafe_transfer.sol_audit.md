@@ -13,7 +13,8 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [M-0] | Return values of `transfer()/transferFrom()` not checked | 2 |
-| [M-1] | Using `ERC721.transferFrom()` may cause the user's NFT to be frozen in a contract that does not support ERC721 | 1 |
+| [M-1] | Unsafe use of `transfer()/transferFrom()` with IERC20 | 13 |
+| [M-2] | Using `ERC721.transferFrom()` may cause the user's NFT to be frozen in a contract that does not support ERC721 | 1 |
 
 
 ### Low Risk Issues
@@ -174,6 +175,76 @@ unchecked-transfer
 
 ### confidence
 Medium
+
+## [Medium] Unsafe use of `transfer()/transferFrom()` with IERC20
+
+### description
+
+Some tokens do not implement the ERC20 standard properly but are still accepted by most code 
+that accepts ERC20 tokens. For example Tether (USDT)'s `transfer()` and `transferFrom()` functions 
+on L1 do not return booleans as the specification requires, and instead have no return value. 
+When these sorts of tokens are cast to IERC20, their [function signatures](https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca) 
+do not match and therefore the calls made, revert.
+
+
+**There are `13` instances of this issue:**
+
+- [t.transferFrom(from,to,tokenId)](solidity/test_unsafe_transfer.sol#L35) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [t.transfer(address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L52) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [a = t.transfer(address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L56) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [require(bool,string)(t.transfer(address(0),1000000000000000000),"failed")](solidity/test_unsafe_transfer.sol#L60) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [assert(bool)(t.transfer(address(0),1000000000000000000))](solidity/test_unsafe_transfer.sol#L64) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [t.transfer(address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L68) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [ret = t.transfer(address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L72) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [t.transferFrom(address(this),address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L77) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [a = t.transferFrom(address(this),address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L81) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [require(bool,string)(t.transferFrom(address(this),address(0),1000000000000000000),"failed")](solidity/test_unsafe_transfer.sol#L85) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [assert(bool)(t.transferFrom(address(this),address(0),1000000000000000000))](solidity/test_unsafe_transfer.sol#L89) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [t.transferFrom(address(this),address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L93) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [ret = t.transferFrom(address(this),address(0),1000000000000000000)](solidity/test_unsafe_transfer.sol#L97) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+
+### recommendation
+
+Use [OpenZeppelin’s SafeERC20](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/utils/SafeERC20.sol) 
+`safeTransfer()/safeTransferFrom()` instead of `transfer()/transferFrom()`
+
+
+### locations
+- solidity/test_unsafe_transfer.sol#L35
+- solidity/test_unsafe_transfer.sol#L52
+- solidity/test_unsafe_transfer.sol#L56
+- solidity/test_unsafe_transfer.sol#L60
+- solidity/test_unsafe_transfer.sol#L64
+- solidity/test_unsafe_transfer.sol#L68
+- solidity/test_unsafe_transfer.sol#L72
+- solidity/test_unsafe_transfer.sol#L77
+- solidity/test_unsafe_transfer.sol#L81
+- solidity/test_unsafe_transfer.sol#L85
+- solidity/test_unsafe_transfer.sol#L89
+- solidity/test_unsafe_transfer.sol#L93
+- solidity/test_unsafe_transfer.sol#L97
+
+### severity
+Medium
+
+### category
+unsafe-transfer
+
+### confidence
+High
 
 ## [Medium] Using `ERC721.transferFrom()` may cause the user's NFT to be frozen in a contract that does not support ERC721
 

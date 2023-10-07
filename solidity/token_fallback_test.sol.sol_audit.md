@@ -5,8 +5,9 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [M-0] | Return values of `transfer()/transferFrom()` not checked | 1 |
-| [M-1] | Incompatibility with transfer-on-fee or deflationary tokens | 1 |
-| [M-2] | The owner is a single point of failure and a centralization risk | 1 |
+| [M-1] | Unsafe use of `transfer()/transferFrom()` with IERC20 | 1 |
+| [M-2] | Incompatibility with transfer-on-fee or deflationary tokens | 1 |
+| [M-3] | The owner is a single point of failure and a centralization risk | 1 |
 
 
 ### Low Risk Issues
@@ -98,6 +99,40 @@ unchecked-transfer
 
 ### confidence
 Medium
+
+## [Medium] Unsafe use of `transfer()/transferFrom()` with IERC20
+
+### description
+
+Some tokens do not implement the ERC20 standard properly but are still accepted by most code 
+that accepts ERC20 tokens. For example Tether (USDT)'s `transfer()` and `transferFrom()` functions 
+on L1 do not return booleans as the specification requires, and instead have no return value. 
+When these sorts of tokens are cast to IERC20, their [function signatures](https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca) 
+do not match and therefore the calls made, revert.
+
+
+**There is `1` instance of this issue:**
+
+- [badToken.transfer(distAddr,BadTokenBalance)](solidity/token_fallback_test.sol.sol#L221) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+
+### recommendation
+
+Use [OpenZeppelin’s SafeERC20](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/utils/SafeERC20.sol) 
+`safeTransfer()/safeTransferFrom()` instead of `transfer()/transferFrom()`
+
+
+### locations
+- solidity/token_fallback_test.sol.sol#L221
+
+### severity
+Medium
+
+### category
+unsafe-transfer
+
+### confidence
+High
 
 ## [Medium] Incompatibility with transfer-on-fee or deflationary tokens
 
@@ -721,9 +756,9 @@ Removing those variables can save deployment and called gas. and improve code qu
 	- [ERC20._beforeTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L170)
 
 - The param variables in [ERC20._afterTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L174-L178) are unused.
+	- [ERC20._afterTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L176)
 	- [ERC20._afterTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L177)
 	- [ERC20._afterTokenTransfer(address,address,uint256).from](solidity/token_fallback_test.sol.sol#L175)
-	- [ERC20._afterTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L176)
 
 
 ### recommendation
@@ -791,12 +826,12 @@ The instances below point to the second+ call of the function within a single fu
 	- [_approve(sender,_msgSender(),currentAllowance - amount)](solidity/token_fallback_test.sol.sol#L101)
 
 - `Context._msgSender()` called result should be cached with local variable in [ERC20.decreaseAllowance(address,uint256)](solidity/token_fallback_test.sol.sol#L112-L120), It is called more than once:
-	- [_approve(_msgSender(),spender,currentAllowance - subtractedValue)](solidity/token_fallback_test.sol.sol#L116)
 	- [currentAllowance = _allowances[_msgSender()][spender]](solidity/token_fallback_test.sol.sol#L113)
+	- [_approve(_msgSender(),spender,currentAllowance - subtractedValue)](solidity/token_fallback_test.sol.sol#L116)
 
 - `ERC20.totalSupply()` called result should be cached with local variable in [AmazoniumToken.constructor()](solidity/token_fallback_test.sol.sol#L207-L211), It is called more than once:
-	- [_transfer(address(this),msg.sender,totalSupply())](solidity/token_fallback_test.sol.sol#L210)
 	- [_approve(address(this),msg.sender,totalSupply())](solidity/token_fallback_test.sol.sol#L209)
+	- [_transfer(address(this),msg.sender,totalSupply())](solidity/token_fallback_test.sol.sol#L210)
 
 
 ### recommendation

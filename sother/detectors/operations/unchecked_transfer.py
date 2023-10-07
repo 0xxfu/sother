@@ -30,6 +30,7 @@ Not all `IERC20` implementations `revert()` when there's a failure in `transfer(
 """
 
 
+# todo except token is state variable
 class UnsafeTransfer(AbstractDetectHasInstance):
     ARGUMENT = "unsafe-transfer"
 
