@@ -87,6 +87,7 @@ from sother.detectors.operations.zero_address_optimization import (
 )
 from sother.detectors.operations.zero_on_transfer import ZeroCheckWithTransfer
 from sother.detectors.permissions.deprecated_ownable import DeprecatedOwnable
+from sother.detectors.permissions.owner_centralization import OwnerCentralization
 from sother.detectors.pragma.unsafe_assembly import UnsafeAssembly
 from sother.detectors.pragma.unsafe_floating_pragma import UnsafeFloatingPragma
 from sother.detectors.pragma.upgrade_to_latest import UpgradeToLatest
@@ -324,6 +325,7 @@ def get_detectors() -> list[Type[AbstractDetector]]:
         MultipleCallsInLoop,
         TooManyDigits,
         IncorrectStrictEquality,
+        OwnerCentralization,
     ]
 
 
