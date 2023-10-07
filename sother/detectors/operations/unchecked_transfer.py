@@ -6,11 +6,12 @@
 import unittest
 
 from slither.core.cfg.node import Node
+from slither.core.declarations import Function
 from slither.detectors.abstract_detector import DetectorClassification, DETECTOR_INFO
 from slither.detectors.operations.unchecked_transfer import (
     UncheckedTransfer as SlitherUncheckedTransfer,
 )
-from slither.slithir.operations import Operation
+from slither.slithir.operations import Operation, HighLevelCall
 
 from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
@@ -57,12 +58,18 @@ Use [OpenZeppelin’s SafeERC20](https://github.com/OpenZeppelin/openzeppelin-co
     def _detect_node_info(cls, node: Node) -> DETECTOR_INFO:
         return [
             node,
-            " should be replaced by `safeTransferFrom()`.",
+            " should be replaced by `safeTransfer()/safeTransferFrom()`.",
             "\n",
         ]
 
     @classmethod
     def _is_instance(cls, ir: Operation) -> bool:
+        unsafe_transfer_signature: list[str] = [
+            "transfer(address,uint256)",
+            "transferFrom(address,address,uint256)",
+        ]
+        if isinstance(ir, HighLevelCall) and isinstance(ir.function, Function):
+            return ir.function.solidity_signature in unsafe_transfer_signature
         return False
 
 
