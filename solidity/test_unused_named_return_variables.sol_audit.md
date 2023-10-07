@@ -17,17 +17,17 @@
 
 ## [Informational] Incorrect versions of Solidity
 
-### description:
+### description
 
 `solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
 We also recommend avoiding complex `pragma` statement.
 
 **There is `1` instance of this issue:**
 
-- solc-0.8.19 is not recommended for deployment
+- solc-0.8.17 is not recommended for deployment
 
 
-### recommendation:
+### recommendation
 
 Deploy with any of the following Solidity versions:
 - 0.8.21
@@ -41,21 +41,21 @@ The recommendations take into account:
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
-### locations:
+### locations
 - 
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 solc-version
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Not using the named return variables anywhere in the function is confusing
 
-### description:
+### description
 
 Consider changing the variable to be an unnamed one, 
 since the variable is never assigned, nor is it returned by name. 
@@ -76,21 +76,21 @@ for the stack variable.
 	- [UnusedReturnName.bad2().b](solidity/test_unused_named_return_variables.sol#L11)
 
 
-### recommendation:
+### recommendation
 
 Remove the unused named return variables.
 
 
-### locations:
+### locations
 - solidity/test_unused_named_return_variables.sol#L2-L4
 - solidity/test_unused_named_return_variables.sol#L6-L9
 - solidity/test_unused_named_return_variables.sol#L11-L13
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 unused-named-return-variables
 
-### confidence:
+### confidence
 High

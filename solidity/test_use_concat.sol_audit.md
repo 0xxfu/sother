@@ -20,17 +20,17 @@
 
 ## [Informational] Incorrect versions of Solidity
 
-### description:
+### description
 
 `solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
 We also recommend avoiding complex `pragma` statement.
 
 **There is `1` instance of this issue:**
 
-- solc-0.8.19 is not recommended for deployment
+- solc-0.8.17 is not recommended for deployment
 
 
-### recommendation:
+### recommendation
 
 Deploy with any of the following Solidity versions:
 - 0.8.21
@@ -44,21 +44,21 @@ The recommendations take into account:
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
-### locations:
+### locations
 - 
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 solc-version
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Pre-calculate the results into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime.
 
-### description:
+### description
 
 It should be saved to an `constant` variable, and the `constant` used instead. 
 If the hash is being used as a part of a function selector, 
@@ -67,70 +67,70 @@ the cast to bytes4 should only be Pre-calculated
 
 **There is `1` instance of this issue:**
 
-- [abi.encodePacked(a)](solidity/test_use_concat.sol#L4) should use pre-calculate results instead of calculation in runtime.
+- [abi.encodePacked("a")](solidity/test_use_concat.sol#L4) should use pre-calculate results instead of calculation in runtime.
 
 
-### recommendation:
+### recommendation
 
 Pre-calculate the results(hardcode) into `constant` instead of calculate `keccak256`/`abi.encode**` in runtime.
 
 
-### locations:
+### locations
 - solidity/test_use_concat.sol#L4
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 keccak-constant-in-function
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Expression `""` is cheaper than `new bytes(0)`
 
-### description:
+### description
 
 
 
 
 **There are `5` instances of this issue:**
 
-- Should use `""` instead of `new bytes(0)` on [abi.encodePacked(a,new bytes(0))](solidity/test_use_concat.sol#L6)
+- Should use `""` instead of `new bytes(0)` on [abi.encodePacked("a",new bytes(0))](solidity/test_use_concat.sol#L6)
 
 - Should use `""` instead of `new bytes(0)` on [bytes.concat(new bytes(0),new bytes(0))](solidity/test_use_concat.sol#L15)
 
-- Should use `""` instead of `new bytes(0)` on [bytes.concat(a,new bytes(0))](solidity/test_use_concat.sol#L17)
+- Should use `""` instead of `new bytes(0)` on [bytes.concat("a",new bytes(0))](solidity/test_use_concat.sol#L17)
 
 - Should use `""` instead of `new bytes(0)` on [abi.encodePacked(new bytes(0))](solidity/test_use_concat.sol#L21)
 
 - Should use `""` instead of `new bytes(0)` on [abi.encodePacked(new bytes(0),new bytes(0))](solidity/test_use_concat.sol#L22)
 
 
-### recommendation:
+### recommendation
 
 Using empty string `""` instead of `new bytes(0)`.
 
 
-### locations:
+### locations
 - solidity/test_use_concat.sol#L6
 - solidity/test_use_concat.sol#L15
 - solidity/test_use_concat.sol#L17
 - solidity/test_use_concat.sol#L21
 - solidity/test_use_concat.sol#L22
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 inefficient-new-bytes
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Use `string.concat()` on string instead of `abi.encodePacked()` to save gas
 
-### description:
+### description
 
 Starting with version 0.8.12, 
 Solidity has the `string.concat()` function, 
@@ -141,29 +141,29 @@ leading to less reviewer confusion and saving more gas.
 
 **There is `1` instance of this issue:**
 
-- should use `string.concat()` on string instead of [abi.encodePacked(a)](solidity/test_use_concat.sol#L4)
+- should use `string.concat()` on string instead of [abi.encodePacked("a")](solidity/test_use_concat.sol#L4)
 
 
-### recommendation:
+### recommendation
 
 Use `string.concat()` on string instead of `abi.encodePacked()`
 
 
-### locations:
+### locations
 - solidity/test_use_concat.sol#L4
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 use-concat-on-string
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Use `bytes.concat()` on mixing bytes and strings instead of `abi.encodePacked()` to save gas
 
-### description:
+### description
 
 Starting with version 0.8.4, 
 Solidity has the `bytes.concat()` function, 
@@ -174,25 +174,25 @@ leading to less reviewer confusion and saving more gas.
 
 **There are `2` instances of this issue:**
 
-- should use `bytes.concat()` on mixing bytes and strings instead of  [abi.encodePacked(a,new bytes(0))](solidity/test_use_concat.sol#L6)
+- should use `bytes.concat()` on mixing bytes and strings instead of  [abi.encodePacked("a",new bytes(0))](solidity/test_use_concat.sol#L6)
 
-- should use `bytes.concat()` on mixing bytes and strings instead of  [abi.encodePacked(a,bytes32(0))](solidity/test_use_concat.sol#L8)
+- should use `bytes.concat()` on mixing bytes and strings instead of  [abi.encodePacked("a",bytes32(0))](solidity/test_use_concat.sol#L8)
 
 
-### recommendation:
+### recommendation
 
 Use `bytes.concat()` on mixing bytes and strings instead of `abi.encodePacked()`
 
 
-### locations:
+### locations
 - solidity/test_use_concat.sol#L6
 - solidity/test_use_concat.sol#L8
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 use-concat-on-bytes
 
-### confidence:
+### confidence
 High

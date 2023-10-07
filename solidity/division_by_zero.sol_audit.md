@@ -12,7 +12,6 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 1 |
-| [N-1] | Magic Number | 5 |
 
 
 ### Gas Optimizations
@@ -27,7 +26,7 @@
 
 ## [Low] Division by zero not prevented
 
-### description:
+### description
 
 In Solidity, transactions are reverted with the "division by zero" error
 message when a division by zero is attempted.
@@ -60,13 +59,13 @@ have informative and user-friendly error messages.
 - [a / (b + 1)](solidity/division_by_zero.sol#L51) possible divisions by `0` can be performed.
 
 
-### recommendation:
+### recommendation
 
 It is recommended to add a sanity check to control whether the borrowed
 amount is zero or not.
 
 
-### locations:
+### locations
 - solidity/division_by_zero.sol#L3
 - solidity/division_by_zero.sol#L5
 - solidity/division_by_zero.sol#L7
@@ -77,28 +76,28 @@ amount is zero or not.
 - solidity/division_by_zero.sol#L47
 - solidity/division_by_zero.sol#L51
 
-### severity:
+### severity
 Low
 
-### category:
+### category
 division-by-zero
 
-### confidence:
+### confidence
 High
 
 ## [Informational] Incorrect versions of Solidity
 
-### description:
+### description
 
 `solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
 We also recommend avoiding complex `pragma` statement.
 
 **There is `1` instance of this issue:**
 
-- solc-0.8.19 is not recommended for deployment
+- solc-0.8.17 is not recommended for deployment
 
 
-### recommendation:
+### recommendation
 
 Deploy with any of the following Solidity versions:
 - 0.8.21
@@ -112,60 +111,21 @@ The recommendations take into account:
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
-### locations:
+### locations
 - 
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 solc-version
 
-### confidence:
-High
-
-## [Informational] Magic Number
-
-### description:
-Values should be assigned to variables
-
-**There are `5` instances of this issue:**
-
-- Function [DivisionByZero.bad0(uint256,uint256)](solidity/division_by_zero.sol#L2-L14) contains magic numbers: 10, 10, 10, 10
-
-- Function [DivisionByZero.notBad0(uint256,uint256)](solidity/division_by_zero.sol#L16-L30) contains magic numbers: 10, 10, 10
-
-- Function [DivisionByZero.notBad1(uint256,uint256)](solidity/division_by_zero.sol#L32-L42) contains magic numbers: 10, 10, 10
-
-- Function [DivisionByZero.notBad2(uint256,uint256)](solidity/division_by_zero.sol#L44-L52) contains magic numbers: 10, 10
-
-- Function [DivisionByZero.f0()](solidity/division_by_zero.sol#L54-L56) contains magic number: 10
-
-#### Exploit scenario
--
-
-### recommendation:
-Assign values to variables
-
-### locations:
-- solidity/division_by_zero.sol#L2-L14
-- solidity/division_by_zero.sol#L16-L30
-- solidity/division_by_zero.sol#L32-L42
-- solidity/division_by_zero.sol#L44-L52
-- solidity/division_by_zero.sol#L54-L56
-
-### severity:
-Informational
-
-### category:
-pess-magic-number
-
-### confidence:
+### confidence
 High
 
 ## [Optimization] Using custom errors replace `require` or `assert`
 
-### description:
+### description
 
 Using a custom error instance will usually be much cheaper than a string description, because you can use the name of the error to describe it, which is encoded in only four bytes. A longer description can be supplied via NatSpec which does not incur any costs.
 
@@ -179,27 +139,27 @@ More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d9
 - [require(bool)(b != 0)](solidity/division_by_zero.sol#L34) should use custom error to save gas.
 
 
-### recommendation:
+### recommendation
 
 Using custom errors replace `require` or `assert`.
 
 
-### locations:
+### locations
 - solidity/division_by_zero.sol#L33
 - solidity/division_by_zero.sol#L34
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 use-custom-error
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Using `x >> constant(uint)` with the right shift operator is a more gas-efficient
 
-### description:
+### description
 
 `<x> / 2` is the same as `<x> >> 1`. While the compiler uses the `SHR` opcode to accomplish both, 
 the version that uses division incurs an overhead of [**20 gas**](https://gist.github.com/0xxfu/84e3727f28e01f9b628836d5bf55d0cc) 
@@ -213,26 +173,26 @@ be avoided by using `unchecked {}` around the division by two
 - [a / 1](solidity/division_by_zero.sol#L49) should use right shift `>>` operator to save gas.
 
 
-### recommendation:
+### recommendation
 
 Using bit shifting (`>>` operator) replace division divided by constant.
 
 
-### locations:
+### locations
 - solidity/division_by_zero.sol#L49
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 divide-by-constant
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] The result of function calls should be cached rather than re-calling the function
 
-### description:
+### description
 
 The instances below point to the second+ call of the function within a single function
 
@@ -240,8 +200,8 @@ The instances below point to the second+ call of the function within a single fu
 **There are `3` instances of this issue:**
 
 - `DivisionByZero.f0()` called result should be cached with local variable in [DivisionByZero.bad0(uint256,uint256)](solidity/division_by_zero.sol#L2-L14), It is called more than once:
-	- [f0() / a](solidity/division_by_zero.sol#L5)
 	- [10 / (f0() * a)](solidity/division_by_zero.sol#L9)
+	- [f0() / a](solidity/division_by_zero.sol#L5)
 	- [10 / (f0() * a - 100)](solidity/division_by_zero.sol#L11)
 	- [f0() / a - 1](solidity/division_by_zero.sol#L13)
 
@@ -254,21 +214,21 @@ The instances below point to the second+ call of the function within a single fu
 	- [10 / (f0() * a)](solidity/division_by_zero.sol#L41)
 
 
-### recommendation:
+### recommendation
 
 Using local variable to cache function called result if the same function called more than once.
 
 
-### locations:
+### locations
 - solidity/division_by_zero.sol#L2-L14
 - solidity/division_by_zero.sol#L16-L30
 - solidity/division_by_zero.sol#L32-L42
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 cache-call-function-result
 
-### confidence:
+### confidence
 High

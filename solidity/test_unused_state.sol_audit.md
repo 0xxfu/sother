@@ -40,7 +40,7 @@
 
 ## [High] Uninitialized state variables
 
-### description:
+### description
 Uninitialized state variables.
 
 **There is `1` instance of this issue:**
@@ -62,26 +62,26 @@ contract Uninitialized{
 Bob calls `transfer`. As a result, the Ether are sent to the address `0x0` and are lost.
 
 
-### recommendation:
+### recommendation
 
 Initialize all the variables. If a variable is meant to be initialized to zero, explicitly set it to zero to improve code readability.
 
 
-### locations:
+### locations
 - solidity/test_unused_state.sol#L2
 
-### severity:
+### severity
 High
 
-### category:
+### category
 uninitialized-state
 
-### confidence:
+### confidence
 High
 
 ## [Low] Don't use `payable.transfer()`/`payable.send()`
 
-### description:
+### description
 
 The use of `payable.transfer()` is [heavily frowned upon](https://consensys.net/diligence/blog/2019/09/stop-using-soliditys-transfer-now/) because it can lead to the locking of funds. The `transfer()` call requires that the recipient is either an EOA account, or is a contract that has a `payable` callback. For the contract case, the `transfer()` call only provides 2300 gas for the contract to complete its operations. 
 
@@ -110,36 +110,36 @@ contract Vulnerable {
 ```
 
 
-### recommendation:
+### recommendation
 
 Use OpenZeppelin's [Address.sendValue()](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/2271e2c58d007894c5fe23c4f03a95f645ac9175/contracts/utils/Address.sol#L41-L50) instead of `payable.transfer()`/`payable.send()`
 
 
-### locations:
+### locations
 - solidity/test_unused_state.sol#L7-L9
 
-### severity:
+### severity
 Low
 
-### category:
+### category
 payable-calls
 
-### confidence:
+### confidence
 High
 
 ## [Informational] Incorrect versions of Solidity
 
-### description:
+### description
 
 `solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
 We also recommend avoiding complex `pragma` statement.
 
 **There is `1` instance of this issue:**
 
-- solc-0.8.19 is not recommended for deployment
+- solc-0.8.17 is not recommended for deployment
 
 
-### recommendation:
+### recommendation
 
 Deploy with any of the following Solidity versions:
 - 0.8.21
@@ -153,21 +153,21 @@ The recommendations take into account:
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
-### locations:
+### locations
 - 
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 solc-version
 
-### confidence:
+### confidence
 High
 
 ## [Informational] Conformance to Solidity naming conventions
 
-### description:
+### description
 
 Solidity defines a [naming convention](https://solidity.readthedocs.io/en/v0.4.25/style-guide.html#naming-conventions) that should be followed.
 #### Rule exceptions
@@ -179,24 +179,24 @@ Solidity defines a [naming convention](https://solidity.readthedocs.io/en/v0.4.2
 - Variable [UnUsedState.__gap](solidity/test_unused_state.sol#L5) is not in mixedCase
 
 
-### recommendation:
+### recommendation
 Follow the Solidity [naming convention](https://solidity.readthedocs.io/en/v0.4.25/style-guide.html#naming-conventions).
 
-### locations:
+### locations
 - solidity/test_unused_state.sol#L5
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 naming-convention
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Remove or replace unused state variables
 
-### description:
+### description
 
 Saves a storage slot. If the variable is assigned a non-zero value, 
 saves Gsset (20000 gas). If it's assigned a zero value, saves Gsreset (2900 gas). 
@@ -211,27 +211,27 @@ mark the variable as constant or immutable so that it does not use a storage slo
 - [UnUsedState.unusedState](solidity/test_unused_state.sol#L4) is never used.
 - [UnusedStruct.stateC](solidity/test_unused_state.sol#L102) is never used.
 
-### recommendation:
+### recommendation
 
 Remove or replace the unused state variables
 
 
-### locations:
+### locations
 - solidity/test_unused_state.sol#L4
 - solidity/test_unused_state.sol#L102
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 unused-state-variables
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Not using the named return variables anywhere in the function is confusing
 
-### description:
+### description
 
 Consider changing the variable to be an unnamed one, 
 since the variable is never assigned, nor is it returned by name. 
@@ -251,28 +251,28 @@ for the stack variable.
 	- [UnusedReturnName.bad2().a](solidity/test_unused_state.sol#L22)
 
 
-### recommendation:
+### recommendation
 
 Remove the unused named return variables.
 
 
-### locations:
+### locations
 - solidity/test_unused_state.sol#L13-L15
 - solidity/test_unused_state.sol#L17-L20
 - solidity/test_unused_state.sol#L22-L25
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 unused-named-return-variables
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Remove unused parameter variables
 
-### description:
+### description
 
 Unused parameters variables are gas consuming, 
 since the initial value assignment costs gas. 
@@ -293,28 +293,28 @@ Removing those variables can save deployment and called gas. and improve code qu
 	- [UnusedStruct.f0(UnusedStruct.StructUsedA).a](solidity/test_unused_state.sol#L104)
 
 
-### recommendation:
+### recommendation
 
 Remove the unused parameter variables.
 
 
-### locations:
+### locations
 - solidity/test_unused_state.sol#L46-L48
 - solidity/test_unused_state.sol#L50-L52
 - solidity/test_unused_state.sol#L104
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 unused-parameter
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Remove unused local variables
 
-### description:
+### description
 
 Unused local variables are gas consuming, 
 since the initial value assignment costs gas. 
@@ -332,27 +332,27 @@ Removing those variables can save deployment and called gas. and improve code qu
 	- [UnusedStruct.f1(uint256).localB](solidity/test_unused_state.sol#L107)
 
 
-### recommendation:
+### recommendation
 
 Remove the unused local variables.
 
 
-### locations:
+### locations
 - solidity/test_unused_state.sol#L66-L71
 - solidity/test_unused_state.sol#L106-L108
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 unused-local-var
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Remove unused struct declaration
 
-### description:
+### description
 
 Unused struct declaration are gas consuming. 
 And are a bad code practice. 
@@ -365,26 +365,26 @@ Removing those structs can save deployment and improve code quality.
 	- [UnusedStruct.StructUnused](solidity/test_unused_state.sol#L88-L90)
 
 
-### recommendation:
+### recommendation
 
 Remove unused struct declaration.
 
 
-### locations:
+### locations
 - solidity/test_unused_state.sol#L87-L109
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 unused-struct
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Remove unused error definition
 
-### description:
+### description
 
 Unused  error definition are gas consuming. 
 And are a bad code practice. 
@@ -397,26 +397,26 @@ Removing those errors save deployment and improve code quality.
 	- `error ErrorUnused()`
 
 
-### recommendation:
+### recommendation
 
 Remove unused error definition.
 
 
-### locations:
+### locations
 - solidity/test_unused_state.sol#L111-L118
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 unused-error
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Empty blocks should be removed or emit something
 
-### description:
+### description
 
 The code should be refactored such that they no longer exist, or the block should do 
 something useful, such as emitting an event or reverting. 
@@ -429,28 +429,28 @@ signatures be added without any default implementation.
 - [UnusedStruct.f0(UnusedStruct.StructUsedA)](solidity/test_unused_state.sol#L104) should removed or do something
 
 
-### recommendation:
+### recommendation
 
 Empty blocks should emit an event, or revert. 
 If not, they can simply be removed to save gas upon deployment. 
 This is valid for `receive()` functions, but also `constructors()`
 
 
-### locations:
+### locations
 - solidity/test_unused_state.sol#L104
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 empty-block
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] Use `delete` to Clear Variables
 
-### description:
+### description
 
 delete a assigns the initial value for the type to a. i.e. 
 for integers it is equivalent to a = 0, but it can also be used on arrays, 
@@ -474,29 +474,29 @@ Consider replacing assignments of zero with delete statements.
 - Should use `delete` statement instead of [a = 0](solidity/test_unused_state.sol#L74)
 
 
-### recommendation:
+### recommendation
 
 Replacing assignments of zero with delete statements.
 
 
 
-### locations:
+### locations
 - solidity/test_unused_state.sol#L37
 - solidity/test_unused_state.sol#L67
 - solidity/test_unused_state.sol#L74
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 use-delete-statement
 
-### confidence:
+### confidence
 High
 
 ## [Optimization] State variables that could be declared constant
 
-### description:
+### description
 State variables that are not updated following deployment should be declared constant to save gas.
 
 **There are `2` instances of this issue:**
@@ -506,18 +506,18 @@ State variables that are not updated following deployment should be declared con
 - [UnUsedState.unusedState](solidity/test_unused_state.sol#L4) should be constant 
 
 
-### recommendation:
+### recommendation
 Add the `constant` attribute to state variables that never change.
 
-### locations:
+### locations
 - solidity/test_unused_state.sol#L2
 - solidity/test_unused_state.sol#L4
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 constable-states
 
-### confidence:
+### confidence
 High
