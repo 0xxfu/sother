@@ -716,14 +716,14 @@ Removing those variables can save deployment and called gas. and improve code qu
 **There are `2` instances of this issue:**
 
 - The param variables in [ERC20._beforeTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L168-L172) are unused.
+	- [ERC20._beforeTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L171)
 	- [ERC20._beforeTokenTransfer(address,address,uint256).from](solidity/token_fallback_test.sol.sol#L169)
 	- [ERC20._beforeTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L170)
-	- [ERC20._beforeTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L171)
 
 - The param variables in [ERC20._afterTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L174-L178) are unused.
-	- [ERC20._afterTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L176)
 	- [ERC20._afterTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L177)
 	- [ERC20._afterTokenTransfer(address,address,uint256).from](solidity/token_fallback_test.sol.sol#L175)
+	- [ERC20._afterTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L176)
 
 
 ### recommendation
@@ -787,12 +787,12 @@ The instances below point to the second+ call of the function within a single fu
 **There are `3` instances of this issue:**
 
 - `Context._msgSender()` called result should be cached with local variable in [ERC20.transferFrom(address,address,uint256)](solidity/token_fallback_test.sol.sol#L91-L105), It is called more than once:
-	- [_approve(sender,_msgSender(),currentAllowance - amount)](solidity/token_fallback_test.sol.sol#L101)
 	- [currentAllowance = _allowances[sender][_msgSender()]](solidity/token_fallback_test.sol.sol#L98)
+	- [_approve(sender,_msgSender(),currentAllowance - amount)](solidity/token_fallback_test.sol.sol#L101)
 
 - `Context._msgSender()` called result should be cached with local variable in [ERC20.decreaseAllowance(address,uint256)](solidity/token_fallback_test.sol.sol#L112-L120), It is called more than once:
-	- [currentAllowance = _allowances[_msgSender()][spender]](solidity/token_fallback_test.sol.sol#L113)
 	- [_approve(_msgSender(),spender,currentAllowance - subtractedValue)](solidity/token_fallback_test.sol.sol#L116)
+	- [currentAllowance = _allowances[_msgSender()][spender]](solidity/token_fallback_test.sol.sol#L113)
 
 - `ERC20.totalSupply()` called result should be cached with local variable in [AmazoniumToken.constructor()](solidity/token_fallback_test.sol.sol#L207-L211), It is called more than once:
 	- [_transfer(address(this),msg.sender,totalSupply())](solidity/token_fallback_test.sol.sol#L210)
