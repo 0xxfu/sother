@@ -69,7 +69,10 @@ from sother.detectors.operations.unchecked_low_level_return_values import (
     UncheckedLowLevel,
 )
 from sother.detectors.operations.unchecked_setters import UncheckedSetters
-from sother.detectors.operations.unchecked_transfer import UncheckedTransfer
+from sother.detectors.operations.unchecked_transfer import (
+    UncheckedTransfer,
+    UnsafeTransfer,
+)
 from sother.detectors.operations.unsafe_casting import UnsafeDowncast, UnsafeDoubleCast
 from sother.detectors.operations.unsafe_tx_origin import UnsafeTxOrigin
 from sother.detectors.operations.unsigned_int_compare_zero import UnsignedIntCompareZero
@@ -251,6 +254,7 @@ def get_detectors() -> list[Type[AbstractDetector]]:
         OperatorAndInRequire,
         MemoryInParameters,
         UncheckedTransfer,
+        UnsafeTransfer,
         PayableCalls,
         UncheckedArrayLength,
         DeprecatedAssert,
