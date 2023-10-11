@@ -919,7 +919,7 @@ contract Token{
         return func_args_list
 
     def check_state_function(self, function):
-        for ir in function.falconir_operations:
+        for ir in function.slithir_operations:
             if isinstance(ir, LowLevelCall):
                 return True
             if (
