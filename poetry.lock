@@ -753,7 +753,7 @@ test = ["hypothesis (>=4.43.0)", "mypy (==0.971)", "pytest (>=7.0.0)", "pytest-x
 [[package]]
 name = "falcon-analyzer"
 version = "0.2.28"
-description = ""
+description = "Falcon is a Solidity static analysis framework written in Python 3."
 optional = false
 python-versions = ">=3.8"
 files = []
@@ -1997,4 +1997,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "c0778e87f0211986174832dc7465f290b659ec27bd1b20d1c4fea02eda74f632"
+content-hash = "129db6180dbc49a0d8f3826af2911874a03237336a491651f3221464ee4b0415"
