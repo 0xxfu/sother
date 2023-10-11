@@ -12,14 +12,17 @@ from typing import Type, Tuple, List
 import click
 from loguru import logger
 from slither.__main__ import main_impl
+from slither.detectors import all_detectors as slither_all_detectors
 from slither.detectors.abstract_detector import AbstractDetector
 from slither.printers.abstract_printer import AbstractPrinter
 from slither.utils.colors import blue
 from slither.utils.command_line import output_detectors
 
 from sother.detectors import get_all_detectors, get_detectors
+from sother.detectors.falcon.detectors import all_detectors as falcon_all_detectors
 from sother.printers import get_all_printers
 from sother.utils.command_line import output_detector_stats
+from sother.utils.detector_utils import DetectorUtils
 
 
 def get_detectors_and_printers() -> (
@@ -59,9 +62,15 @@ def detector_stats():
     detectors = get_all_detectors()
     output_detector_stats(detectors)
 
-    print(blue("------ Sother ------"))
+    print(blue("\n------ Sother ------"))
     detectors = get_detectors()
     output_detector_stats(detectors)
+
+    print(blue("\n------ Slither ------"))
+    output_detector_stats(DetectorUtils.get_detectors_from_file(slither_all_detectors))
+
+    print(blue("\n------ Falcon ------"))
+    output_detector_stats(DetectorUtils.get_detectors_from_file(falcon_all_detectors))
 
 
 @cli.command()

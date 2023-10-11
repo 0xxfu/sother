@@ -40,6 +40,8 @@ from sother.detectors.erc.erc721.unsafe_721_transfer import UnsafeTransferErc721
 from sother.detectors.events.missing_sender_in_event import MissingSenderInEvent
 from sother.detectors.events.superfluous_fields_event import SuperfluousFieldsEvent
 from sother.detectors.events.unindexed_event import UnindexedEvent
+from sother.detectors.falcon.detectors import all_detectors as falcon_all_detectors
+from sother.detectors.falcon.detectors.common.contract.locked_ether import LockedEther
 from sother.detectors.functions.cache_call_function_result import (
     CacheCallFunctionResult,
 )
@@ -165,6 +167,7 @@ from sother.detectors.variables.unused_variables import (
 from sother.detectors.variables.zero_initialized_state_variable import (
     ZeroInitializedStateVariable,
 )
+from sother.utils.detector_utils import DetectorUtils
 
 
 # from slither_pess import make_plugin as press_make_plugin
@@ -190,7 +193,12 @@ def get_all_detectors() -> list[Type[AbstractDetector]]:
     # detectors_ = extend_detectors(detectors_, press_make_plugin()[0])
     detectors_ = extend_detectors(
         detectors_,
-        [getattr(slither_all_detectors, name) for name in dir(slither_all_detectors)],
+        DetectorUtils.get_detectors_from_file(slither_all_detectors),
+    )
+
+    detectors_ = extend_detectors(
+        detectors_,
+        DetectorUtils.get_detectors_from_file(falcon_all_detectors),
     )
 
     return [
