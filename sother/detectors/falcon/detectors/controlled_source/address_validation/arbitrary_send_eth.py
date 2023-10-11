@@ -11,10 +11,6 @@
 """
 from typing import List
 
-# todo replace utils
-from falcon.utils.function_permission_check import (
-    function_has_caller_check,
-)
 from slither.analyses.data_dependency.data_dependency import is_tainted, is_dependent
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function, Contract
@@ -31,9 +27,12 @@ from slither.slithir.operations import (
     SolidityCall,
     Transfer,
 )
-
 # pylint: disable=too-many-nested-blocks,too-many-branches
 from slither.utils.output import Output
+
+from sother.detectors.falcon.utils.function_permission_check import (
+    function_has_caller_check,
+)
 
 
 def arbitrary_send(func: Function, c: Contract):
