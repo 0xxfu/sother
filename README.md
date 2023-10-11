@@ -10,6 +10,8 @@ poetry install
 make local
 ```
 
+## Usage
+
 print default markdown:
 
 ```shell
