@@ -6,6 +6,7 @@
 |---|:---|:---:|
 | [M-0] | Did not Approve to zero first | 2 |
 | [M-1] | Unused return | 2 |
+| [M-2] | Void function | 3 |
 
 
 ### Low Risk Issues
@@ -27,14 +28,15 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Dead-code: functions not used should be removed to save deployment gas | 1 |
-| [G-1] | Empty blocks should be removed or emit something | 3 |
+| [G-0] | Remove unused parameter variables | 3 |
+| [G-1] | Dead-code: functions not used should be removed to save deployment gas | 1 |
+| [G-2] | Empty blocks should be removed or emit something | 3 |
 
 
 
 ## [Medium] Did not Approve to zero first
 
-### description:
+### description
 
 Calling `approve()` without first calling `approve(0)` if the current approval is non-zero 
 will revert with some tokens, such as Tether (USDT). While Tether is known to do this, 
@@ -48,9 +50,9 @@ or use `safeIncreaseAllowance()`/`safeDecreaseAllowance()`
 
 **There are `2` instances of this issue:**
 
-- [token.approve(spender,type()(uint256).max)](solidity/revert_on_approve_max.sol#L34) should be used `safeIncreaseAllowance()` or `safeDecreaseAllowance()` instead.
+- [token.approve(spender,type()(uint256).max)](solidity/tmp/revert_on_approve_max.sol#L34) should be used `safeIncreaseAllowance()` or `safeDecreaseAllowance()` instead.
 
-- [token.approve(spender,type()(uint96).max)](solidity/revert_on_approve_max.sol#L42) should be used `safeIncreaseAllowance()` or `safeDecreaseAllowance()` instead.
+- [token.approve(spender,type()(uint96).max)](solidity/tmp/revert_on_approve_max.sol#L42) should be used `safeIncreaseAllowance()` or `safeDecreaseAllowance()` instead.
 
 #### Exploit scenario
 
@@ -62,32 +64,35 @@ Unsafe ERC20 approve that do not handle non-standard erc20 behavior.
 2. Some token contracts revert the transaction when the allowance is not zero.
 
 
-### recommendation:
+### recommendation
 
 As suggested by the [OpenZeppelin comment](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/bfff03c0d2a59bcd8e2ead1da9aed9edf0080d05/contracts/token/ERC20/utils/SafeERC20.sol#L38-L45),
 replace `approve()/safeApprove()` with `safeIncreaseAllowance()` or `safeDecreaseAllowance()` instead.
 
 
-### locations:
-- solidity/revert_on_approve_max.sol#L34
-- solidity/revert_on_approve_max.sol#L42
+### locations
+- solidity/tmp/revert_on_approve_max.sol#L34
+- solidity/tmp/revert_on_approve_max.sol#L42
 
-### severity:
+### severity
 Medium
 
-### category:
+### category
 deprecated-approve
+
+### confidence
+High
 
 ## [Medium] Unused return
 
-### description:
+### description
 The return value of an external call is not stored in a local or state variable.
 
 **There are `2` instances of this issue:**
 
-- [RevertOnApproveMax.bad(IERC20,address)](solidity/revert_on_approve_max.sol#L33-L39) ignores return value by [token.approve(spender,type()(uint256).max)](solidity/revert_on_approve_max.sol#L34)
+- [RevertOnApproveMax.bad(IERC20,address)](solidity/tmp/revert_on_approve_max.sol#L33-L39) ignores return value by [token.approve(spender,type()(uint256).max)](solidity/tmp/revert_on_approve_max.sol#L34)
 
-- [RevertOnApproveMax.notBad(IERC20,address)](solidity/revert_on_approve_max.sol#L41-L47) ignores return value by [token.approve(spender,type()(uint96).max)](solidity/revert_on_approve_max.sol#L42)
+- [RevertOnApproveMax.notBad(IERC20,address)](solidity/tmp/revert_on_approve_max.sol#L41-L47) ignores return value by [token.approve(spender,type()(uint96).max)](solidity/tmp/revert_on_approve_max.sol#L42)
 
 #### Exploit scenario
 
@@ -101,22 +106,65 @@ contract MyConc{
 ```
 `MyConc` calls `add` of `SafeMath`, but does not store the result in `a`. As a result, the computation has no effect.
 
-### recommendation:
+### recommendation
 Ensure that all the return values of the function calls are used.
 
-### locations:
-- solidity/revert_on_approve_max.sol#L33-L39
-- solidity/revert_on_approve_max.sol#L41-L47
+### locations
+- solidity/tmp/revert_on_approve_max.sol#L33-L39
+- solidity/tmp/revert_on_approve_max.sol#L41-L47
 
-### severity:
+### severity
 Medium
 
-### category:
+### category
 unused-return
+
+### confidence
+Medium
+
+## [Medium] Void function
+
+### description
+Detect the call to a function that is not implemented
+
+**There are `3` instances of this issue:**
+
+- function:[SafeERC20.safeApprove(IERC20,address,uint256)](solidity/tmp/revert_on_approve_max.sol#L2-L6)is empty 
+
+- function:[SafeERC20.safeIncreaseAllowance(IERC20,address,uint256)](solidity/tmp/revert_on_approve_max.sol#L8-L12)is empty 
+
+- function:[SafeERC20.safeDecreaseAllowance(IERC20,address,uint256)](solidity/tmp/revert_on_approve_max.sol#L14-L18)is empty 
+
+#### Exploit scenario
+
+```solidity
+contract A{}
+contract B is A{
+    constructor() public A(){}
+}
+```
+When reading `B`'s constructor definition, we might assume that `A()` initiates the contract, but no code is executed.
+
+### recommendation
+Implement the function
+
+### locations
+- solidity/tmp/revert_on_approve_max.sol#L2-L6
+- solidity/tmp/revert_on_approve_max.sol#L8-L12
+- solidity/tmp/revert_on_approve_max.sol#L14-L18
+
+### severity
+Medium
+
+### category
+void-function
+
+### confidence
+High
 
 ## [Low] `safeApprove()` is deprecated
 
-### description:
+### description
 
 [Deprecated](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/bfff03c0d2a59bcd8e2ead1da9aed9edf0080d05/contracts/token/ERC20/utils/SafeERC20.sol#L38-L45) 
 in favor of `safeIncreaseAllowance()` and `safeDecreaseAllowance()`. 
@@ -130,30 +178,33 @@ in porting and testing replacement contracts.
 
 **There are `2` instances of this issue:**
 
-- [token.safeApprove(spender,type()(uint256).max)](solidity/revert_on_approve_max.sol#L36) is deprecated.
+- [token.safeApprove(spender,type()(uint256).max)](solidity/tmp/revert_on_approve_max.sol#L36) is deprecated.
 
-- [token.safeApprove(spender,type()(uint96).max)](solidity/revert_on_approve_max.sol#L44) is deprecated.
+- [token.safeApprove(spender,type()(uint96).max)](solidity/tmp/revert_on_approve_max.sol#L44) is deprecated.
 
 
-### recommendation:
+### recommendation
 
 As suggested by the [OpenZeppelin comment](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/bfff03c0d2a59bcd8e2ead1da9aed9edf0080d05/contracts/token/ERC20/utils/SafeERC20.sol#L38-L45),
 replace `safeApprove()` with `safeIncreaseAllowance()` or `safeDecreaseAllowance()` instead.
 
 
-### locations:
-- solidity/revert_on_approve_max.sol#L36
-- solidity/revert_on_approve_max.sol#L44
+### locations
+- solidity/tmp/revert_on_approve_max.sol#L36
+- solidity/tmp/revert_on_approve_max.sol#L44
 
-### severity:
+### severity
 Low
 
-### category:
+### category
 deprecated-safe-approve
+
+### confidence
+High
 
 ## [Low] Approve `type(uint256).max` not work with some tokens
 
-### description:
+### description
 
 Some tokens (e.g. `UNI`, `COMP`) revert if the value passed to `approve` or `transfer` 
 is larger than `uint96`.
@@ -170,46 +221,49 @@ in case the approved contract gets hacked.
 
 **There are `3` instances of this issue:**
 
-- [token.approve(spender,type()(uint256).max)](solidity/revert_on_approve_max.sol#L34) should use exact amount that's needed to be transferred.
+- [token.approve(spender,type()(uint256).max)](solidity/tmp/revert_on_approve_max.sol#L34) should use exact amount that's needed to be transferred.
 
-- [token.safeApprove(spender,type()(uint256).max)](solidity/revert_on_approve_max.sol#L36) should use exact amount that's needed to be transferred.
+- [token.safeApprove(spender,type()(uint256).max)](solidity/tmp/revert_on_approve_max.sol#L36) should use exact amount that's needed to be transferred.
 
-- [token.safeIncreaseAllowance(spender,type()(uint256).max)](solidity/revert_on_approve_max.sol#L38) should use exact amount that's needed to be transferred.
+- [token.safeIncreaseAllowance(spender,type()(uint256).max)](solidity/tmp/revert_on_approve_max.sol#L38) should use exact amount that's needed to be transferred.
 
 
-### recommendation:
+### recommendation
 
 Consider approving the exact amount that’s needed to be transferred 
 instead of the `type(uint256).max` amount.
 
 
-### locations:
-- solidity/revert_on_approve_max.sol#L34
-- solidity/revert_on_approve_max.sol#L36
-- solidity/revert_on_approve_max.sol#L38
+### locations
+- solidity/tmp/revert_on_approve_max.sol#L34
+- solidity/tmp/revert_on_approve_max.sol#L36
+- solidity/tmp/revert_on_approve_max.sol#L38
 
-### severity:
+### severity
 Low
 
-### category:
+### category
 revert-on-approve-max
+
+### confidence
+High
 
 ## [Informational] Incorrect versions of Solidity
 
-### description:
+### description
 
 `solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
 We also recommend avoiding complex `pragma` statement.
 
 **There is `1` instance of this issue:**
 
-- solc-0.8.19 is not recommended for deployment
+- solc-0.8.17 is not recommended for deployment
 
 
-### recommendation:
+### recommendation
 
 Deploy with any of the following Solidity versions:
-- 0.8.20
+- 0.8.21
 
 The recommendations take into account:
 - Risks related to recent releases
@@ -220,40 +274,94 @@ The recommendations take into account:
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
-### locations:
+### locations
 - 
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 solc-version
+
+### confidence
+High
+
+## [Optimization] Remove unused parameter variables
+
+### description
+
+Unused parameters variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
+
+
+
+**There are `3` instances of this issue:**
+
+- The param variables in [SafeERC20.safeApprove(IERC20,address,uint256)](solidity/tmp/revert_on_approve_max.sol#L2-L6) are unused.
+	- [SafeERC20.safeApprove(IERC20,address,uint256).spender](solidity/tmp/revert_on_approve_max.sol#L4)
+	- [SafeERC20.safeApprove(IERC20,address,uint256).token](solidity/tmp/revert_on_approve_max.sol#L3)
+	- [SafeERC20.safeApprove(IERC20,address,uint256).value](solidity/tmp/revert_on_approve_max.sol#L5)
+
+- The param variables in [SafeERC20.safeIncreaseAllowance(IERC20,address,uint256)](solidity/tmp/revert_on_approve_max.sol#L8-L12) are unused.
+	- [SafeERC20.safeIncreaseAllowance(IERC20,address,uint256).token](solidity/tmp/revert_on_approve_max.sol#L9)
+	- [SafeERC20.safeIncreaseAllowance(IERC20,address,uint256).spender](solidity/tmp/revert_on_approve_max.sol#L10)
+	- [SafeERC20.safeIncreaseAllowance(IERC20,address,uint256).value](solidity/tmp/revert_on_approve_max.sol#L11)
+
+- The param variables in [SafeERC20.safeDecreaseAllowance(IERC20,address,uint256)](solidity/tmp/revert_on_approve_max.sol#L14-L18) are unused.
+	- [SafeERC20.safeDecreaseAllowance(IERC20,address,uint256).token](solidity/tmp/revert_on_approve_max.sol#L15)
+	- [SafeERC20.safeDecreaseAllowance(IERC20,address,uint256).spender](solidity/tmp/revert_on_approve_max.sol#L16)
+	- [SafeERC20.safeDecreaseAllowance(IERC20,address,uint256).value](solidity/tmp/revert_on_approve_max.sol#L17)
+
+
+### recommendation
+
+Remove the unused parameter variables.
+
+
+### locations
+- solidity/tmp/revert_on_approve_max.sol#L2-L6
+- solidity/tmp/revert_on_approve_max.sol#L8-L12
+- solidity/tmp/revert_on_approve_max.sol#L14-L18
+
+### severity
+Optimization
+
+### category
+unused-parameter
+
+### confidence
+High
 
 ## [Optimization] Dead-code: functions not used should be removed to save deployment gas
 
-### description:
+### description
 Functions that are not sued.
 
 **There is `1` instance of this issue:**
 
-- [SafeERC20.safeDecreaseAllowance(IERC20,address,uint256)](solidity/revert_on_approve_max.sol#L14-L18) is never used and should be removed
+- [SafeERC20.safeDecreaseAllowance(IERC20,address,uint256)](solidity/tmp/revert_on_approve_max.sol#L14-L18) is never used and should be removed
 
 
-### recommendation:
+### recommendation
 Remove unused functions.
 
-### locations:
-- solidity/revert_on_approve_max.sol#L14-L18
+### locations
+- solidity/tmp/revert_on_approve_max.sol#L14-L18
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 dead-code
+
+### confidence
+High
 
 ## [Optimization] Empty blocks should be removed or emit something
 
-### description:
+### description
 
 The code should be refactored such that they no longer exist, or the block should do 
 something useful, such as emitting an event or reverting. 
@@ -263,27 +371,30 @@ signatures be added without any default implementation.
 
 **There are `3` instances of this issue:**
 
-- [SafeERC20.safeApprove(IERC20,address,uint256)](solidity/revert_on_approve_max.sol#L2-L6) should removed or do something
+- [SafeERC20.safeApprove(IERC20,address,uint256)](solidity/tmp/revert_on_approve_max.sol#L2-L6) should removed or do something
 
-- [SafeERC20.safeIncreaseAllowance(IERC20,address,uint256)](solidity/revert_on_approve_max.sol#L8-L12) should removed or do something
+- [SafeERC20.safeIncreaseAllowance(IERC20,address,uint256)](solidity/tmp/revert_on_approve_max.sol#L8-L12) should removed or do something
 
-- [SafeERC20.safeDecreaseAllowance(IERC20,address,uint256)](solidity/revert_on_approve_max.sol#L14-L18) should removed or do something
+- [SafeERC20.safeDecreaseAllowance(IERC20,address,uint256)](solidity/tmp/revert_on_approve_max.sol#L14-L18) should removed or do something
 
 
-### recommendation:
+### recommendation
 
 Empty blocks should emit an event, or revert. 
 If not, they can simply be removed to save gas upon deployment. 
 This is valid for `receive()` functions, but also `constructors()`
 
 
-### locations:
-- solidity/revert_on_approve_max.sol#L2-L6
-- solidity/revert_on_approve_max.sol#L8-L12
-- solidity/revert_on_approve_max.sol#L14-L18
+### locations
+- solidity/tmp/revert_on_approve_max.sol#L2-L6
+- solidity/tmp/revert_on_approve_max.sol#L8-L12
+- solidity/tmp/revert_on_approve_max.sol#L14-L18
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 empty-block
+
+### confidence
+High

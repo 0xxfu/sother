@@ -12,27 +12,28 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Multiple address `mappings` can be combined into a single `mapping` | 2 |
-| [G-1] | Remove or replace unused state variables | 13 |
+| [G-0] | Remove or replace unused state variables | 13 |
+| [G-1] | Multiple address `mappings` can be combined into a single `mapping` | 2 |
+| [G-2] | State variables that could be declared constant | 6 |
 
 
 
 ## [Informational] Incorrect versions of Solidity
 
-### description:
+### description
 
 `solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
 We also recommend avoiding complex `pragma` statement.
 
 **There is `1` instance of this issue:**
 
-- solc-0.8.19 is not recommended for deployment
+- solc-0.8.17 is not recommended for deployment
 
 
-### recommendation:
+### recommendation
 
 Deploy with any of the following Solidity versions:
-- 0.8.20
+- 0.8.21
 
 The recommendations take into account:
 - Risks related to recent releases
@@ -43,60 +44,123 @@ The recommendations take into account:
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
-### locations:
+### locations
 - 
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 solc-version
+
+### confidence
+High
 
 ## [Informational] Variable names too similar
 
-### description:
+### description
 Detect variables with names that are too similar.
 
 **There are `7` instances of this issue:**
 
-- Variable `BadMappings.badMapping2` (solidity/test_multiple_address_mappings.sol#L6) is too similar to `BadMappings.badMapping5` (solidity/test_multiple_address_mappings.sol#L11)
+- Variable [BadMappings.badMapping2](solidity/tmp/test_multiple_address_mappings.sol#L6) is too similar to [BadMappings.badMapping5](solidity/tmp/test_multiple_address_mappings.sol#L11)
 
-- Variable `BadMappings.badMapping2` (solidity/test_multiple_address_mappings.sol#L6) is too similar to `BadMappings.badMapping4` (solidity/test_multiple_address_mappings.sol#L10)
+- Variable [BadMappings.badMapping2](solidity/tmp/test_multiple_address_mappings.sol#L6) is too similar to [BadMappings.badMapping4](solidity/tmp/test_multiple_address_mappings.sol#L10)
 
-- Variable `BadMappings.badMapping2` (solidity/test_multiple_address_mappings.sol#L6) is too similar to `BadMappings.badMapping3` (solidity/test_multiple_address_mappings.sol#L8)
+- Variable [BadMappings.badMapping2](solidity/tmp/test_multiple_address_mappings.sol#L6) is too similar to [BadMappings.badMapping3](solidity/tmp/test_multiple_address_mappings.sol#L8)
 
-- Variable `BadMappings.badMapping3` (solidity/test_multiple_address_mappings.sol#L8) is too similar to `BadMappings.badMapping4` (solidity/test_multiple_address_mappings.sol#L10)
+- Variable [BadMappings.badMapping3](solidity/tmp/test_multiple_address_mappings.sol#L8) is too similar to [BadMappings.badMapping4](solidity/tmp/test_multiple_address_mappings.sol#L10)
 
-- Variable `BadMappings.badMapping3` (solidity/test_multiple_address_mappings.sol#L8) is too similar to `BadMappings.badMapping5` (solidity/test_multiple_address_mappings.sol#L11)
+- Variable [BadMappings.badMapping3](solidity/tmp/test_multiple_address_mappings.sol#L8) is too similar to [BadMappings.badMapping5](solidity/tmp/test_multiple_address_mappings.sol#L11)
 
-- Variable `BadMappings.badMapping4` (solidity/test_multiple_address_mappings.sol#L10) is too similar to `BadMappings.badMapping5` (solidity/test_multiple_address_mappings.sol#L11)
+- Variable [BadMappings.badMapping4](solidity/tmp/test_multiple_address_mappings.sol#L10) is too similar to [BadMappings.badMapping5](solidity/tmp/test_multiple_address_mappings.sol#L11)
 
-- Variable `NotBadMappings.notBadMapping1` (solidity/test_multiple_address_mappings.sol#L19) is too similar to `NotBadMappings.notBadMapping2` (solidity/test_multiple_address_mappings.sol#L21)
+- Variable [NotBadMappings.notBadMapping1](solidity/tmp/test_multiple_address_mappings.sol#L19) is too similar to [NotBadMappings.notBadMapping2](solidity/tmp/test_multiple_address_mappings.sol#L21)
 
 #### Exploit scenario
 Bob uses several variables with similar names. As a result, his code is difficult to review.
 
-### recommendation:
+### recommendation
 Prevent variables from having similar names.
 
-### locations:
-- solidity/test_multiple_address_mappings.sol#L6
-- solidity/test_multiple_address_mappings.sol#L6
-- solidity/test_multiple_address_mappings.sol#L6
-- solidity/test_multiple_address_mappings.sol#L8
-- solidity/test_multiple_address_mappings.sol#L8
-- solidity/test_multiple_address_mappings.sol#L10
-- solidity/test_multiple_address_mappings.sol#L19
+### locations
+- solidity/tmp/test_multiple_address_mappings.sol#L6
+- solidity/tmp/test_multiple_address_mappings.sol#L6
+- solidity/tmp/test_multiple_address_mappings.sol#L6
+- solidity/tmp/test_multiple_address_mappings.sol#L8
+- solidity/tmp/test_multiple_address_mappings.sol#L8
+- solidity/tmp/test_multiple_address_mappings.sol#L10
+- solidity/tmp/test_multiple_address_mappings.sol#L19
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 similar-names
+
+### confidence
+Medium
+
+## [Optimization] Remove or replace unused state variables
+
+### description
+
+Saves a storage slot. If the variable is assigned a non-zero value, 
+saves Gsset (20000 gas). If it's assigned a zero value, saves Gsreset (2900 gas). 
+If the variable remains unassigned, there is no gas savings unless the variable is public, 
+in which case the compiler-generated non-payable getter deployment cost is saved. 
+If the state variable is overriding an interface's public function, 
+mark the variable as constant or immutable so that it does not use a storage slot
+
+
+**There are `13` instances of this issue:**
+
+- [BadMappings.badMapping](solidity/tmp/test_multiple_address_mappings.sol#L4) is never used.
+- [BadMappings.badMapping2](solidity/tmp/test_multiple_address_mappings.sol#L6) is never used.
+- [BadMappings.badMapping3](solidity/tmp/test_multiple_address_mappings.sol#L8) is never used.
+- [BadMappings.badMapping4](solidity/tmp/test_multiple_address_mappings.sol#L10) is never used.
+- [BadMappings.badMapping5](solidity/tmp/test_multiple_address_mappings.sol#L11) is never used.
+- [BadMappings.notBad1](solidity/tmp/test_multiple_address_mappings.sol#L13) is never used.
+- [BadMappings.notBad2](solidity/tmp/test_multiple_address_mappings.sol#L14) is never used.
+- [BadMappings.notBad3](solidity/tmp/test_multiple_address_mappings.sol#L15) is never used.
+- [NotBadMappings.notBadMapping1](solidity/tmp/test_multiple_address_mappings.sol#L19) is never used.
+- [NotBadMappings.notBadMapping2](solidity/tmp/test_multiple_address_mappings.sol#L21) is never used.
+- [NotBadMappings.notBad1](solidity/tmp/test_multiple_address_mappings.sol#L22) is never used.
+- [NotBadMappings.notBad2](solidity/tmp/test_multiple_address_mappings.sol#L23) is never used.
+- [NotBadMappings.notBad3](solidity/tmp/test_multiple_address_mappings.sol#L24) is never used.
+
+### recommendation
+
+Remove or replace the unused state variables
+
+
+### locations
+- solidity/tmp/test_multiple_address_mappings.sol#L4
+- solidity/tmp/test_multiple_address_mappings.sol#L6
+- solidity/tmp/test_multiple_address_mappings.sol#L8
+- solidity/tmp/test_multiple_address_mappings.sol#L10
+- solidity/tmp/test_multiple_address_mappings.sol#L11
+- solidity/tmp/test_multiple_address_mappings.sol#L13
+- solidity/tmp/test_multiple_address_mappings.sol#L14
+- solidity/tmp/test_multiple_address_mappings.sol#L15
+- solidity/tmp/test_multiple_address_mappings.sol#L19
+- solidity/tmp/test_multiple_address_mappings.sol#L21
+- solidity/tmp/test_multiple_address_mappings.sol#L22
+- solidity/tmp/test_multiple_address_mappings.sol#L23
+- solidity/tmp/test_multiple_address_mappings.sol#L24
+
+### severity
+Optimization
+
+### category
+unused-state-variables
+
+### confidence
+High
 
 ## [Optimization] Multiple address `mappings` can be combined into a single `mapping`
 
-### description:
+### description
 
 Saves a storage slot for the `mapping`. 
 Depending on the circumstances and sizes of types, 
@@ -110,76 +174,70 @@ that calculation’s associated stack operations.
 **There are `2` instances of this issue:**
 
 - Following mappings should be combined into one:
-	- `BadMappings.badMapping` (solidity/test_multiple_address_mappings.sol#L4)
-	- `BadMappings.badMapping2` (solidity/test_multiple_address_mappings.sol#L6)
-	- `BadMappings.badMapping3` (solidity/test_multiple_address_mappings.sol#L8)
+	- [BadMappings.badMapping](solidity/tmp/test_multiple_address_mappings.sol#L4)
+	- [BadMappings.badMapping2](solidity/tmp/test_multiple_address_mappings.sol#L6)
+	- [BadMappings.badMapping3](solidity/tmp/test_multiple_address_mappings.sol#L8)
 
 - Following mappings should be combined into one:
-	- `BadMappings.badMapping4` (solidity/test_multiple_address_mappings.sol#L10)
-	- `BadMappings.badMapping5` (solidity/test_multiple_address_mappings.sol#L11)
+	- [BadMappings.badMapping4](solidity/tmp/test_multiple_address_mappings.sol#L10)
+	- [BadMappings.badMapping5](solidity/tmp/test_multiple_address_mappings.sol#L11)
 
 
-### recommendation:
+### recommendation
 
 Multiple address `mappings` can be combined into a single mapping of 
 an address to a struct, where appropriate.
 
 
-### locations:
-- solidity/test_multiple_address_mappings.sol#L4
-- solidity/test_multiple_address_mappings.sol#L10
+### locations
+- solidity/tmp/test_multiple_address_mappings.sol#L4
+- solidity/tmp/test_multiple_address_mappings.sol#L10
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 multiple-address-mappings
 
-## [Optimization] Remove or replace unused state variables
+### confidence
+High
 
-### description:
+## [Optimization] State variables that could be declared constant
 
-Saves a storage slot. If the variable is assigned a non-zero value, saves Gsset (20000 gas). If it's assigned a zero value, saves Gsreset (2900 gas). If the variable remains unassigned, there is no gas savings unless the variable is public, in which case the compiler-generated non-payable getter deployment cost is saved. If the state variable is overriding an interface's public function, mark the variable as constant or immutable so that it does not use a storage slot
+### description
+Constant state variables should be declared constant to save gas.
 
+**There are `6` instances of this issue:**
 
-**There are `13` instances of this issue:**
+- [BadMappings.notBad1](solidity/tmp/test_multiple_address_mappings.sol#L13) should be constant
 
-- `BadMappings.badMapping` (solidity/test_multiple_address_mappings.sol#L4) is never used.
-- `BadMappings.badMapping2` (solidity/test_multiple_address_mappings.sol#L6) is never used.
-- `BadMappings.badMapping3` (solidity/test_multiple_address_mappings.sol#L8) is never used.
-- `BadMappings.badMapping4` (solidity/test_multiple_address_mappings.sol#L10) is never used.
-- `BadMappings.badMapping5` (solidity/test_multiple_address_mappings.sol#L11) is never used.
-- `BadMappings.notBad1` (solidity/test_multiple_address_mappings.sol#L13) is never used.
-- `BadMappings.notBad2` (solidity/test_multiple_address_mappings.sol#L14) is never used.
-- `BadMappings.notBad3` (solidity/test_multiple_address_mappings.sol#L15) is never used.
-- `NotBadMappings.notBadMapping1` (solidity/test_multiple_address_mappings.sol#L19) is never used.
-- `NotBadMappings.notBadMapping2` (solidity/test_multiple_address_mappings.sol#L21) is never used.
-- `NotBadMappings.notBad1` (solidity/test_multiple_address_mappings.sol#L22) is never used.
-- `NotBadMappings.notBad2` (solidity/test_multiple_address_mappings.sol#L23) is never used.
-- `NotBadMappings.notBad3` (solidity/test_multiple_address_mappings.sol#L24) is never used.
+- [BadMappings.notBad2](solidity/tmp/test_multiple_address_mappings.sol#L14) should be constant
 
-### recommendation:
+- [BadMappings.notBad3](solidity/tmp/test_multiple_address_mappings.sol#L15) should be constant
 
-Remove or replace the unused state variables
+- [NotBadMappings.notBad1](solidity/tmp/test_multiple_address_mappings.sol#L22) should be constant
+
+- [NotBadMappings.notBad2](solidity/tmp/test_multiple_address_mappings.sol#L23) should be constant
+
+- [NotBadMappings.notBad3](solidity/tmp/test_multiple_address_mappings.sol#L24) should be constant
 
 
-### locations:
-- solidity/test_multiple_address_mappings.sol#L4
-- solidity/test_multiple_address_mappings.sol#L6
-- solidity/test_multiple_address_mappings.sol#L8
-- solidity/test_multiple_address_mappings.sol#L10
-- solidity/test_multiple_address_mappings.sol#L11
-- solidity/test_multiple_address_mappings.sol#L13
-- solidity/test_multiple_address_mappings.sol#L14
-- solidity/test_multiple_address_mappings.sol#L15
-- solidity/test_multiple_address_mappings.sol#L19
-- solidity/test_multiple_address_mappings.sol#L21
-- solidity/test_multiple_address_mappings.sol#L22
-- solidity/test_multiple_address_mappings.sol#L23
-- solidity/test_multiple_address_mappings.sol#L24
+### recommendation
+Add the `constant` attributes to state variables that never change.
 
-### severity:
+### locations
+- solidity/tmp/test_multiple_address_mappings.sol#L13
+- solidity/tmp/test_multiple_address_mappings.sol#L14
+- solidity/tmp/test_multiple_address_mappings.sol#L15
+- solidity/tmp/test_multiple_address_mappings.sol#L22
+- solidity/tmp/test_multiple_address_mappings.sol#L23
+- solidity/tmp/test_multiple_address_mappings.sol#L24
+
+### severity
 Optimization
 
-### category:
-unused-state-variables
+### category
+state-should-be-constant
+
+### confidence
+High

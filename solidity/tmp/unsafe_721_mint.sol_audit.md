@@ -1,12 +1,5 @@
 ## Summary 
 
-### Medium Risk Issues
-
-|ID|Issues|Instances|
-|---|:---|:---:|
-| [M-0] | Use `_safeMint` instead of `_mint` for ERC721 | 1 |
-
-
 ### Non-critical Issues
 
 |ID|Issues|Instances|
@@ -18,92 +11,31 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Reduce gas usage by moving to Solidity 0.8.20 or later | 1 |
-| [G-1] | use custom errors instead of revert strings | 1 |
+| [G-0] | Should use latest solidity version `0.8.21` for gas reduction and improved security. | 1 |
+| [G-1] | Using custom errors replace `require` or `assert` | 1 |
+| [G-2] | Remove unused parameter variables | 2 |
+| [G-3] | Use assembly to check for `address(0)` | 1 |
 
 
-
-## [Medium] Use `_safeMint` instead of `_mint` for ERC721
-
-### description:
-
-`_mint()` is [discouraged](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/d4d8d2ed9798cc3383912a23b5e8d5cb602f7d4b/contracts/token/ERC721/ERC721.sol#L271) in favor of `_safeMint()` 
-which ensures that the recipient is either an EOA or implements `IERC721Receiver`. 
-Both [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/d4d8d2ed9798cc3383912a23b5e8d5cb602f7d4b/contracts/token/ERC721/ERC721.sol#L238-L250) and [solmate](https://github.com/Rari-Capital/solmate/blob/4eaf6b68202e36f67cab379768ac6be304c8ebde/src/tokens/ERC721.sol#L180) 
-have versions of this function
-
-
-**There is `1` instance of this issue:**
-
-- [_mint(to,tokenId)](solidity/unsafe_721_mint.sol#L38) should be replaced by `_safeMint()`.
-
-#### Exploit scenario
-
-if `to` is a contract address that does not support ERC721, the NFT can be frozen in the contract.
-
-As per the documentation of EIP-721:
-
-> A wallet/broker/auction application MUST implement the wallet interface if it will accept safe transfers.
-
-Ref: https://eips.ethereum.org/EIPS/eip-721
-
-As per the documentation of ERC721.sol by Openzeppelin
-
-Ref: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol#L260-L272
-
-```
-    /**
-     * @dev Mints `tokenId` and transfers it to `to`.
-     *
-     * WARNING: Usage of this method is discouraged, use {_safeMint} whenever possible
-     *
-     * Requirements:
-     *
-     * - `tokenId` must not exist.
-     * - `to` cannot be the zero address.
-     *
-     * Emits a {Transfer} event.
-     */
-    function _mint(address to, uint256 tokenId) internal virtual {
-```
-
-
-
-### recommendation:
-
-Use `_safeMint` instead of `_mint` to check received address support for ERC721 implementation.
-
-Ref: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol#L249-L258
-
-
-
-### locations:
-- solidity/unsafe_721_mint.sol#L38
-
-### severity:
-Medium
-
-### category:
-unsafe-721-mint
 
 ## [Informational] Incorrect versions of Solidity
 
-### description:
+### description
 
 `solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
 We also recommend avoiding complex `pragma` statement.
 
 **There are `2` instances of this issue:**
 
-- Pragma version[0.8.19](solidity/unsafe_721_mint.sol#L2) allows old versions
+- Pragma version[0.8.17](solidity/tmp/unsafe_721_mint.sol#L2) allows old versions
 
-- solc-0.8.19 is not recommended for deployment
+- solc-0.8.17 is not recommended for deployment
 
 
-### recommendation:
+### recommendation
 
 Deploy with any of the following Solidity versions:
-- 0.8.20
+- 0.8.21
 
 The recommendations take into account:
 - Risks related to recent releases
@@ -114,40 +46,49 @@ The recommendations take into account:
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
-### locations:
-- solidity/unsafe_721_mint.sol#L2
+### locations
+- solidity/tmp/unsafe_721_mint.sol#L2
 - 
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 solc-version
 
-## [Optimization] Reduce gas usage by moving to Solidity 0.8.20 or later
+### confidence
+High
 
-### description:
-See this [link](https://blog.soliditylang.org/2023/02/22/solidity-0.8.19-release-announcement/#preventing-dead-code-in-runtime-bytecode) for the full details
+## [Optimization] Should use latest solidity version `0.8.21` for gas reduction and improved security.
+
+### description
+
+[Solidity `0.8.21`](https://soliditylang.org/blog/2023/07/19/solidity-0.8.21-release-announcement) has many optimization with compiler and bugfixes, 
+please upgrade Solidity to the latest version(`0.8.21`) for gas reduction and improved security.
+
 
 **There is `1` instance of this issue:**
 
-- pragma solidity version [0.8.19](solidity/unsafe_721_mint.sol#L2) should upgrade to the latest version: 0.8.20
+- pragma solidity version [0.8.17](solidity/tmp/unsafe_721_mint.sol#L2) should upgrade to the latest version: 0.8.21
 
-### recommendation:
-Upgrade solidity version to the latest version: 0.8.20
+### recommendation
+Upgrade solidity version to the latest version: 0.8.21
 
-### locations:
-- solidity/unsafe_721_mint.sol#L2
+### locations
+- solidity/tmp/unsafe_721_mint.sol#L2
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 upgrade-to-latest
 
-## [Optimization] use custom errors instead of revert strings
+### confidence
+High
 
-### description:
+## [Optimization] Using custom errors replace `require` or `assert`
+
+### description
 
 Using a custom error instance will usually be much cheaper than a string description, because you can use the name of the error to describe it, which is encoded in only four bytes. A longer description can be supplied via NatSpec which does not incur any costs.
 
@@ -156,19 +97,101 @@ More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d9
 
 **There is `1` instance of this issue:**
 
-- [require(bool,string)(to != address(0),ERC721: mint to the zero address)](solidity/unsafe_721_mint.sol#L32) should use custom error to save gas.
+- [require(bool,string)(to != address(0),"ERC721: mint to the zero address")](solidity/tmp/unsafe_721_mint.sol#L32) should use custom error to save gas.
 
 
-### recommendation:
+### recommendation
 
 Using custom errors replace `require` or `assert`.
 
 
-### locations:
-- solidity/unsafe_721_mint.sol#L32
+### locations
+- solidity/tmp/unsafe_721_mint.sol#L32
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 use-custom-error
+
+### confidence
+High
+
+## [Optimization] Remove unused parameter variables
+
+### description
+
+Unused parameters variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
+
+
+
+**There are `2` instances of this issue:**
+
+- The param variables in [ERC721._safeMint(address,uint256,bytes)](solidity/tmp/unsafe_721_mint.sol#L23-L29) are unused.
+	- [ERC721._safeMint(address,uint256,bytes)._data](solidity/tmp/unsafe_721_mint.sol#L26)
+
+- The param variables in [ERC721._mint(address,uint256)](solidity/tmp/unsafe_721_mint.sol#L31-L33) are unused.
+	- [ERC721._mint(address,uint256).tokenId](solidity/tmp/unsafe_721_mint.sol#L31)
+
+
+### recommendation
+
+Remove the unused parameter variables.
+
+
+### locations
+- solidity/tmp/unsafe_721_mint.sol#L23-L29
+- solidity/tmp/unsafe_721_mint.sol#L31-L33
+
+### severity
+Optimization
+
+### category
+unused-parameter
+
+### confidence
+High
+
+## [Optimization] Use assembly to check for `address(0)`
+
+### description
+
+[Inline Assembly](https://docs.soliditylang.org/en/latest/assembly.html) more gas efficient and [Saving Gas with Simple Inlining](https://blog.soliditylang.org/2021/03/02/saving-gas-with-simple-inliner/).
+
+
+
+**There is `1` instance of this issue:**
+
+- [require(bool,string)(to != address(0),"ERC721: mint to the zero address")](solidity/tmp/unsafe_721_mint.sol#L32) should use assembly to check for `address(0)`
+
+
+### recommendation
+
+Use assembly to check for `address(0)`:
+
+```
+function addrNotZero(address _addr) public pure {
+        assembly {
+            if iszero(_addr) {
+                mstore(0x00, "zero address")
+                revert(0x00, 0x20)
+            }
+        }
+}
+```
+
+
+### locations
+- solidity/tmp/unsafe_721_mint.sol#L32
+
+### severity
+Optimization
+
+### category
+zero-address-optimization
+
+### confidence
+High

@@ -1,5 +1,12 @@
 ## Summary 
 
+### High Risk Issues
+
+|ID|Issues|Instances|
+|---|:---|:---:|
+| [H-0] | State variable not initialized | 1 |
+
+
 ### Low Risk Issues
 
 |ID|Issues|Instances|
@@ -23,9 +30,49 @@
 
 
 
+## [High] State variable not initialized
+
+### description
+A state variable not initialized and not written in contract but be used in contract
+
+**There is `1` instance of this issue:**
+
+- state variable: [UnsupportDecimalsToken.token](solidity/tmp/test_unsupported_decimals_token.sol#L10) not initialized and not written in contract but be used in contract
+
+#### Exploit scenario
+
+```solidity
+    struct BalancesStruct{
+        address owner;
+        array[]] balances;
+    }
+    array[] public stackBalance;
+
+    function remove() internal{
+         delete stackBalance[msg.sender];
+    }
+```
+`remove` deletes an item of `stackBalance`.
+The array `balances` is never deleted, so `remove` does not work as intended.
+
+### recommendation
+Use a lock mechanism instead of a deletion to disable structure containing a array.
+
+### locations
+- solidity/tmp/test_unsupported_decimals_token.sol#L10
+
+### severity
+High
+
+### category
+state-variable-not-initialized
+
+### confidence
+High
+
 ## [Low] Unsafe calls to optional ERC20 functions:`decimals()`/`name()`/`symbol()`
 
-### description:
+### description
 
 The`decimals()`/`name()`/`symbol()` functions are not a part of the 
 [ERC-20 standard](https://eips.ethereum.org/EIPS/eip-20), 
@@ -38,14 +85,14 @@ and then call this function.
 
 **There are `3` instances of this issue:**
 
-- [a.decimals()](solidity/test_unsupported_decimals_token.sol#L13) should use `safe` call target function.
+- [a.decimals()](solidity/tmp/test_unsupported_decimals_token.sol#L13) should use `safe**()` call target function.
 
-- [a.symbol()](solidity/test_unsupported_decimals_token.sol#L17) should use `safe` call target function.
+- [a.symbol()](solidity/tmp/test_unsupported_decimals_token.sol#L17) should use `safe**()` call target function.
 
-- [a.name()](solidity/test_unsupported_decimals_token.sol#L21) should use `safe` call target function.
+- [a.name()](solidity/tmp/test_unsupported_decimals_token.sol#L21) should use `safe**()` call target function.
 
 
-### recommendation:
+### recommendation
 
 Using `safe` call target function. see [this](https://github.com/boringcrypto/BoringSolidity/blob/78f4817d9c0d95fe9c45cd42e307ccd22cf5f4fc/contracts/libraries/BoringERC20.sol#L34-L56) to resolve the issue
 
@@ -58,33 +105,36 @@ For example:
 ```
 
 
-### locations:
-- solidity/test_unsupported_decimals_token.sol#L13
-- solidity/test_unsupported_decimals_token.sol#L17
-- solidity/test_unsupported_decimals_token.sol#L21
+### locations
+- solidity/tmp/test_unsupported_decimals_token.sol#L13
+- solidity/tmp/test_unsupported_decimals_token.sol#L17
+- solidity/tmp/test_unsupported_decimals_token.sol#L21
 
-### severity:
+### severity
 Low
 
-### category:
+### category
 unsupported-decimals-token
+
+### confidence
+High
 
 ## [Informational] Incorrect versions of Solidity
 
-### description:
+### description
 
 `solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
 We also recommend avoiding complex `pragma` statement.
 
 **There is `1` instance of this issue:**
 
-- solc-0.8.19 is not recommended for deployment
+- solc-0.8.17 is not recommended for deployment
 
 
-### recommendation:
+### recommendation
 
 Deploy with any of the following Solidity versions:
-- 0.8.20
+- 0.8.21
 
 The recommendations take into account:
 - Risks related to recent releases
@@ -95,18 +145,21 @@ The recommendations take into account:
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
-### locations:
+### locations
 - 
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 solc-version
+
+### confidence
+High
 
 ## [Optimization] Usage of `uints`/`ints` smaller than 32 bytes (256 bits) incurs overhead
 
-### description:
+### description
 
 > When using elements that are smaller than 32 bytes, your contract’s gas usage may be higher. This is because the EVM operates on 32 bytes at a time. Therefore, if the element is smaller than that, the EVM must use more operations in order to reduce the size of the element from 32 bytes to the desired size.
 
@@ -117,47 +170,53 @@ Each operation involving a `uint8` costs an extra [**22-28 gas**](https://gist.g
 
 **There are `3` instances of this issue:**
 
-- `uint8 `[IERC20Metadata.decimals().](solidity/test_unsupported_decimals_token.sol#L6) should be used `uint256/int256`.
+- `uint8 `[IERC20Metadata.decimals().](solidity/tmp/test_unsupported_decimals_token.sol#L6) should be used `uint256/int256`.
 
-- `uint8 `[UnsupportDecimalsToken.bad(IERC20Metadata).](solidity/test_unsupported_decimals_token.sol#L12) should be used `uint256/int256`.
+- `uint8 `[UnsupportDecimalsToken.bad(IERC20Metadata).](solidity/tmp/test_unsupported_decimals_token.sol#L12) should be used `uint256/int256`.
 
-- `uint8 `[UnsupportDecimalsToken.notBad().](solidity/test_unsupported_decimals_token.sol#L24) should be used `uint256/int256`.
+- `uint8 `[UnsupportDecimalsToken.notBad().](solidity/tmp/test_unsupported_decimals_token.sol#L24) should be used `uint256/int256`.
 
 
-### recommendation:
+### recommendation
 
 Using `uint256/int256` replace `uint128/uint64/uint32/uint16/uint8` or `int128/int64/int32/int16/int8`
 
 
-### locations:
-- solidity/test_unsupported_decimals_token.sol#L6
-- solidity/test_unsupported_decimals_token.sol#L12
-- solidity/test_unsupported_decimals_token.sol#L24
+### locations
+- solidity/tmp/test_unsupported_decimals_token.sol#L6
+- solidity/tmp/test_unsupported_decimals_token.sol#L12
+- solidity/tmp/test_unsupported_decimals_token.sol#L24
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 smaller-uint-int
+
+### confidence
+High
 
 ## [Optimization] State variables that could be declared constant
 
-### description:
+### description
 State variables that are not updated following deployment should be declared constant to save gas.
 
 **There is `1` instance of this issue:**
 
-- [UnsupportDecimalsToken.token](solidity/test_unsupported_decimals_token.sol#L10) should be constant 
+- [UnsupportDecimalsToken.token](solidity/tmp/test_unsupported_decimals_token.sol#L10) should be constant 
 
 
-### recommendation:
+### recommendation
 Add the `constant` attribute to state variables that never change.
 
-### locations:
-- solidity/test_unsupported_decimals_token.sol#L10
+### locations
+- solidity/tmp/test_unsupported_decimals_token.sol#L10
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 constable-states
+
+### confidence
+High

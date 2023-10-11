@@ -1,11 +1,18 @@
 ## Summary 
 
+### High Risk Issues
+
+|ID|Issues|Instances|
+|---|:---|:---:|
+| [H-0] | State variable not initialized | 2 |
+
+
 ### Low Risk Issues
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [L-0] | `tokenURI()` does not follow EIP-721 | 1 |
-| [L-1] | NFT doesn't handle hard forks | 3 |
+| [L-0] | NFT doesn't handle hard forks | 3 |
+| [L-1] | `tokenURI()` does not follow EIP-721 | 1 |
 
 
 ### Non-critical Issues
@@ -13,7 +20,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 1 |
-| [N-1] | Unused state variable | 1 |
+| [N-1] | Unnecessary Public Function Modifier | 3 |
 
 
 ### Gas Optimizations
@@ -22,13 +29,103 @@
 |---|:---|:---:|
 | [G-0] | `internal` functions only called once can be inlined to save gas | 1 |
 | [G-1] | Remove or replace unused state variables | 1 |
-| [G-2] | Use assembly to check for `address(0)` | 2 |
+| [G-2] | Remove unused parameter variables | 1 |
+| [G-3] | Use assembly to check for `address(0)` | 2 |
 
 
+
+## [High] State variable not initialized
+
+### description
+A state variable not initialized and not written in contract but be used in contract
+
+**There are `2` instances of this issue:**
+
+- state variable: [NotBad0._owners](solidity/tmp/test_unchecked_token_id.sol#L16) not initialized and not written in contract but be used in contract
+
+- state variable: [NotBad1._owners](solidity/tmp/test_unchecked_token_id.sol#L34) not initialized and not written in contract but be used in contract
+
+#### Exploit scenario
+
+```solidity
+    struct BalancesStruct{
+        address owner;
+        array[]] balances;
+    }
+    array[] public stackBalance;
+
+    function remove() internal{
+         delete stackBalance[msg.sender];
+    }
+```
+`remove` deletes an item of `stackBalance`.
+The array `balances` is never deleted, so `remove` does not work as intended.
+
+### recommendation
+Use a lock mechanism instead of a deletion to disable structure containing a array.
+
+### locations
+- solidity/tmp/test_unchecked_token_id.sol#L16
+- solidity/tmp/test_unchecked_token_id.sol#L34
+
+### severity
+High
+
+### category
+state-variable-not-initialized
+
+### confidence
+High
+
+## [Low] NFT doesn't handle hard forks
+
+### description
+
+When there are hard forks, users often have to go through 
+[many hoops](https://twitter.com/elerium115/status/1558471934924431363) to ensure that 
+they control ownership on every fork. Consider adding `require(1 == chain.chainId)`, 
+or the chain ID of whichever chain you prefer, to the functions below, 
+or at least include the chain ID in the URI, 
+so that there is no confusion about which chain is the owner of the NFT.
+
+
+
+**There are `3` instances of this issue:**
+
+- Protect NFT from copying in forks at the beginning of :
+[Bad.tokenURI(uint256)](solidity/tmp/test_unchecked_token_id.sol#L4-L12)
+- Protect NFT from copying in forks at the beginning of :
+[NotBad0.tokenURI(uint256)](solidity/tmp/test_unchecked_token_id.sol#L18-L30)
+- Protect NFT from copying in forks at the beginning of :
+[NotBad1.tokenURI(uint256)](solidity/tmp/test_unchecked_token_id.sol#L36-L46)
+
+### recommendation
+
+Add the following check:
+```
+if(block.chainid != 1) { 
+    revert(); 
+}
+```
+
+
+### locations
+- solidity/tmp/test_unchecked_token_id.sol#L4-L12
+- solidity/tmp/test_unchecked_token_id.sol#L18-L30
+- solidity/tmp/test_unchecked_token_id.sol#L36-L46
+
+### severity
+Low
+
+### category
+unprotected-nft-fork
+
+### confidence
+High
 
 ## [Low] `tokenURI()` does not follow EIP-721
 
-### description:
+### description
 
 The [EIP](https://eips.ethereum.org/EIPS/eip-721) states that `tokenURI()` 
 "Throws if `_tokenId` is not a valid NFT", which the code below does not do. 
@@ -39,9 +136,9 @@ f the NFT has not yet been minted, `tokenURI()` should revert.
 **There is `1` instance of this issue:**
 
 - Check if `tokenId` has minted at the beginning of :
-[Bad.tokenURI(uint256)](solidity/test_unchecked_token_id.sol#L4-L12)
+[Bad.tokenURI(uint256)](solidity/tmp/test_unchecked_token_id.sol#L4-L12)
 
-### recommendation:
+### recommendation
 
 Check if `tokenId` has minted at the beginning of `tokenURI` function.
 
@@ -58,74 +155,34 @@ For example:
 ```
 
 
-### locations:
-- solidity/test_unchecked_token_id.sol#L4-L12
+### locations
+- solidity/tmp/test_unchecked_token_id.sol#L4-L12
 
-### severity:
+### severity
 Low
 
-### category:
+### category
 unchecked-token-id
 
-## [Low] NFT doesn't handle hard forks
-
-### description:
-
-When there are hard forks, users often have to go through 
-[many hoops](https://twitter.com/elerium115/status/1558471934924431363) to ensure that 
-they control ownership on every fork. Consider adding `require(1 == chain.chainId)`, 
-or the chain ID of whichever chain you prefer, to the functions below, 
-or at least include the chain ID in the URI, 
-so that there is no confusion about which chain is the owner of the NFT.
-
-
-
-**There are `3` instances of this issue:**
-
-- Protect NFT from copying in forks at the beginning of :
-[Bad.tokenURI(uint256)](solidity/test_unchecked_token_id.sol#L4-L12)
-- Protect NFT from copying in forks at the beginning of :
-[NotBad0.tokenURI(uint256)](solidity/test_unchecked_token_id.sol#L18-L30)
-- Protect NFT from copying in forks at the beginning of :
-[NotBad1.tokenURI(uint256)](solidity/test_unchecked_token_id.sol#L36-L46)
-
-### recommendation:
-
-Add the following check:
-```
-if(block.chainid != 1) { 
-    revert(); 
-}
-```
-
-
-### locations:
-- solidity/test_unchecked_token_id.sol#L4-L12
-- solidity/test_unchecked_token_id.sol#L18-L30
-- solidity/test_unchecked_token_id.sol#L36-L46
-
-### severity:
-Low
-
-### category:
-unprotected-nft-fork
+### confidence
+High
 
 ## [Informational] Incorrect versions of Solidity
 
-### description:
+### description
 
 `solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
 We also recommend avoiding complex `pragma` statement.
 
 **There is `1` instance of this issue:**
 
-- solc-0.8.19 is not recommended for deployment
+- solc-0.8.17 is not recommended for deployment
 
 
-### recommendation:
+### recommendation
 
 Deploy with any of the following Solidity versions:
-- 0.8.20
+- 0.8.21
 
 The recommendations take into account:
 - Risks related to recent releases
@@ -136,40 +193,61 @@ The recommendations take into account:
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
-### locations:
+### locations
 - 
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 solc-version
 
-## [Informational] Unused state variable
+### confidence
+High
 
-### description:
-Unused state variable.
+## [Informational] Unnecessary Public Function Modifier
 
-**There is `1` instance of this issue:**
+### description
+Detect the public function which can be replaced with external
 
-- [Bad._owners](solidity/test_unchecked_token_id.sol#L2) is never used in [Bad](solidity/test_unchecked_token_id.sol#L1-L13)
+**There are `3` instances of this issue:**
 
+- function:[Bad.tokenURI(uint256)](solidity/tmp/test_unchecked_token_id.sol#L4-L12)is public and can be replaced with external 
 
-### recommendation:
-Remove unused state variables.
+- function:[NotBad0.tokenURI(uint256)](solidity/tmp/test_unchecked_token_id.sol#L18-L30)is public and can be replaced with external 
 
-### locations:
-- solidity/test_unchecked_token_id.sol#L2
+- function:[NotBad1.tokenURI(uint256)](solidity/tmp/test_unchecked_token_id.sol#L36-L46)is public and can be replaced with external 
 
-### severity:
+#### Exploit scenario
+
+```solidity
+contract A{}
+contract B is A{
+    constructor() public A(){}
+}
+```
+When reading `B`'s constructor definition, we might assume that `A()` initiates the contract, but no code is executed.
+
+### recommendation
+Replace public with external
+
+### locations
+- solidity/tmp/test_unchecked_token_id.sol#L4-L12
+- solidity/tmp/test_unchecked_token_id.sol#L18-L30
+- solidity/tmp/test_unchecked_token_id.sol#L36-L46
+
+### severity
 Informational
 
-### category:
-unused-state
+### category
+unnecessary-public-function-modifier
+
+### confidence
+High
 
 ## [Optimization] `internal` functions only called once can be inlined to save gas
 
-### description:
+### description
 
 Not inlining costs **20 to 40 gas** because of two extra `JUMP` instructions and additional stack operations needed for function calls.
 more detail see [this](https://docs.soliditylang.org/en/v0.8.20/internals/optimizer.html#function-inlining) and [this](https://blog.soliditylang.org/2021/03/02/saving-gas-with-simple-inliner/)
@@ -177,49 +255,94 @@ more detail see [this](https://docs.soliditylang.org/en/v0.8.20/internals/optimi
 
 **There is `1` instance of this issue:**
 
-- [NotBad1._requireMinted(uint256)](solidity/test_unchecked_token_id.sol#L48-L52) could be inlined to save gas.
+- [NotBad1._requireMinted(uint256)](solidity/tmp/test_unchecked_token_id.sol#L48-L52) could be inlined to save gas.
 
 
-### recommendation:
+### recommendation
 Using inlining replace `internal` function which only called once
 
-### locations:
-- solidity/test_unchecked_token_id.sol#L48-L52
+### locations
+- solidity/tmp/test_unchecked_token_id.sol#L48-L52
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 internal-function-to-inline
+
+### confidence
+High
 
 ## [Optimization] Remove or replace unused state variables
 
-### description:
+### description
 
-Saves a storage slot. If the variable is assigned a non-zero value, saves Gsset (20000 gas). If it's assigned a zero value, saves Gsreset (2900 gas). If the variable remains unassigned, there is no gas savings unless the variable is public, in which case the compiler-generated non-payable getter deployment cost is saved. If the state variable is overriding an interface's public function, mark the variable as constant or immutable so that it does not use a storage slot
+Saves a storage slot. If the variable is assigned a non-zero value, 
+saves Gsset (20000 gas). If it's assigned a zero value, saves Gsreset (2900 gas). 
+If the variable remains unassigned, there is no gas savings unless the variable is public, 
+in which case the compiler-generated non-payable getter deployment cost is saved. 
+If the state variable is overriding an interface's public function, 
+mark the variable as constant or immutable so that it does not use a storage slot
 
 
 **There is `1` instance of this issue:**
 
-- [Bad._owners](solidity/test_unchecked_token_id.sol#L2) is never used.
+- [Bad._owners](solidity/tmp/test_unchecked_token_id.sol#L2) is never used.
 
-### recommendation:
+### recommendation
 
 Remove or replace the unused state variables
 
 
-### locations:
-- solidity/test_unchecked_token_id.sol#L2
+### locations
+- solidity/tmp/test_unchecked_token_id.sol#L2
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 unused-state-variables
+
+### confidence
+High
+
+## [Optimization] Remove unused parameter variables
+
+### description
+
+Unused parameters variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
+
+
+
+**There is `1` instance of this issue:**
+
+- The param variables in [Bad.tokenURI(uint256)](solidity/tmp/test_unchecked_token_id.sol#L4-L12) are unused.
+	- [Bad.tokenURI(uint256).tokenId](solidity/tmp/test_unchecked_token_id.sol#L4)
+
+
+### recommendation
+
+Remove the unused parameter variables.
+
+
+### locations
+- solidity/tmp/test_unchecked_token_id.sol#L4-L12
+
+### severity
+Optimization
+
+### category
+unused-parameter
+
+### confidence
+High
 
 ## [Optimization] Use assembly to check for `address(0)`
 
-### description:
+### description
 
 [Inline Assembly](https://docs.soliditylang.org/en/latest/assembly.html) more gas efficient and [Saving Gas with Simple Inlining](https://blog.soliditylang.org/2021/03/02/saving-gas-with-simple-inliner/).
 
@@ -227,12 +350,12 @@ unused-state-variables
 
 **There are `2` instances of this issue:**
 
-- [_owners[tokenId] == address(0)](solidity/test_unchecked_token_id.sol#L24) should use assembly to check for `address(0)`
+- [_owners[tokenId] == address(0)](solidity/tmp/test_unchecked_token_id.sol#L24) should use assembly to check for `address(0)`
 
-- [_owners[tokenId] == address(0)](solidity/test_unchecked_token_id.sol#L49) should use assembly to check for `address(0)`
+- [_owners[tokenId] == address(0)](solidity/tmp/test_unchecked_token_id.sol#L49) should use assembly to check for `address(0)`
 
 
-### recommendation:
+### recommendation
 
 Use assembly to check for `address(0)`:
 
@@ -248,12 +371,15 @@ function addrNotZero(address _addr) public pure {
 ```
 
 
-### locations:
-- solidity/test_unchecked_token_id.sol#L24
-- solidity/test_unchecked_token_id.sol#L49
+### locations
+- solidity/tmp/test_unchecked_token_id.sol#L24
+- solidity/tmp/test_unchecked_token_id.sol#L49
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 zero-address-optimization
+
+### confidence
+High

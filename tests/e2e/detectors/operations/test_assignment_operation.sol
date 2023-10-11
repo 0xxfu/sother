@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19; // optimize 200
+pragma solidity ^0.8.17; // optimize 200
 
 /**
  * @title StateVarPlusEqVsEqPlus

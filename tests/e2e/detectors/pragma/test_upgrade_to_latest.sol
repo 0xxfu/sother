@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.2 <=0.8.19;
+pragma solidity >=0.6.2 <=0.8.17;
 //pragma solidity >=0.6.2 ;
 contract SafeAdd {
     function add(uint x, uint y) public pure returns (uint z) {

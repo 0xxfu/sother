@@ -5,8 +5,9 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 2 |
-| [N-1] | Conformance to Solidity naming conventions | 3 |
-| [N-2] | Unnecessary Public Function Modifier | 3 |
+| [N-1] | Conformance to Solidity naming conventions | 1 |
+| [N-2] | .. | 2 |
+| [N-3] | Unnecessary Public Function Modifier | 2 |
 
 
 ### Gas Optimizations
@@ -14,7 +15,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Should use latest solidity version `0.8.21` for gas reduction and improved security. | 1 |
-| [G-1] | Using custom errors replace `require` or `assert` | 1 |
+| [G-1] | Using custom errors replace `require` or `assert` | 2 |
 
 
 
@@ -27,7 +28,7 @@ We also recommend avoiding complex `pragma` statement.
 
 **There are `2` instances of this issue:**
 
-- Pragma version[0.8.17](solidity/tmp/test_used_custom_error.sol#L2) allows old versions
+- Pragma version[>=0.4.24](solidity/tmp/sample.sol#L2) allows old versions
 
 - solc-0.8.17 is not recommended for deployment
 
@@ -47,7 +48,7 @@ Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
 ### locations
-- solidity/tmp/test_used_custom_error.sol#L2
+- solidity/tmp/sample.sol#L2
 - 
 
 ### severity
@@ -68,22 +69,16 @@ Solidity defines a [naming convention](https://solidity.readthedocs.io/en/v0.4.2
 - Allow constant variable name/symbol/decimals to be lowercase (`ERC20`).
 - Allow `_` at the beginning of the `mixed_case` match for private variables and unused parameters.
 
-**There are `3` instances of this issue:**
+**There is `1` instance of this issue:**
 
-- Parameter [Exception.testRequire(uint256)._i](solidity/tmp/test_used_custom_error.sol#L6) is not in mixedCase
-
-- Parameter [Exception.testRevert1(uint256)._i](solidity/tmp/test_used_custom_error.sol#L11) is not in mixedCase
-
-- Parameter [Exception.testRevert2(uint256)._i](solidity/tmp/test_used_custom_error.sol#L20) is not in mixedCase
+- Function [SafeAdd.add_v2(uint256,uint256)](solidity/tmp/sample.sol#L8-L10) is not in mixedCase
 
 
 ### recommendation
 Follow the Solidity [naming convention](https://solidity.readthedocs.io/en/v0.4.25/style-guide.html#naming-conventions).
 
 ### locations
-- solidity/tmp/test_used_custom_error.sol#L6
-- solidity/tmp/test_used_custom_error.sol#L11
-- solidity/tmp/test_used_custom_error.sol#L20
+- solidity/tmp/sample.sol#L8-L10
 
 ### severity
 Informational
@@ -94,18 +89,48 @@ naming-convention
 ### confidence
 High
 
+## [Informational] ..
+
+### description
+..
+
+**There are `2` instances of this issue:**
+
+- require() missing error messages
+	 - [require(bool)((z = x + y) >= x)](solidity/tmp/sample.sol#L6)
+
+- require() missing error messages
+	 - [require(bool)((z = x + y) >= x)](solidity/tmp/sample.sol#L9)
+
+#### Exploit scenario
+..
+
+### recommendation
+..
+
+### locations
+- solidity/tmp/sample.sol#L6
+- solidity/tmp/sample.sol#L9
+
+### severity
+Informational
+
+### category
+error-msg
+
+### confidence
+Medium
+
 ## [Informational] Unnecessary Public Function Modifier
 
 ### description
 Detect the public function which can be replaced with external
 
-**There are `3` instances of this issue:**
+**There are `2` instances of this issue:**
 
-- function:[Exception.testRequire(uint256)](solidity/tmp/test_used_custom_error.sol#L6-L8)is public and can be replaced with external 
+- function:[SafeAdd.add(uint256,uint256)](solidity/tmp/sample.sol#L5-L7)is public and can be replaced with external 
 
-- function:[Exception.testRevert1(uint256)](solidity/tmp/test_used_custom_error.sol#L11-L15)is public and can be replaced with external 
-
-- function:[Exception.testRevert2(uint256)](solidity/tmp/test_used_custom_error.sol#L20-L24)is public and can be replaced with external 
+- function:[SafeAdd.add_v2(uint256,uint256)](solidity/tmp/sample.sol#L8-L10)is public and can be replaced with external 
 
 #### Exploit scenario
 
@@ -121,9 +146,8 @@ When reading `B`'s constructor definition, we might assume that `A()` initiates 
 Replace public with external
 
 ### locations
-- solidity/tmp/test_used_custom_error.sol#L6-L8
-- solidity/tmp/test_used_custom_error.sol#L11-L15
-- solidity/tmp/test_used_custom_error.sol#L20-L24
+- solidity/tmp/sample.sol#L5-L7
+- solidity/tmp/sample.sol#L8-L10
 
 ### severity
 Informational
@@ -144,13 +168,13 @@ please upgrade Solidity to the latest version(`0.8.21`) for gas reduction and im
 
 **There is `1` instance of this issue:**
 
-- pragma solidity version [0.8.17](solidity/tmp/test_used_custom_error.sol#L2) should upgrade to the latest version: 0.8.21
+- pragma solidity version [>=0.4.24](solidity/tmp/sample.sol#L2) should upgrade to the latest version: 0.8.21
 
 ### recommendation
 Upgrade solidity version to the latest version: 0.8.21
 
 ### locations
-- solidity/tmp/test_used_custom_error.sol#L2
+- solidity/tmp/sample.sol#L2
 
 ### severity
 Optimization
@@ -170,9 +194,11 @@ Using a custom error instance will usually be much cheaper than a string descrip
 More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d97a215) and [this](https://docs.soliditylang.org/en/latest/control-structures.html#revert).
 
 
-**There is `1` instance of this issue:**
+**There are `2` instances of this issue:**
 
-- [require(bool,string)(_i > 10,"Input must be greater than 10")](solidity/tmp/test_used_custom_error.sol#L7) should use custom error to save gas.
+- [require(bool)((z = x + y) >= x)](solidity/tmp/sample.sol#L6) should use custom error to save gas.
+
+- [require(bool)((z = x + y) >= x)](solidity/tmp/sample.sol#L9) should use custom error to save gas.
 
 
 ### recommendation
@@ -181,7 +207,8 @@ Using custom errors replace `require` or `assert`.
 
 
 ### locations
-- solidity/tmp/test_used_custom_error.sol#L7
+- solidity/tmp/sample.sol#L6
+- solidity/tmp/sample.sol#L9
 
 ### severity
 Optimization

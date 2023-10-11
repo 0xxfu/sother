@@ -5,14 +5,23 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [H-0] | Uninitialized state variables | 1 |
+| [H-1] | State variable not initialized | 1 |
 
 
 ### Medium Risk Issues
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [M-0] | Incompatibility with transfer-on-fee or deflationary tokens | 4 |
-| [M-1] | Return values of `transfer()/transferFrom()` not checked | 4 |
+| [M-0] | Return values of `transfer()/transferFrom()` not checked | 4 |
+| [M-1] | Unsafe use of `transfer()/transferFrom()` with IERC20 | 4 |
+| [M-2] | Void function | 1 |
+
+
+### Low Risk Issues
+
+|ID|Issues|Instances|
+|---|:---|:---:|
+| [L-0] | Functions calling contracts/addresses with transfer hooks are missing reentrancy guards | 8 |
 
 
 ### Non-critical Issues
@@ -26,25 +35,27 @@
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | Use `calldata` instead of `memory` for function parameters | 3 |
-| [G-1] | State variables should be cached in stack variables rather than re-reading them from storage | 4 |
-| [G-2] | Amounts should be checked for `0` before calling a `transfer` | 8 |
-| [G-3] | State variables that could be declared constant | 1 |
+| [G-0] | Cache state variables instead of rereading | 4 |
+| [G-1] | Remove unused parameter variables | 1 |
+| [G-2] | Remove unused local variables | 2 |
+| [G-3] | Amounts should be checked for `0` before calling a `transfer` | 8 |
+| [G-4] | Empty blocks should be removed or emit something | 1 |
+| [G-5] | State variables that could be declared constant | 1 |
 
 
 
 ## [High] Uninitialized state variables
 
-### description:
+### description
 Uninitialized state variables.
 
 **There is `1` instance of this issue:**
 
-- [FeeOnTransfer.token](solidity/test_fee_on_transfer.sol#L44) is never initialized. It is used in:
-	- [FeeOnTransfer.bad0(address,uint256)](solidity/test_fee_on_transfer.sol#L46-L49)
-	- [FeeOnTransfer.bad1(address,uint256)](solidity/test_fee_on_transfer.sol#L51-L54)
-	- [FeeOnTransfer.good0(address,uint256)](solidity/test_fee_on_transfer.sol#L56-L61)
-	- [FeeOnTransfer.good1(address,uint256)](solidity/test_fee_on_transfer.sol#L63-L68)
+- [FeeOnTransfer.token](solidity/tmp/test_fee_on_transfer.sol#L44) is never initialized. It is used in:
+	- [FeeOnTransfer.bad0(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L46-L49)
+	- [FeeOnTransfer.bad1(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L51-L54)
+	- [FeeOnTransfer.good0(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L56-L61)
+	- [FeeOnTransfer.good1(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L63-L68)
 
 #### Exploit scenario
 
@@ -60,88 +71,79 @@ contract Uninitialized{
 Bob calls `transfer`. As a result, the Ether are sent to the address `0x0` and are lost.
 
 
-### recommendation:
+### recommendation
 
 Initialize all the variables. If a variable is meant to be initialized to zero, explicitly set it to zero to improve code readability.
 
 
-### locations:
-- solidity/test_fee_on_transfer.sol#L44
+### locations
+- solidity/tmp/test_fee_on_transfer.sol#L44
 
-### severity:
+### severity
 High
 
-### category:
+### category
 uninitialized-state
 
-## [Medium] Incompatibility with transfer-on-fee or deflationary tokens
+### confidence
+High
 
-### description:
+## [High] State variable not initialized
 
-Some ERC20 tokens make modifications to the standard implementations of
-their ERC20’s `transfer` or `balanceOf` functions.
-One type of such token is deflationary tokens that charge a fee on every
-`transfer()` and `transferFrom()`.
-The protocol does not have incompatibility with fee-on-transfer tokens.
+### description
+A state variable not initialized and not written in contract but be used in contract
 
-Note that there has been a real-world exploit related to this with 
-[Balancer pool and STA deflationary tokens](https://medium.com/1inch-network/balancer-hack-2020-a8f7131c980e).
+**There is `1` instance of this issue:**
 
-
-**There are `4` instances of this issue:**
-
-- [token.transfer(to,amount)](solidity/test_fee_on_transfer.sol#L47) with fee on transfer are not supported.
-
-- [token.transferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L48) with fee on transfer are not supported.
-
-- [token.safeTransfer(to,amount)](solidity/test_fee_on_transfer.sol#L52) with fee on transfer are not supported.
-
-- [token.safeTransferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L53) with fee on transfer are not supported.
+- state variable: [FeeOnTransfer.token](solidity/tmp/test_fee_on_transfer.sol#L44) not initialized and not written in contract but be used in contract
 
 #### Exploit scenario
 
-i.e. Fee-on-transfer scenario:
-1. Contract calls transfer from contractA 100 tokens to current contract
-2. Current contract thinks it received 100 tokens
-3. It updates balances to increase +100 tokens
-4. While actually contract received only 90 tokens
-5. That breaks whole math for given token
+```solidity
+    struct BalancesStruct{
+        address owner;
+        array[]] balances;
+    }
+    array[] public stackBalance;
 
+    function remove() internal{
+         delete stackBalance[msg.sender];
+    }
+```
+`remove` deletes an item of `stackBalance`.
+The array `balances` is never deleted, so `remove` does not work as intended.
 
-### recommendation:
+### recommendation
+Use a lock mechanism instead of a deletion to disable structure containing a array.
 
-1. Consider comparing before and after balance to get the actual transferred amount.
-2. Alternatively, disallow tokens with fee-on-transfer mechanics to be added as tokens.
+### locations
+- solidity/tmp/test_fee_on_transfer.sol#L44
 
+### severity
+High
 
-### locations:
-- solidity/test_fee_on_transfer.sol#L47
-- solidity/test_fee_on_transfer.sol#L48
-- solidity/test_fee_on_transfer.sol#L52
-- solidity/test_fee_on_transfer.sol#L53
+### category
+state-variable-not-initialized
 
-### severity:
-Medium
-
-### category:
-fee-on-transfer
+### confidence
+High
 
 ## [Medium] Return values of `transfer()/transferFrom()` not checked
 
-### description:
+### description
 
 Not all `IERC20` implementations `revert()` when there's a failure in `transfer()`/`transferFrom()`. The function signature has a `boolean` return value and they indicate errors that way instead. By not checking the return value, operations that should have marked as failed, may potentially go through without actually making a payment.
 
 
 **There are `4` instances of this issue:**
 
-- [FeeOnTransfer.bad0(address,uint256)](solidity/test_fee_on_transfer.sol#L46-L49) ignores return value by [token.transfer(to,amount)](solidity/test_fee_on_transfer.sol#L47)
+- [FeeOnTransfer.bad0(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L46-L49) ignores return value by [token.transfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L47)
 
-- [FeeOnTransfer.bad0(address,uint256)](solidity/test_fee_on_transfer.sol#L46-L49) ignores return value by [token.transferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L48)
+- [FeeOnTransfer.bad0(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L46-L49) ignores return value by [token.transferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L48)
 
-- [FeeOnTransfer.good0(address,uint256)](solidity/test_fee_on_transfer.sol#L56-L61) ignores return value by [token.transferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L59)
+- [FeeOnTransfer.good0(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L56-L61) ignores return value by [token.transfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L58)
 
-- [FeeOnTransfer.good0(address,uint256)](solidity/test_fee_on_transfer.sol#L56-L61) ignores return value by [token.transfer(to,amount)](solidity/test_fee_on_transfer.sol#L58)
+- [FeeOnTransfer.good0(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L56-L61) ignores return value by [token.transferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L59)
 
 #### Exploit scenario
 
@@ -160,37 +162,172 @@ contract MyBank{
 ```
 Several tokens do not revert in case of failure and return false. If one of these tokens is used in `MyBank`, `deposit` will not revert if the transfer fails, and an attacker can call `deposit` for free..
 
-### recommendation:
+### recommendation
 Use `SafeERC20`, or ensure that the transfer/transferFrom return value is checked.
 
-### locations:
-- solidity/test_fee_on_transfer.sol#L46-L49
-- solidity/test_fee_on_transfer.sol#L46-L49
-- solidity/test_fee_on_transfer.sol#L56-L61
-- solidity/test_fee_on_transfer.sol#L56-L61
+### locations
+- solidity/tmp/test_fee_on_transfer.sol#L46-L49
+- solidity/tmp/test_fee_on_transfer.sol#L46-L49
+- solidity/tmp/test_fee_on_transfer.sol#L56-L61
+- solidity/tmp/test_fee_on_transfer.sol#L56-L61
 
-### severity:
+### severity
 Medium
 
-### category:
+### category
 unchecked-transfer
+
+### confidence
+Medium
+
+## [Medium] Unsafe use of `transfer()/transferFrom()` with IERC20
+
+### description
+
+Some tokens do not implement the ERC20 standard properly but are still accepted by most code 
+that accepts ERC20 tokens. For example Tether (USDT)'s `transfer()` and `transferFrom()` functions 
+on L1 do not return booleans as the specification requires, and instead have no return value. 
+When these sorts of tokens are cast to IERC20, their [function signatures](https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca) 
+do not match and therefore the calls made, revert.
+
+
+**There are `4` instances of this issue:**
+
+- [token.transfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L47) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [token.transferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L48) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [token.transfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L58) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+- [token.transferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L59) should be replaced by `safeTransfer()/safeTransferFrom()`.
+
+
+### recommendation
+
+Use [OpenZeppelin’s SafeERC20](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/utils/SafeERC20.sol) 
+`safeTransfer()/safeTransferFrom()` instead of `transfer()/transferFrom()`
+
+
+### locations
+- solidity/tmp/test_fee_on_transfer.sol#L47
+- solidity/tmp/test_fee_on_transfer.sol#L48
+- solidity/tmp/test_fee_on_transfer.sol#L58
+- solidity/tmp/test_fee_on_transfer.sol#L59
+
+### severity
+Medium
+
+### category
+unsafe-transfer
+
+### confidence
+High
+
+## [Medium] Void function
+
+### description
+Detect the call to a function that is not implemented
+
+**There is `1` instance of this issue:**
+
+- function:[SafeERC20._callOptionalReturn(IERC20,bytes)](solidity/tmp/test_fee_on_transfer.sol#L27)is empty 
+
+#### Exploit scenario
+
+```solidity
+contract A{}
+contract B is A{
+    constructor() public A(){}
+}
+```
+When reading `B`'s constructor definition, we might assume that `A()` initiates the contract, but no code is executed.
+
+### recommendation
+Implement the function
+
+### locations
+- solidity/tmp/test_fee_on_transfer.sol#L27
+
+### severity
+Medium
+
+### category
+void-function
+
+### confidence
+High
+
+## [Low] Functions calling contracts/addresses with transfer hooks are missing reentrancy guards
+
+### description
+
+Even if the function follows the best practice of check-effects-interaction, 
+not using a reentrancy guard when there may be transfer hooks will open the 
+users of this protocol up to 
+[read-only reentrancies](https://chainsecurity.com/curve-lp-oracle-manipulation-post-mortem/) 
+with no way to protect against it, except by block-listing the whole protocol.
+
+
+**There are `8` instances of this issue:**
+
+- [token.transfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L47) should use Reentrancy-Guard.
+
+- [token.transferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L48) should use Reentrancy-Guard.
+
+- [token.safeTransfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L52) should use Reentrancy-Guard.
+
+- [token.safeTransferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L53) should use Reentrancy-Guard.
+
+- [token.transfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L58) should use Reentrancy-Guard.
+
+- [token.transferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L59) should use Reentrancy-Guard.
+
+- [token.safeTransfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L65) should use Reentrancy-Guard.
+
+- [token.safeTransferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L66) should use Reentrancy-Guard.
+
+
+### recommendation
+
+Using [Reentrancy-Guard](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/bfff03c0d2a59bcd8e2ead1da9aed9edf0080d05/contracts/security/ReentrancyGuard.sol#L50C5-L62) 
+when calling contracts/addresses with transfer hooks.
+
+
+### locations
+- solidity/tmp/test_fee_on_transfer.sol#L47
+- solidity/tmp/test_fee_on_transfer.sol#L48
+- solidity/tmp/test_fee_on_transfer.sol#L52
+- solidity/tmp/test_fee_on_transfer.sol#L53
+- solidity/tmp/test_fee_on_transfer.sol#L58
+- solidity/tmp/test_fee_on_transfer.sol#L59
+- solidity/tmp/test_fee_on_transfer.sol#L65
+- solidity/tmp/test_fee_on_transfer.sol#L66
+
+### severity
+Low
+
+### category
+reentrancy-transfer
+
+### confidence
+High
 
 ## [Informational] Incorrect versions of Solidity
 
-### description:
+### description
 
 `solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
 We also recommend avoiding complex `pragma` statement.
 
 **There is `1` instance of this issue:**
 
-- solc-0.8.19 is not recommended for deployment
+- solc-0.8.17 is not recommended for deployment
 
 
-### recommendation:
+### recommendation
 
 Deploy with any of the following Solidity versions:
-- 0.8.20
+- 0.8.21
 
 The recommendations take into account:
 - Risks related to recent releases
@@ -201,56 +338,21 @@ The recommendations take into account:
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
-### locations:
+### locations
 - 
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 solc-version
 
-## [Optimization] Use `calldata` instead of `memory` for function parameters
+### confidence
+High
 
-### description:
+## [Optimization] Cache state variables instead of rereading
 
-On external functions, when using the `memory` keyword with a function argument, what's happening is a `memory` acts as an intermediate.
-
-When the function gets called externally, the array values are kept in `calldata` and copied to memory during ABI decoding (using the opcode `calldataload` and `mstore`). 
-And during the for loop, the values in the array are accessed in memory using a `mload`. That is inefficient. Reading directly from `calldata` using `calldataload` instead of going via `memory` saves the gas from the intermediate memory operations that carry the values.
-
-More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-should-i-use-calldata-and-when-should-i-use-memory)
-
-
-**There are `3` instances of this issue:**
-
-- [SafeERC20.safeTransfer(IERC20,address,uint256)](solidity/test_fee_on_transfer.sol#L4-L13) read-only `memory` parameters below should be changed to `calldata` :
-	- [SafeERC20.safeTransfer(IERC20,address,uint256).token](solidity/test_fee_on_transfer.sol#L5)
-
-- [SafeERC20.safeTransferFrom(IERC20,address,address,uint256)](solidity/test_fee_on_transfer.sol#L15-L25) read-only `memory` parameters below should be changed to `calldata` :
-	- [SafeERC20.safeTransferFrom(IERC20,address,address,uint256).token](solidity/test_fee_on_transfer.sol#L16)
-
-- [SafeERC20._callOptionalReturn(IERC20,bytes)](solidity/test_fee_on_transfer.sol#L27) read-only `memory` parameters below should be changed to `calldata` :
-	- [SafeERC20._callOptionalReturn(IERC20,bytes).token](solidity/test_fee_on_transfer.sol#L27)
-
-
-### recommendation:
-Use `calldata` instead of `memory` for external functions where the function argument is read-only.
-
-### locations:
-- solidity/test_fee_on_transfer.sol#L4-L13
-- solidity/test_fee_on_transfer.sol#L15-L25
-- solidity/test_fee_on_transfer.sol#L27
-
-### severity:
-Optimization
-
-### category:
-memory-in-parameters
-
-## [Optimization] State variables should be cached in stack variables rather than re-reading them from storage
-
-### description:
+### description
 
 The instances below point to the second+ access of a state variable within a function. Caching of a state variable replaces each Gwarmaccess (**100 gas**) with a much cheaper stack read. Other less obvious fixes/optimizations include having local memory caches of state variable structs, or having local caches of state variable contracts/addresses.
 
@@ -259,47 +361,124 @@ More detail see [this.](https://gist.github.com/0xxfu/af8f63ccbf36af9d067ed6eff9
 
 **There are `4` instances of this issue:**
 
-- [FeeOnTransfer.token](solidity/test_fee_on_transfer.sol#L44) should be cached with local memory-based variable in [FeeOnTransfer.good0(address,uint256)](solidity/test_fee_on_transfer.sol#L56-L61), It is called more than once:
-	- [beforeBalance = token.balanceOf(to)](solidity/test_fee_on_transfer.sol#L57)
-	- [token.transfer(to,amount)](solidity/test_fee_on_transfer.sol#L58)
-	- [token.transferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L59)
-	- [afterBalance = token.balanceOf(to)](solidity/test_fee_on_transfer.sol#L60)
+- [FeeOnTransfer.token](solidity/tmp/test_fee_on_transfer.sol#L44) should be cached with local memory-based variable in [FeeOnTransfer.bad0(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L46-L49), It is called more than once:
+	- [token.transfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L47)
+	- [token.transferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L48)
 
-- [FeeOnTransfer.token](solidity/test_fee_on_transfer.sol#L44) should be cached with local memory-based variable in [FeeOnTransfer.good1(address,uint256)](solidity/test_fee_on_transfer.sol#L63-L68), It is called more than once:
-	- [beforeBalance = token.balanceOf(to)](solidity/test_fee_on_transfer.sol#L64)
-	- [token.safeTransfer(to,amount)](solidity/test_fee_on_transfer.sol#L65)
-	- [token.safeTransferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L66)
-	- [afterBalance = token.balanceOf(to)](solidity/test_fee_on_transfer.sol#L67)
+- [FeeOnTransfer.token](solidity/tmp/test_fee_on_transfer.sol#L44) should be cached with local memory-based variable in [FeeOnTransfer.good0(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L56-L61), It is called more than once:
+	- [afterBalance = token.balanceOf(to)](solidity/tmp/test_fee_on_transfer.sol#L60)
+	- [beforeBalance = token.balanceOf(to)](solidity/tmp/test_fee_on_transfer.sol#L57)
+	- [token.transfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L58)
+	- [token.transferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L59)
 
-- [FeeOnTransfer.token](solidity/test_fee_on_transfer.sol#L44) should be cached with local memory-based variable in [FeeOnTransfer.bad1(address,uint256)](solidity/test_fee_on_transfer.sol#L51-L54), It is called more than once:
-	- [token.safeTransfer(to,amount)](solidity/test_fee_on_transfer.sol#L52)
-	- [token.safeTransferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L53)
+- [FeeOnTransfer.token](solidity/tmp/test_fee_on_transfer.sol#L44) should be cached with local memory-based variable in [FeeOnTransfer.good1(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L63-L68), It is called more than once:
+	- [beforeBalance = token.balanceOf(to)](solidity/tmp/test_fee_on_transfer.sol#L64)
+	- [token.safeTransferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L66)
+	- [token.safeTransfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L65)
+	- [afterBalance = token.balanceOf(to)](solidity/tmp/test_fee_on_transfer.sol#L67)
 
-- [FeeOnTransfer.token](solidity/test_fee_on_transfer.sol#L44) should be cached with local memory-based variable in [FeeOnTransfer.bad0(address,uint256)](solidity/test_fee_on_transfer.sol#L46-L49), It is called more than once:
-	- [token.transfer(to,amount)](solidity/test_fee_on_transfer.sol#L47)
-	- [token.transferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L48)
+- [FeeOnTransfer.token](solidity/tmp/test_fee_on_transfer.sol#L44) should be cached with local memory-based variable in [FeeOnTransfer.bad1(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L51-L54), It is called more than once:
+	- [token.safeTransfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L52)
+	- [token.safeTransferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L53)
 
 
-### recommendation:
+### recommendation
 
 Cache storage-based state variables in local memory-based variables appropriately to convert SLOADs to MLOADs and reduce gas consumption from 100 units to 3 units. than once for a function
 
 
-### locations:
-- solidity/test_fee_on_transfer.sol#L44
-- solidity/test_fee_on_transfer.sol#L44
-- solidity/test_fee_on_transfer.sol#L44
-- solidity/test_fee_on_transfer.sol#L44
+### locations
+- solidity/tmp/test_fee_on_transfer.sol#L44
+- solidity/tmp/test_fee_on_transfer.sol#L44
+- solidity/tmp/test_fee_on_transfer.sol#L44
+- solidity/tmp/test_fee_on_transfer.sol#L44
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 reread-state-variables
+
+### confidence
+High
+
+## [Optimization] Remove unused parameter variables
+
+### description
+
+Unused parameters variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
+
+
+
+**There is `1` instance of this issue:**
+
+- The param variables in [SafeERC20._callOptionalReturn(IERC20,bytes)](solidity/tmp/test_fee_on_transfer.sol#L27) are unused.
+	- [SafeERC20._callOptionalReturn(IERC20,bytes).token](solidity/tmp/test_fee_on_transfer.sol#L27)
+	- [SafeERC20._callOptionalReturn(IERC20,bytes).data](solidity/tmp/test_fee_on_transfer.sol#L27)
+
+
+### recommendation
+
+Remove the unused parameter variables.
+
+
+### locations
+- solidity/tmp/test_fee_on_transfer.sol#L27
+
+### severity
+Optimization
+
+### category
+unused-parameter
+
+### confidence
+High
+
+## [Optimization] Remove unused local variables
+
+### description
+
+Unused local variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
+
+
+**There are `2` instances of this issue:**
+
+- The local variables in [FeeOnTransfer.good0(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L56-L61) are unused.
+	- [FeeOnTransfer.good0(address,uint256).beforeBalance](solidity/tmp/test_fee_on_transfer.sol#L57)
+	- [FeeOnTransfer.good0(address,uint256).afterBalance](solidity/tmp/test_fee_on_transfer.sol#L60)
+
+- The local variables in [FeeOnTransfer.good1(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L63-L68) are unused.
+	- [FeeOnTransfer.good1(address,uint256).beforeBalance](solidity/tmp/test_fee_on_transfer.sol#L64)
+	- [FeeOnTransfer.good1(address,uint256).afterBalance](solidity/tmp/test_fee_on_transfer.sol#L67)
+
+
+### recommendation
+
+Remove the unused local variables.
+
+
+### locations
+- solidity/tmp/test_fee_on_transfer.sol#L56-L61
+- solidity/tmp/test_fee_on_transfer.sol#L63-L68
+
+### severity
+Optimization
+
+### category
+unused-local-var
+
+### confidence
+High
 
 ## [Optimization] Amounts should be checked for `0` before calling a `transfer`
 
-### description:
+### description
 
 According to the fact that EIP-20 [states](https://github.com/ethereum/EIPs/blob/46b9b698815abbfa628cd1097311deee77dd45c5/EIPS/eip-20.md?plain=1#L116) that zero-valued transfers must be accepted.
 
@@ -309,62 +488,102 @@ While this is done at some places, it’s not consistently done in the solution.
 
 **There are `8` instances of this issue:**
 
-- Adding a non-zero-value check for [token.transfer(to,amount)](solidity/test_fee_on_transfer.sol#L47) at the beginning of [FeeOnTransfer.bad0(address,uint256)](solidity/test_fee_on_transfer.sol#L46-L49)
+- Adding a non-zero-value check for [token.transfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L47) at the beginning of [FeeOnTransfer.bad0(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L46-L49)
 
-- Adding a non-zero-value check for [token.transferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L48) at the beginning of [FeeOnTransfer.bad0(address,uint256)](solidity/test_fee_on_transfer.sol#L46-L49)
+- Adding a non-zero-value check for [token.transferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L48) at the beginning of [FeeOnTransfer.bad0(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L46-L49)
 
-- Adding a non-zero-value check for [token.safeTransfer(to,amount)](solidity/test_fee_on_transfer.sol#L52) at the beginning of [FeeOnTransfer.bad1(address,uint256)](solidity/test_fee_on_transfer.sol#L51-L54)
+- Adding a non-zero-value check for [token.safeTransfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L52) at the beginning of [FeeOnTransfer.bad1(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L51-L54)
 
-- Adding a non-zero-value check for [token.safeTransferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L53) at the beginning of [FeeOnTransfer.bad1(address,uint256)](solidity/test_fee_on_transfer.sol#L51-L54)
+- Adding a non-zero-value check for [token.safeTransferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L53) at the beginning of [FeeOnTransfer.bad1(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L51-L54)
 
-- Adding a non-zero-value check for [token.transfer(to,amount)](solidity/test_fee_on_transfer.sol#L58) at the beginning of [FeeOnTransfer.good0(address,uint256)](solidity/test_fee_on_transfer.sol#L56-L61)
+- Adding a non-zero-value check for [token.transfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L58) at the beginning of [FeeOnTransfer.good0(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L56-L61)
 
-- Adding a non-zero-value check for [token.transferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L59) at the beginning of [FeeOnTransfer.good0(address,uint256)](solidity/test_fee_on_transfer.sol#L56-L61)
+- Adding a non-zero-value check for [token.transferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L59) at the beginning of [FeeOnTransfer.good0(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L56-L61)
 
-- Adding a non-zero-value check for [token.safeTransfer(to,amount)](solidity/test_fee_on_transfer.sol#L65) at the beginning of [FeeOnTransfer.good1(address,uint256)](solidity/test_fee_on_transfer.sol#L63-L68)
+- Adding a non-zero-value check for [token.safeTransfer(to,amount)](solidity/tmp/test_fee_on_transfer.sol#L65) at the beginning of [FeeOnTransfer.good1(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L63-L68)
 
-- Adding a non-zero-value check for [token.safeTransferFrom(address(this),to,amount)](solidity/test_fee_on_transfer.sol#L66) at the beginning of [FeeOnTransfer.good1(address,uint256)](solidity/test_fee_on_transfer.sol#L63-L68)
+- Adding a non-zero-value check for [token.safeTransferFrom(address(this),to,amount)](solidity/tmp/test_fee_on_transfer.sol#L66) at the beginning of [FeeOnTransfer.good1(address,uint256)](solidity/tmp/test_fee_on_transfer.sol#L63-L68)
 
 
-### recommendation:
+### recommendation
 
 Consider adding a non-zero-value check at the beginning of function.
 
 
-### locations:
-- solidity/test_fee_on_transfer.sol#L47
-- solidity/test_fee_on_transfer.sol#L48
-- solidity/test_fee_on_transfer.sol#L52
-- solidity/test_fee_on_transfer.sol#L53
-- solidity/test_fee_on_transfer.sol#L58
-- solidity/test_fee_on_transfer.sol#L59
-- solidity/test_fee_on_transfer.sol#L65
-- solidity/test_fee_on_transfer.sol#L66
+### locations
+- solidity/tmp/test_fee_on_transfer.sol#L47
+- solidity/tmp/test_fee_on_transfer.sol#L48
+- solidity/tmp/test_fee_on_transfer.sol#L52
+- solidity/tmp/test_fee_on_transfer.sol#L53
+- solidity/tmp/test_fee_on_transfer.sol#L58
+- solidity/tmp/test_fee_on_transfer.sol#L59
+- solidity/tmp/test_fee_on_transfer.sol#L65
+- solidity/tmp/test_fee_on_transfer.sol#L66
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 zero-check-with-transfer
+
+### confidence
+High
+
+## [Optimization] Empty blocks should be removed or emit something
+
+### description
+
+The code should be refactored such that they no longer exist, or the block should do 
+something useful, such as emitting an event or reverting. 
+If the contract is meant to be extended, the contract should be `abstract` and the function 
+signatures be added without any default implementation.
+
+
+**There is `1` instance of this issue:**
+
+- [SafeERC20._callOptionalReturn(IERC20,bytes)](solidity/tmp/test_fee_on_transfer.sol#L27) should removed or do something
+
+
+### recommendation
+
+Empty blocks should emit an event, or revert. 
+If not, they can simply be removed to save gas upon deployment. 
+This is valid for `receive()` functions, but also `constructors()`
+
+
+### locations
+- solidity/tmp/test_fee_on_transfer.sol#L27
+
+### severity
+Optimization
+
+### category
+empty-block
+
+### confidence
+High
 
 ## [Optimization] State variables that could be declared constant
 
-### description:
+### description
 State variables that are not updated following deployment should be declared constant to save gas.
 
 **There is `1` instance of this issue:**
 
-- [FeeOnTransfer.token](solidity/test_fee_on_transfer.sol#L44) should be constant 
+- [FeeOnTransfer.token](solidity/tmp/test_fee_on_transfer.sol#L44) should be constant 
 
 
-### recommendation:
+### recommendation
 Add the `constant` attribute to state variables that never change.
 
-### locations:
-- solidity/test_fee_on_transfer.sol#L44
+### locations
+- solidity/tmp/test_fee_on_transfer.sol#L44
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 constable-states
+
+### confidence
+High

@@ -14,6 +14,7 @@
 | [N-0] | Incorrect versions of Solidity | 1 |
 | [N-1] | Assembly usage | 1 |
 | [N-2] | Conformance to Solidity naming conventions | 3 |
+| [N-3] | Unnecessary Public Function Modifier | 3 |
 
 
 ### Gas Optimizations
@@ -21,13 +22,15 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [G-0] | Using custom errors replace `require` or `assert` | 2 |
-| [G-1] | Use assembly to check for `address(0)` | 3 |
+| [G-1] | Remove unused parameter variables | 1 |
+| [G-2] | Use assembly to check for `address(0)` | 3 |
+| [G-3] | Use `delete` to Clear Variables | 1 |
 
 
 
 ## [Low] `revert CustomError()` should be used instead of `assert()`
 
-### description:
+### description
 
 Prior to solidity version 0.8.0, hitting an assert consumes the **remainder of the 
 transaction's available gas** rather than returning it, as `require()`/`revert()` do. 
@@ -41,39 +44,42 @@ input. If this happens, then there is a bug in your contract which you should fi
 
 **There is `1` instance of this issue:**
 
-- `assert(bool)(_addr != address(0))` (solidity/test_zero_address_optimization.sol#L4) should be replaced by `if (!condition) revert CustomError();`.
+- [assert(bool)(_addr != address(0))](solidity/tmp/test_zero_address_optimization.sol#L4) should be replaced by `if (!condition) revert CustomError();`.
 
 
-### recommendation:
+### recommendation
 
 Please use `if (!condition) revert CustomError();` instead of `assert()`.
 
 
-### locations:
-- solidity/test_zero_address_optimization.sol#L4
+### locations
+- solidity/tmp/test_zero_address_optimization.sol#L4
 
-### severity:
+### severity
 Low
 
-### category:
+### category
 deprecated-assert
+
+### confidence
+High
 
 ## [Informational] Incorrect versions of Solidity
 
-### description:
+### description
 
 `solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
 We also recommend avoiding complex `pragma` statement.
 
 **There is `1` instance of this issue:**
 
-- solc-0.8.19 is not recommended for deployment
+- solc-0.8.17 is not recommended for deployment
 
 
-### recommendation:
+### recommendation
 
 Deploy with any of the following Solidity versions:
-- 0.8.20
+- 0.8.21
 
 The recommendations take into account:
 - Risks related to recent releases
@@ -84,41 +90,47 @@ The recommendations take into account:
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
-### locations:
+### locations
 - 
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 solc-version
+
+### confidence
+High
 
 ## [Informational] Assembly usage
 
-### description:
+### description
 The use of assembly is error-prone and should be avoided.
 
 **There is `1` instance of this issue:**
 
-- `Contract0.good(address)` (solidity/test_zero_address_optimization.sol#L14-L21) uses assembly
-	- `INLINE ASM` (solidity/test_zero_address_optimization.sol#L15-L20)
+- [Contract0.good(address)](solidity/tmp/test_zero_address_optimization.sol#L14-L21) uses assembly
+	- [INLINE ASM](solidity/tmp/test_zero_address_optimization.sol#L15-L20)
 
 
-### recommendation:
+### recommendation
 Do not use `evm` assembly.
 
-### locations:
-- solidity/test_zero_address_optimization.sol#L14-L21
+### locations
+- solidity/tmp/test_zero_address_optimization.sol#L14-L21
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 assembly
+
+### confidence
+High
 
 ## [Informational] Conformance to Solidity naming conventions
 
-### description:
+### description
 
 Solidity defines a [naming convention](https://solidity.readthedocs.io/en/v0.4.25/style-guide.html#naming-conventions) that should be followed.
 #### Rule exceptions
@@ -127,30 +139,73 @@ Solidity defines a [naming convention](https://solidity.readthedocs.io/en/v0.4.2
 
 **There are `3` instances of this issue:**
 
-- Parameter `Contract0.bad(address)._addr` (solidity/test_zero_address_optimization.sol#L2) is not in mixedCase
+- Parameter [Contract0.bad(address)._addr](solidity/tmp/test_zero_address_optimization.sol#L2) is not in mixedCase
 
-- Parameter `Contract0.notBad(address)._addr` (solidity/test_zero_address_optimization.sol#L10) is not in mixedCase
+- Parameter [Contract0.notBad(address)._addr](solidity/tmp/test_zero_address_optimization.sol#L10) is not in mixedCase
 
-- Parameter `Contract0.good(address)._addr` (solidity/test_zero_address_optimization.sol#L14) is not in mixedCase
+- Parameter [Contract0.good(address)._addr](solidity/tmp/test_zero_address_optimization.sol#L14) is not in mixedCase
 
 
-### recommendation:
+### recommendation
 Follow the Solidity [naming convention](https://solidity.readthedocs.io/en/v0.4.25/style-guide.html#naming-conventions).
 
-### locations:
-- solidity/test_zero_address_optimization.sol#L2
-- solidity/test_zero_address_optimization.sol#L10
-- solidity/test_zero_address_optimization.sol#L14
+### locations
+- solidity/tmp/test_zero_address_optimization.sol#L2
+- solidity/tmp/test_zero_address_optimization.sol#L10
+- solidity/tmp/test_zero_address_optimization.sol#L14
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 naming-convention
+
+### confidence
+High
+
+## [Informational] Unnecessary Public Function Modifier
+
+### description
+Detect the public function which can be replaced with external
+
+**There are `3` instances of this issue:**
+
+- function:[Contract0.bad(address)](solidity/tmp/test_zero_address_optimization.sol#L2-L8)is public and can be replaced with external 
+
+- function:[Contract0.notBad(address)](solidity/tmp/test_zero_address_optimization.sol#L10-L12)is public and can be replaced with external 
+
+- function:[Contract0.good(address)](solidity/tmp/test_zero_address_optimization.sol#L14-L21)is public and can be replaced with external 
+
+#### Exploit scenario
+
+```solidity
+contract A{}
+contract B is A{
+    constructor() public A(){}
+}
+```
+When reading `B`'s constructor definition, we might assume that `A()` initiates the contract, but no code is executed.
+
+### recommendation
+Replace public with external
+
+### locations
+- solidity/tmp/test_zero_address_optimization.sol#L2-L8
+- solidity/tmp/test_zero_address_optimization.sol#L10-L12
+- solidity/tmp/test_zero_address_optimization.sol#L14-L21
+
+### severity
+Informational
+
+### category
+unnecessary-public-function-modifier
+
+### confidence
+High
 
 ## [Optimization] Using custom errors replace `require` or `assert`
 
-### description:
+### description
 
 Using a custom error instance will usually be much cheaper than a string description, because you can use the name of the error to describe it, which is encoded in only four bytes. A longer description can be supplied via NatSpec which does not incur any costs.
 
@@ -159,29 +214,66 @@ More detail see [this](https://gist.github.com/0xxfu/712f7965446526f8c5bc53a91d9
 
 **There are `2` instances of this issue:**
 
-- `require(bool,string)(_addr != address(0),zero address))` (solidity/test_zero_address_optimization.sol#L3) should use custom error to save gas.
+- [require(bool,string)(_addr != address(0),"zero address)")](solidity/tmp/test_zero_address_optimization.sol#L3) should use custom error to save gas.
 
-- `assert(bool)(_addr != address(0))` (solidity/test_zero_address_optimization.sol#L4) should use custom error to save gas.
+- [assert(bool)(_addr != address(0))](solidity/tmp/test_zero_address_optimization.sol#L4) should use custom error to save gas.
 
 
-### recommendation:
+### recommendation
 
 Using custom errors replace `require` or `assert`.
 
 
-### locations:
-- solidity/test_zero_address_optimization.sol#L3
-- solidity/test_zero_address_optimization.sol#L4
+### locations
+- solidity/tmp/test_zero_address_optimization.sol#L3
+- solidity/tmp/test_zero_address_optimization.sol#L4
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 use-custom-error
+
+### confidence
+High
+
+## [Optimization] Remove unused parameter variables
+
+### description
+
+Unused parameters variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
+
+
+
+**There is `1` instance of this issue:**
+
+- The param variables in [Contract0.notBad(address)](solidity/tmp/test_zero_address_optimization.sol#L10-L12) are unused.
+	- [Contract0.notBad(address)._addr](solidity/tmp/test_zero_address_optimization.sol#L10)
+
+
+### recommendation
+
+Remove the unused parameter variables.
+
+
+### locations
+- solidity/tmp/test_zero_address_optimization.sol#L10-L12
+
+### severity
+Optimization
+
+### category
+unused-parameter
+
+### confidence
+High
 
 ## [Optimization] Use assembly to check for `address(0)`
 
-### description:
+### description
 
 [Inline Assembly](https://docs.soliditylang.org/en/latest/assembly.html) more gas efficient and [Saving Gas with Simple Inlining](https://blog.soliditylang.org/2021/03/02/saving-gas-with-simple-inliner/).
 
@@ -189,14 +281,14 @@ use-custom-error
 
 **There are `3` instances of this issue:**
 
-- `require(bool,string)(_addr != address(0),zero address))` (solidity/test_zero_address_optimization.sol#L3) should use assembly to check for `address(0)`
+- [require(bool,string)(_addr != address(0),"zero address)")](solidity/tmp/test_zero_address_optimization.sol#L3) should use assembly to check for `address(0)`
 
-- `assert(bool)(_addr != address(0))` (solidity/test_zero_address_optimization.sol#L4) should use assembly to check for `address(0)`
+- [assert(bool)(_addr != address(0))](solidity/tmp/test_zero_address_optimization.sol#L4) should use assembly to check for `address(0)`
 
-- `_addr == address(0)` (solidity/test_zero_address_optimization.sol#L5) should use assembly to check for `address(0)`
+- [_addr == address(0)](solidity/tmp/test_zero_address_optimization.sol#L5) should use assembly to check for `address(0)`
 
 
-### recommendation:
+### recommendation
 
 Use assembly to check for `address(0)`:
 
@@ -212,13 +304,56 @@ function addrNotZero(address _addr) public pure {
 ```
 
 
-### locations:
-- solidity/test_zero_address_optimization.sol#L3
-- solidity/test_zero_address_optimization.sol#L4
-- solidity/test_zero_address_optimization.sol#L5
+### locations
+- solidity/tmp/test_zero_address_optimization.sol#L3
+- solidity/tmp/test_zero_address_optimization.sol#L4
+- solidity/tmp/test_zero_address_optimization.sol#L5
 
-### severity:
+### severity
 Optimization
 
-### category:
+### category
 zero-address-optimization
+
+### confidence
+High
+
+## [Optimization] Use `delete` to Clear Variables
+
+### description
+
+delete a assigns the initial value for the type to a. i.e. 
+for integers it is equivalent to a = 0, but it can also be used on arrays, 
+where it assigns a dynamic array of length zero or a static array of the same 
+length with all elements reset. For structs, it assigns a struct with all members reset. 
+Similarly, it can also be used to set an address to zero address. 
+It has no effect on whole mappings though (as the keys of mappings may be arbitrary 
+and are generally unknown). However, individual keys and what they map to can be deleted: 
+If a is a mapping, then delete a[x] will delete the value stored at x.
+
+The delete key better conveys the intention and is also more idiomatic. 
+Consider replacing assignments of zero with delete statements.
+
+
+**There is `1` instance of this issue:**
+
+- Should use `delete` statement instead of [_addr = address(0)](solidity/tmp/test_zero_address_optimization.sol#L11)
+
+
+### recommendation
+
+Replacing assignments of zero with delete statements.
+
+
+
+### locations
+- solidity/tmp/test_zero_address_optimization.sol#L11
+
+### severity
+Optimization
+
+### category
+use-delete-statement
+
+### confidence
+High

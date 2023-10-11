@@ -5,6 +5,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [M-0] | Unused return | 3 |
+| [M-1] | Integer Overflow and Underflow | 2 |
 
 
 ### Non-critical Issues
@@ -12,29 +13,29 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 1 |
+| [N-1] | Unnecessary Public Function Modifier | 5 |
 
 
 ### Gas Optimizations
 
 |ID|Issues|Instances|
 |---|:---|:---:|
-| [G-0] | The result of function calls should be cached rather than re-calling the function | 1 |
-| [G-1] | Use `calldata` instead of `memory` for function parameters | 2 |
+| [G-0] | Remove unused local variables | 2 |
 
 
 
 ## [Medium] Unused return
 
-### description:
+### description
 The return value of an external call is not stored in a local or state variable.
 
 **There are `3` instances of this issue:**
 
-- [User.test(Target)](solidity/test_unused_return.sol#L17-L36) ignores return value by [a.add(0)](solidity/test_unused_return.sol#L22)
+- [User.test(Target)](solidity/tmp/test_unused_return.sol#L17-L36) ignores return value by [t.f()](solidity/tmp/test_unused_return.sol#L18)
 
-- [User.test(Target)](solidity/test_unused_return.sol#L17-L36) ignores return value by [t.f()](solidity/test_unused_return.sol#L18)
+- [User.test(Target)](solidity/tmp/test_unused_return.sol#L17-L36) ignores return value by [t.g()](solidity/tmp/test_unused_return.sol#L30)
 
-- [User.test(Target)](solidity/test_unused_return.sol#L17-L36) ignores return value by [t.g()](solidity/test_unused_return.sol#L30)
+- [User.test(Target)](solidity/tmp/test_unused_return.sol#L17-L36) ignores return value by [a.add(0)](solidity/tmp/test_unused_return.sol#L22)
 
 #### Exploit scenario
 
@@ -48,36 +49,75 @@ contract MyConc{
 ```
 `MyConc` calls `add` of `SafeMath`, but does not store the result in `a`. As a result, the computation has no effect.
 
-### recommendation:
+### recommendation
 Ensure that all the return values of the function calls are used.
 
-### locations:
-- solidity/test_unused_return.sol#L17-L36
-- solidity/test_unused_return.sol#L17-L36
-- solidity/test_unused_return.sol#L17-L36
+### locations
+- solidity/tmp/test_unused_return.sol#L17-L36
+- solidity/tmp/test_unused_return.sol#L17-L36
+- solidity/tmp/test_unused_return.sol#L17-L36
 
-### severity:
+### severity
 Medium
 
-### category:
+### category
 unused-return
+
+### confidence
+Medium
+
+## [Medium] Integer Overflow and Underflow
+
+### description
+
+    若不使用OpenZeppelin的SafeMath(或类似的库)检查溢出/下溢，
+    如果用户/攻击者能够控制这种算术运算的整数操作数，
+    可能会导致漏洞或意外行为。
+    Solc v0.8.0为所有算术运算引入了默认的溢出/底溢检查。(见这里和这里)
+
+**There are `2` instances of this issue:**
+
+- add(uint256,uint256) has possible integer overflow/underflow:
+	- [a + b](solidity/tmp/test_unused_return.sol#L4)
+
+- good(Target) has possible integer overflow/underflow:
+	- [c = a + 1](solidity/tmp/test_unused_return.sol#L40)
+
+#### Exploit scenario
+..
+
+### recommendation
+..
+
+### locations
+- solidity/tmp/test_unused_return.sol#L4
+- solidity/tmp/test_unused_return.sol#L40
+
+### severity
+Medium
+
+### category
+integer-overflow
+
+### confidence
+High
 
 ## [Informational] Incorrect versions of Solidity
 
-### description:
+### description
 
 `solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
 We also recommend avoiding complex `pragma` statement.
 
 **There is `1` instance of this issue:**
 
-- solc-0.8.19 is not recommended for deployment
+- solc-0.8.17 is not recommended for deployment
 
 
-### recommendation:
+### recommendation
 
 Deploy with any of the following Solidity versions:
-- 0.8.20
+- 0.8.21
 
 The recommendations take into account:
 - Risks related to recent releases
@@ -88,74 +128,100 @@ The recommendations take into account:
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
-### locations:
+### locations
 - 
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 solc-version
 
-## [Optimization] The result of function calls should be cached rather than re-calling the function
+### confidence
+High
 
-### description:
+## [Informational] Unnecessary Public Function Modifier
 
-The instances below point to the second+ call of the function within a single function
+### description
+Detect the public function which can be replaced with external
 
+**There are `5` instances of this issue:**
 
-**There is `1` instance of this issue:**
+- function:[SafeMath.add(uint256,uint256)](solidity/tmp/test_unused_return.sol#L3-L5)is public and can be replaced with external 
 
-- `Target.g()` called result should be cached with local variable in [User.test(Target)](solidity/test_unused_return.sol#L17-L36), It is called more than once:
-	- [(e) = t.g()](solidity/test_unused_return.sol#L35)
-	- [(c,d) = t.g()](solidity/test_unused_return.sol#L32)
-	- [t.g()](solidity/test_unused_return.sol#L30)
+- function:[Target.f()](solidity/tmp/test_unused_return.sol#L9)is public and can be replaced with external 
 
+- function:[Target.g()](solidity/tmp/test_unused_return.sol#L10)is public and can be replaced with external 
 
-### recommendation:
+- function:[User.test(Target)](solidity/tmp/test_unused_return.sol#L17-L36)is public and can be replaced with external 
 
-Using local variable to cache function called result if the same function called more than once.
+- function:[User.good(Target)](solidity/tmp/test_unused_return.sol#L38-L41)is public and can be replaced with external 
 
+#### Exploit scenario
 
-### locations:
-- solidity/test_unused_return.sol#L17-L36
+```solidity
+contract A{}
+contract B is A{
+    constructor() public A(){}
+}
+```
+When reading `B`'s constructor definition, we might assume that `A()` initiates the contract, but no code is executed.
 
-### severity:
-Optimization
+### recommendation
+Replace public with external
 
-### category:
-cache-call-function-result
+### locations
+- solidity/tmp/test_unused_return.sol#L3-L5
+- solidity/tmp/test_unused_return.sol#L9
+- solidity/tmp/test_unused_return.sol#L10
+- solidity/tmp/test_unused_return.sol#L17-L36
+- solidity/tmp/test_unused_return.sol#L38-L41
 
-## [Optimization] Use `calldata` instead of `memory` for function parameters
+### severity
+Informational
 
-### description:
+### category
+unnecessary-public-function-modifier
 
-On external functions, when using the `memory` keyword with a function argument, what's happening is a `memory` acts as an intermediate.
+### confidence
+High
 
-When the function gets called externally, the array values are kept in `calldata` and copied to memory during ABI decoding (using the opcode `calldataload` and `mstore`). 
-And during the for loop, the values in the array are accessed in memory using a `mload`. That is inefficient. Reading directly from `calldata` using `calldataload` instead of going via `memory` saves the gas from the intermediate memory operations that carry the values.
+## [Optimization] Remove unused local variables
 
-More detail see [this](https://ethereum.stackexchange.com/questions/74442/when-should-i-use-calldata-and-when-should-i-use-memory)
+### description
+
+Unused local variables are gas consuming, 
+since the initial value assignment costs gas. 
+And are a bad code practice. 
+Removing those variables can save deployment and called gas. and improve code quality. 
 
 
 **There are `2` instances of this issue:**
 
-- [User.test(Target)](solidity/test_unused_return.sol#L17-L36) read-only `memory` parameters below should be changed to `calldata` :
-	- [User.test(Target).t](solidity/test_unused_return.sol#L17)
+- The local variables in [User.test(Target)](solidity/tmp/test_unused_return.sol#L17-L36) are unused.
+	- [User.test(Target).d](solidity/tmp/test_unused_return.sol#L32)
+	- [User.test(Target).e](solidity/tmp/test_unused_return.sol#L35)
+	- [User.test(Target).c](solidity/tmp/test_unused_return.sol#L32)
+	- [User.test(Target).b](solidity/tmp/test_unused_return.sol#L28)
 
-- [User.good(Target)](solidity/test_unused_return.sol#L38-L41) read-only `memory` parameters below should be changed to `calldata` :
-	- [User.good(Target).t](solidity/test_unused_return.sol#L38)
+- The local variables in [User.good(Target)](solidity/tmp/test_unused_return.sol#L38-L41) are unused.
+	- [User.good(Target).c](solidity/tmp/test_unused_return.sol#L40)
 
 
-### recommendation:
-Use `calldata` instead of `memory` for external functions where the function argument is read-only.
+### recommendation
 
-### locations:
-- solidity/test_unused_return.sol#L17-L36
-- solidity/test_unused_return.sol#L38-L41
+Remove the unused local variables.
 
-### severity:
+
+### locations
+- solidity/tmp/test_unused_return.sol#L17-L36
+- solidity/tmp/test_unused_return.sol#L38-L41
+
+### severity
 Optimization
 
-### category:
-memory-in-parameters
+### category
+unused-local-var
+
+### confidence
+High

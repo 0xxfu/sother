@@ -5,6 +5,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [L-0] | Use of `tx.origin` is unsafe in almost every context | 1 |
+| [L-1] | Missing Event Setter | 1 |
 
 
 ### Non-critical Issues
@@ -17,7 +18,7 @@
 
 ## [Low] Use of `tx.origin` is unsafe in almost every context
 
-### description:
+### description
 
 According to [Vitalik Buterin](https://ethereum.stackexchange.com/questions/196/how-do-i-make-my-dapp-serenity-proof), 
 contracts should _not_ `assume that tx.origin will continue to be usable or meaningful`. 
@@ -33,39 +34,69 @@ For these reasons, it's best to completely avoid the feature.
 
 **There is `1` instance of this issue:**
 
-- [tx.origin](solidity/test_unsafe_tx_origin.sol#L3) should use `msg.sender` instead of `tx.origin` as much as possible.
+- [tx.origin](solidity/tmp/test_unsafe_tx_origin.sol#L3) should use `msg.sender` instead of `tx.origin` as much as possible.
 
 
-### recommendation:
+### recommendation
 
 Please use `msg.sender` instead of `tx.origin` as much as possible.
 
 
-### locations:
-- solidity/test_unsafe_tx_origin.sol#L3
+### locations
+- solidity/tmp/test_unsafe_tx_origin.sol#L3
 
-### severity:
+### severity
 Low
 
-### category:
+### category
 unsafe-tx-origin
+
+### confidence
+High
+
+## [Low] Missing Event Setter
+
+### description
+Setter-functions must emit events
+
+**There is `1` instance of this issue:**
+
+- Setter function [UnsafeTxOrigin.notBad()](solidity/tmp/test_unsafe_tx_origin.sol#L6-L8) does not emit an event
+
+#### Exploit scenario
+N/A
+
+### recommendation
+Emit events in setter functions
+
+### locations
+- solidity/tmp/test_unsafe_tx_origin.sol#L6-L8
+
+### severity
+Low
+
+### category
+pess-event-setter
+
+### confidence
+Medium
 
 ## [Informational] Incorrect versions of Solidity
 
-### description:
+### description
 
 `solc` frequently releases new compiler versions. Using an old version prevents access to new Solidity security checks.
 We also recommend avoiding complex `pragma` statement.
 
 **There is `1` instance of this issue:**
 
-- solc-0.8.19 is not recommended for deployment
+- solc-0.8.17 is not recommended for deployment
 
 
-### recommendation:
+### recommendation
 
 Deploy with any of the following Solidity versions:
-- 0.8.20
+- 0.8.21
 
 The recommendations take into account:
 - Risks related to recent releases
@@ -76,11 +107,14 @@ The recommendations take into account:
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing.
 
-### locations:
+### locations
 - 
 
-### severity:
+### severity
 Informational
 
-### category:
+### category
 solc-version
+
+### confidence
+High
