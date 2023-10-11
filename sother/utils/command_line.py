@@ -25,7 +25,8 @@ def output_detector_stats(detectors: list[Type[AbstractDetector]]) -> None:
         DetectorClassification, list[Type[AbstractDetector]]
     ] = defaultdict(list)
     for item in detectors:
-        impact_detectors[item.IMPACT].append(item)
+        if isinstance(item.IMPACT, DetectorClassification):
+            impact_detectors[item.IMPACT].append(item)
     impacts = sorted(impact_detectors.keys(), key=lambda x: x.value)
     for item in impacts:
         print(f"{classification_txt[item]}: {len(impact_detectors[item])}")
