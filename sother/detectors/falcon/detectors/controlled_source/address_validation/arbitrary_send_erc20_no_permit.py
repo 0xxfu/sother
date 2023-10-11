@@ -1,10 +1,11 @@
 from typing import List
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.detectors.controlled_source.access_control.arbitrary_send_erc20 import (
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.utils.output import Output
+
+from sother.detectors.falcon.detectors.controlled_source.access_control.arbitrary_send_erc20 import (
     ArbitrarySendErc20,
 )
-from falcon.utils.output import Output
 
 
 class ArbitrarySendErc20NoPermit(AbstractDetector):

@@ -2,9 +2,9 @@
 Module detecting dangerous conversion to enum
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import TypeConversion
-from falcon.core.declarations.enum import Enum
+from slither.core.declarations.enum import Enum
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import TypeConversion
 
 
 def _uses_vulnerable_solc_version(version):

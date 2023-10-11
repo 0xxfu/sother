@@ -2,14 +2,14 @@
 Module detecting storage signed integer array bug
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.core.cfg.node import NodeType
-from falcon.core.solidity_types import ArrayType
-from falcon.core.solidity_types.elementary_type import Int, ElementaryType
-from falcon.core.variables.local_variable import LocalVariable
-from falcon.core.variables.state_variable import StateVariable
-from falcon.ir.operations.assignment import Assignment
-from falcon.ir.operations.init_array import InitArray
+from slither.core.cfg.node import NodeType
+from slither.core.solidity_types import ArrayType
+from slither.core.solidity_types.elementary_type import Int, ElementaryType
+from slither.core.variables.local_variable import LocalVariable
+from slither.core.variables.state_variable import StateVariable
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations.assignment import Assignment
+from slither.slithir.operations.init_array import InitArray
 
 vulnerable_solc_versions = [
     "0.4.7",
@@ -141,11 +141,17 @@ contract A {
         if self.compilation_unit.solc_version not in vulnerable_solc_versions:
             return results
         for contract in self.contracts:
-            storage_signed_integer_arrays = self.detect_storage_signed_integer_arrays(contract)
+            storage_signed_integer_arrays = self.detect_storage_signed_integer_arrays(
+                contract
+            )
             for function, node in storage_signed_integer_arrays:
                 contract_info = ["Contract ", contract, " \n"]
                 function_info = ["\t- Function ", function, "\n"]
-                node_info = ["\t\t- ", node, " has a storage signed integer array assignment\n"]
+                node_info = [
+                    "\t\t- ",
+                    node,
+                    " has a storage signed integer array assignment\n",
+                ]
                 res = self.generate_result(contract_info + function_info + node_info)
                 results.append(res)
 

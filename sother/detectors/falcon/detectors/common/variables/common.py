@@ -1,6 +1,6 @@
-from falcon.core.declarations import Contract
-from falcon.core.variables.state_variable import StateVariable
-from falcon.core.solidity_types import ArrayType, ElementaryType
+from slither.core.declarations import Contract
+from slither.core.solidity_types import ArrayType, ElementaryType
+from slither.core.variables.state_variable import StateVariable
 
 
 def is_upgradable_gap_variable(contract: Contract, variable: StateVariable) -> bool:
@@ -23,8 +23,8 @@ def is_upgradable_gap_variable(contract: Contract, variable: StateVariable) -> b
 
     variable_type = variable.type
     return (
-        declared_variable_ordered[-1] is variable
-        and isinstance(variable_type, ArrayType)
-        and variable_type.type == ElementaryType("uint256")
-        and variable.visibility == "private"
+            declared_variable_ordered[-1] is variable
+            and isinstance(variable_type, ArrayType)
+            and variable_type.type == ElementaryType("uint256")
+            and variable.visibility == "private"
     )

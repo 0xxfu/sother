@@ -1,27 +1,28 @@
-from falcon.core.declarations.function import SolidityFunction
-from falcon.core.declarations.function_contract import FunctionContract
-from falcon.core.declarations.modifier import Modifier
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations.assignment import Assignment
-from falcon.ir.operations.binary import Binary
-from falcon.ir.operations.condition import Condition
-from falcon.ir.operations.index import Index
-from falcon.ir.operations.internal_call import InternalCall
-from falcon.ir.operations.length import Length
-from falcon.ir.operations.library_call import HighLevelCall
-from falcon.ir.operations.low_level_call import LowLevelCall
-from falcon.ir.operations.member import Member
-from falcon.ir.operations.return_operation import Return
-from falcon.ir.operations.send import Send
-from falcon.ir.operations.solidity_call import SolidityCall
-from falcon.ir.operations.type_conversion import TypeConversion
-from falcon.ir.operations.unary import Unary
-from falcon.ir.variables.constant import Constant
-from falcon.ir.variables.local_variable import LocalVariable
-from falcon.ir.variables.reference import SolidityVariable
-from falcon.ir.variables.state_variable import StateVariable
-from falcon.ir.variables.temporary import TemporaryVariable
-from falcon.utils.modifier_utils import ModifierUtil
+from slither.core.declarations.function import SolidityFunction
+from slither.core.declarations.function_contract import FunctionContract
+from slither.core.declarations.modifier import Modifier
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations.assignment import Assignment
+from slither.slithir.operations.binary import Binary
+from slither.slithir.operations.condition import Condition
+from slither.slithir.operations.index import Index
+from slither.slithir.operations.internal_call import InternalCall
+from slither.slithir.operations.length import Length
+from slither.slithir.operations.library_call import HighLevelCall
+from slither.slithir.operations.low_level_call import LowLevelCall
+from slither.slithir.operations.member import Member
+from slither.slithir.operations.return_operation import Return
+from slither.slithir.operations.send import Send
+from slither.slithir.operations.solidity_call import SolidityCall
+from slither.slithir.operations.type_conversion import TypeConversion
+from slither.slithir.operations.unary import Unary
+from slither.slithir.variables.constant import Constant
+from slither.slithir.variables.local_variable import LocalVariable
+from slither.slithir.variables.reference import SolidityVariable
+from slither.slithir.variables.state_variable import StateVariable
+from slither.slithir.variables.temporary import TemporaryVariable
+
+from sother.detectors.falcon.utils.modifier_utils import ModifierUtil
 
 
 class SigReplayProtectionDetection(AbstractDetector):

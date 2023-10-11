@@ -2,10 +2,10 @@
 Module detecting tautologies and contradictions based on types in comparison operations over integers
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import Binary, BinaryType
-from falcon.ir.variables import Constant
-from falcon.core.solidity_types.elementary_type import Int, Uint
+from slither.core.solidity_types.elementary_type import Int, Uint
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import Binary, BinaryType
+from slither.slithir.variables import Constant
 
 
 def typeRange(t):
@@ -75,7 +75,9 @@ class ConstantResult(AbstractDetector):
     WIKI_TITLE = "Tautology Fixed"
     WIKI_DESCRIPTION = "Detects expressions that are tautologies or contradictions."
     WIKI_EXPLOIT_SCENARIO = ".."
-    WIKI_RECOMMENDATION = "Fix the incorrect comparison by changing the value type or the comparison."
+    WIKI_RECOMMENDATION = (
+        "Fix the incorrect comparison by changing the value type or the comparison."
+    )
 
     flip_table = {
         BinaryType.GREATER: BinaryType.LESS,
@@ -103,9 +105,10 @@ class ConstantResult(AbstractDetector):
             for node in function.nodes:
                 for ir in node.irs:
                     if isinstance(ir, Binary) and ir.type in self.flip_table:
-
                         # If both sides are constant
-                        if isinstance(ir.variable_left, Constant) and isinstance(ir.variable_right, Constant):
+                        if isinstance(ir.variable_left, Constant) and isinstance(
+                            ir.variable_right, Constant
+                        ):
                             f_results.add(node)
                         elif ir.variable_left.name == ir.variable_right.name:
                             f_results.add(node)
@@ -126,7 +129,9 @@ class ConstantResult(AbstractDetector):
                                 ltype = str(ir.variable_left.type)
                                 if ltype in allInts:
                                     (low, high) = typeRange(ltype)
-                                    if _detect_tautology_or_contradiction(low, high, cval, ir.type):
+                                    if _detect_tautology_or_contradiction(
+                                        low, high, cval, ir.type
+                                    ):
                                         f_results.add(node)
 
             results.append((function, f_results))
@@ -142,7 +147,7 @@ class ConstantResult(AbstractDetector):
         for contract in self.contracts:
             tautologies = self.detect_type_based_tautologies(contract)
             if tautologies:
-                for (func, nodes) in tautologies:
+                for func, nodes in tautologies:
                     for node in nodes:
                         info = [func, " contains a tautology or contradiction:\n"]
                         info += ["\t- ", node, "\n"]

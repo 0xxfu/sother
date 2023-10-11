@@ -3,9 +3,9 @@ Module detecting dead code
 """
 from typing import List, Tuple
 
-from falcon.core.declarations import Function, FunctionContract, Contract
-from falcon.core.declarations.function_top_level import FunctionTopLevel
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.core.declarations import Function, FunctionContract, Contract
+from slither.core.declarations.function_top_level import FunctionTopLevel
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 
 
 class DeadCode(AbstractDetector):
@@ -34,9 +34,10 @@ contract Contract{
     # endregion wiki_exploit_scenario
 
     WIKI_RECOMMENDATION = "Remove unused functions."
+
     def _exclude_erc(self, c):
         return (
-            c.contract_kind != 'contract'
+            c.contract_kind != "contract"
             or c.is_erc20()
             or c.is_erc165()
             or c.is_erc1820()
@@ -49,9 +50,7 @@ contract Contract{
             or c.is_erc4626()
         )
 
-
     def _detect(self):
-
         results = []
 
         functions_used = set()
@@ -59,18 +58,28 @@ contract Contract{
             all_functionss_called = [
                 f.all_internal_calls() for f in contract.functions_entry_points
             ]
-            all_functions_called = [item for sublist in all_functionss_called for item in sublist]
+            all_functions_called = [
+                item for sublist in all_functionss_called for item in sublist
+            ]
             functions_used |= {
-                f.canonical_name for f in all_functions_called if isinstance(f, Function)
+                f.canonical_name
+                for f in all_functions_called
+                if isinstance(f, Function)
             }
-            all_libss_called = [f.all_library_calls() for f in contract.functions_entry_points]
+            all_libss_called = [
+                f.all_library_calls() for f in contract.functions_entry_points
+            ]
             all_libs_called: List[Tuple[Contract, Function]] = [
                 item for sublist in all_libss_called for item in sublist
             ]
             functions_used |= {
-                lib[1].canonical_name for lib in all_libs_called if isinstance(lib, tuple)
+                lib[1].canonical_name
+                for lib in all_libs_called
+                if isinstance(lib, tuple)
             }
-        for function in sorted(self.compilation_unit.functions, key=lambda x: x.canonical_name):
+        for function in sorted(
+            self.compilation_unit.functions, key=lambda x: x.canonical_name
+        ):
             if (
                 function.visibility in ["public", "external"]
                 or function.is_constructor

@@ -1,42 +1,23 @@
-from falcon.core.declarations.function import FunctionType
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.utils.output import Output
-from typing import List
+import difflib
 
-from falcon.core.cfg.node import Node
-from falcon.core.declarations import Function, Contract
-from falcon.analyses.data_dependency.data_dependency import is_tainted, is_dependent
-from falcon.core.declarations.solidity_variables import (
-    SolidityFunction,
-    SolidityVariableComposed,
-)
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import (
-    HighLevelCall,
-    Index,
-    LowLevelCall,
-    Send,
-    SolidityCall,
-    Transfer,
-)
-import re, difflib
+from slither.core.declarations import Contract
+from slither.core.declarations.function import FunctionType
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+
+
 class IncorrectConstructorName(AbstractDetector):
     """
     Detect SWC118 Incorrect Constructor Name
     """
 
-    ARGUMENT = "incorrect-constructor-name"  # falcon will launch the detector with falcon.py --mydetector
-    HELP = 'https://swcregistry.io/docs/SWC-118'
+    ARGUMENT = "incorrect-constructor-name"  # slither will launch the detector with slither.py --mydetector
+    HELP = "https://swcregistry.io/docs/SWC-118"
 
-    IMPACT = DetectorClassification.MEDIUM
-
-    CONFIDENCE = DetectorClassification.HIGH
-
-    WIKI = 'https://swcregistry.io/docs/SWC-118'
-    WIKI_TITLE = 'SWC-118'
+    WIKI = "https://swcregistry.io/docs/SWC-118"
+    WIKI_TITLE = "SWC-118"
     WIKI_DESCRIPTION = ".."
     WIKI_EXPLOIT_SCENARIO = ".."
-    WIKI_RECOMMENDATION = '..'
+    WIKI_RECOMMENDATION = ".."
     IMPACT = DetectorClassification.HIGH
     CONFIDENCE = DetectorClassification.HIGH
 
@@ -57,8 +38,9 @@ class IncorrectConstructorName(AbstractDetector):
 
         # No constructors!
         for function in contract.functions:
-            if str(function.name).lower() == str(contract.name).lower() and str(function.name) != str(
-                    contract.name):
+            if str(function.name).lower() == str(contract.name).lower() and str(
+                function.name
+            ) != str(contract.name):
                 results.append(function)
             elif str(function.name).lower() == "constructor":
                 results.append(function)
@@ -66,27 +48,34 @@ class IncorrectConstructorName(AbstractDetector):
                 results.append(function)
 
         return results
+
     def _check_version_if_below_422(self, contract):
         try:
             for pragma in contract.compilation_unit.pragma_directives:
                 if not pragma.is_solidity_version:
                     return False
-                if len(pragma.directive) == 4 and float(pragma.directive[2]) > 0.4 and float(pragma.directive[3]>0.22):
+                if (
+                    len(pragma.directive) == 4
+                    and float(pragma.directive[2]) > 0.4
+                    and float(pragma.directive[3] > 0.22)
+                ):
                     return False
-                elif len(pragma.directive) == 3 and float(pragma.directive[1]) > 0.4 and float(pragma.directive[2]>0.22):
+                elif (
+                    len(pragma.directive) == 3
+                    and float(pragma.directive[1]) > 0.4
+                    and float(pragma.directive[2] > 0.22)
+                ):
                     return False
                 else:
                     return False
             return True
         except Exception as e:
-            
             return False
 
     def similarity(self, s1: str, s2: str):
         return difflib.SequenceMatcher(None, s1.lower(), s2.lower()).quick_ratio()
 
     def _detect(self):
-
         final_results = []
         for c in self.contracts:
             if not self._check_version_if_below_422(c):

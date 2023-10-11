@@ -2,10 +2,10 @@
 Detect deletion on structure containing a mapping
 """
 
-from falcon.core.declarations import Structure
-from falcon.core.solidity_types import MappingType, UserDefinedType
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import Delete
+from slither.core.declarations import Structure
+from slither.core.solidity_types import MappingType, UserDefinedType
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import Delete
 
 
 class MappingDeletionDetection(AbstractDetector):
@@ -40,9 +40,7 @@ class MappingDeletionDetection(AbstractDetector):
 The mapping `balances` is never deleted, so `remove` does not work as intended."""
     # endregion wiki_exploit_scenario
 
-    WIKI_RECOMMENDATION = (
-        "Use a lock mechanism instead of a deletion to disable structure containing a mapping."
-    )
+    WIKI_RECOMMENDATION = "Use a lock mechanism instead of a deletion to disable structure containing a mapping."
 
     @staticmethod
     def detect_mapping_deletion(contract):
@@ -62,7 +60,10 @@ The mapping `balances` is never deleted, so `remove` does not work as intended."
                             value.type.type, Structure
                         ):
                             st = value.type.type
-                            if any(isinstance(e.type, MappingType) for e in st.elems.values()):
+                            if any(
+                                isinstance(e.type, MappingType)
+                                for e in st.elems.values()
+                            ):
                                 ret.append((f, st, node))
         return ret
 
@@ -75,7 +76,7 @@ The mapping `balances` is never deleted, so `remove` does not work as intended."
         results = []
         for c in self.contracts:
             mapping = MappingDeletionDetection.detect_mapping_deletion(c)
-            for (func, struct, node) in mapping:
+            for func, struct, node in mapping:
                 info = [func, " deletes ", struct, " which contains a mapping:\n"]
                 info += ["\t-", node, "\n"]
 

@@ -2,16 +2,16 @@
 Module detecting ABIEncoderV2 array bug
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.core.solidity_types import ArrayType
-from falcon.core.solidity_types import UserDefinedType
-from falcon.core.variables.local_variable import LocalVariable
-from falcon.core.variables.state_variable import StateVariable
-from falcon.ir.operations import SolidityCall
-from falcon.core.declarations.solidity_variables import SolidityFunction
-from falcon.ir.operations import EventCall
-from falcon.ir.operations import HighLevelCall
-from falcon.utils.utils import unroll
+from slither.core.declarations.solidity_variables import SolidityFunction
+from slither.core.solidity_types import ArrayType
+from slither.core.solidity_types import UserDefinedType
+from slither.core.variables.local_variable import LocalVariable
+from slither.core.variables.state_variable import StateVariable
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import EventCall
+from slither.slithir.operations import HighLevelCall
+from slither.slithir.operations import SolidityCall
+from slither.utils.utils import unroll
 
 vulnerable_solc_versions = [
     "0.4.7",
@@ -111,10 +111,15 @@ contract A {
                                 # Storage allocated
                                 and (
                                     isinstance(arg, StateVariable)
-                                    or (isinstance(arg, LocalVariable) and arg.is_storage)
+                                    or (
+                                        isinstance(arg, LocalVariable)
+                                        and arg.is_storage
+                                    )
                                 )
                                 # Array of arrays or structs
-                                and isinstance(arg.type.type, (ArrayType, UserDefinedType))
+                                and isinstance(
+                                    arg.type.type, (ArrayType, UserDefinedType)
+                                )
                             ):
                                 results.add((function, node))
                                 break
@@ -142,9 +147,17 @@ contract A {
         # Check for storage-allocated abiencoderv2 arrays of arrays/structs
         # in arguments of abi.encode, events or external calls
         for contract in self.contracts:
-            storage_abiencoderv2_arrays = self._detect_storage_abiencoderv2_arrays(contract)
+            storage_abiencoderv2_arrays = self._detect_storage_abiencoderv2_arrays(
+                contract
+            )
             for function, node in storage_abiencoderv2_arrays:
-                info = ["Function ", function, " trigger an abi encoding bug:\n\t- ", node, "\n"]
+                info = [
+                    "Function ",
+                    function,
+                    " trigger an abi encoding bug:\n\t- ",
+                    node,
+                    "\n",
+                ]
                 res = self.generate_result(info)
                 results.append(res)
 

@@ -1,8 +1,9 @@
-from falcon.analyses.data_dependency.data_dependency import is_tainted
-from falcon.core.variables.state_variable import StateVariable
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import LowLevelCall
-from falcon.utils.modifier_utils import ModifierUtil
+from slither.analyses.data_dependency.data_dependency import is_tainted
+from slither.core.variables.state_variable import StateVariable
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import LowLevelCall
+
+from sother.detectors.falcon.utils.modifier_utils import ModifierUtil
 
 
 def controlled_delegatecall(function):

@@ -2,38 +2,45 @@
 # SWC-128
 from typing import List
 
-from falcon.core.cfg.node import Node, NodeType
-from falcon.core.declarations import Contract, FunctionContract
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.utils.output import Output
-from falcon.utils.modifier_utils import ModifierUtil
+from slither.core.cfg.node import Node, NodeType
+from slither.core.declarations import Contract, FunctionContract
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.utils.output import Output
+
+from sother.detectors.falcon.utils.modifier_utils import ModifierUtil
+
 
 class UnControlledResourceConsumption(AbstractDetector):
-    ARGUMENT = 'uncontrolled-resource-consumption'
+    ARGUMENT = "uncontrolled-resource-consumption"
 
     IMPACT = DetectorClassification.INFORMATIONAL
     CONFIDENCE = DetectorClassification.MEDIUM
 
-    HELP = 'https://swcregistry.io/docs/SWC-128'
-    WIKI = 'https://swcregistry.io/docs/SWC-128'
-    WIKI_TITLE = 'DoS With Block Gas Limit'
-    WIKI_DESCRIPTION = '''
+    HELP = "https://swcregistry.io/docs/SWC-128"
+    WIKI = "https://swcregistry.io/docs/SWC-128"
+    WIKI_TITLE = "DoS With Block Gas Limit"
+    WIKI_DESCRIPTION = """
     When smart contracts are deployed or functions inside them are called, the execution of these actions always requires a certain amount of gas, based of how much computation is needed to complete them. The Ethereum network specifies a block gas limit and the sum of all transactions included in a block can not exceed the threshold.
     Programming patterns that are harmless in centralized applications can lead to Denial of Service conditions in smart contracts when the cost of executing a function exceeds the block gas limit. Modifying an array of unknown size, that increases in size over time, can lead to such a Denial of Service condition.
-    '''
-    WIKI_RECOMMENDATION = '''
+    """
+    WIKI_RECOMMENDATION = """
     Caution is advised when you expect to have large arrays that grow over time. Actions that require looping across the entire data structure should be avoided.
     If you absolutely must loop over an array of unknown size, then you should plan for it to potentially take multiple blocks, and therefore require multiple transactions.
-    '''
-    WIKI_EXPLOIT_SCENARIO = ''' '''
+    """
+    WIKI_EXPLOIT_SCENARIO = """ """
 
     MAX_LOOP_COUNT = 100
 
     def _get_loop_count(self, node: Node):
         count = 1
-        if not node.fathers or len(node.fathers) != 1 or not node.sons or len(node.sons) != 1:
+        if (
+            not node.fathers
+            or len(node.fathers) != 1
+            or not node.sons
+            or len(node.sons) != 1
+        ):
             return count
-        if node.fathers[0].type.name == 'VARIABLE':
+        if node.fathers[0].type.name == "VARIABLE":
             try:
                 start_variable = node.fathers[0].variables_written[0]
                 start_value = node.fathers[0].expression.expression_right.value
@@ -54,12 +61,9 @@ class UnControlledResourceConsumption(AbstractDetector):
             if node.type == NodeType.STARTLOOP:
                 loop_count = self._get_loop_count(node)
                 if loop_count > self.MAX_LOOP_COUNT:
-                    func_detect_results.append([
-                        'Potential DoS Gas Limit Attack occur in',
-                        func,
-                        node,
-                        '\n'
-                    ])
+                    func_detect_results.append(
+                        ["Potential DoS Gas Limit Attack occur in", func, node, "\n"]
+                    )
 
         return func_detect_results
 

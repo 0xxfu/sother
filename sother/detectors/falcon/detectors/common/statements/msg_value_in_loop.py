@@ -1,10 +1,10 @@
 from typing import List, Optional
 
-from falcon.core.cfg.node import NodeType, Node
-from falcon.core.declarations import SolidityVariableComposed, Contract
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import InternalCall
-from falcon.utils.output import Output
+from slither.core.cfg.node import NodeType, Node
+from slither.core.declarations import SolidityVariableComposed, Contract
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import InternalCall
+from slither.utils.output import Output
 
 
 def detect_msg_value_in_loop(contract: Contract) -> List[Node]:

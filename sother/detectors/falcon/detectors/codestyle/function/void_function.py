@@ -1,9 +1,7 @@
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import Nop
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 
 
 class VoidFunction(AbstractDetector):
-
     ARGUMENT = "void-function"
     HELP = "Function not implemented"
     IMPACT = DetectorClassification.MEDIUM
@@ -24,19 +22,22 @@ contract B is A{
 }
 ```
 When reading `B`'s constructor definition, we might assume that `A()` initiates the contract, but no code is executed."""
+
     # endregion wiki_exploit_scenario
 
     def _detect(self):
         """"""
         results = []
-        contract_info=[]
+        contract_info = []
         for c in self.contracts:
             for f in c.functions:
                 if f.is_receive or f.name in ["_beforeFallback"] or f.is_constructor:
                     continue
                 if f.is_empty:
-                    contract_info.append(self.generate_result(["function:" ,f, "is empty \n"]))
-                    
+                    contract_info.append(
+                        self.generate_result(["function:", f, "is empty \n"])
+                    )
+
         results.extend(contract_info) if contract_info else None
-                    
+
         return results

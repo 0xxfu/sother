@@ -1,13 +1,16 @@
 """
 Module detecting state variables that could be declared as constant
 """
-from falcon.core.compilation_unit import FalconCompilationUnit
-from falcon.core.solidity_types.elementary_type import ElementaryType
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.visitors.expression.export_values import ExportValues
-from falcon.core.declarations.solidity_variables import SolidityFunction
-from falcon.core.variables.state_variable import StateVariable
-from falcon.formatters.variables.possible_const_state_variables import custom_format
+from slither.core.compilation_unit import SlitherCompilationUnit
+from slither.core.declarations.solidity_variables import SolidityFunction
+from slither.core.solidity_types.elementary_type import ElementaryType
+from slither.core.variables.state_variable import StateVariable
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.visitors.expression.export_values import ExportValues
+
+from sother.detectors.falcon.formatters.variables.possible_const_state_variables import (
+    custom_format,
+)
 
 
 class ConstCandidateStateVars(AbstractDetector):
@@ -26,12 +29,18 @@ class ConstCandidateStateVars(AbstractDetector):
     WIKI = " "
 
     WIKI_TITLE = "State variables that could be declared constant"
-    WIKI_DESCRIPTION = "Constant state variables should be declared constant to save gas."
-    WIKI_RECOMMENDATION = "Add the `constant` attributes to state variables that never change."
+    WIKI_DESCRIPTION = (
+        "Constant state variables should be declared constant to save gas."
+    )
+    WIKI_RECOMMENDATION = (
+        "Add the `constant` attributes to state variables that never change."
+    )
 
     @staticmethod
     def _valid_candidate(v):
-        return isinstance(v.type, ElementaryType) and not (v.is_constant or v.is_immutable)
+        return isinstance(v.type, ElementaryType) and not (
+                v.is_constant or v.is_immutable
+        )
 
     # https://solidity.readthedocs.io/en/v0.5.2/contracts.html#constant-state-variables
     valid_solidity_function = [
@@ -61,7 +70,10 @@ class ConstCandidateStateVars(AbstractDetector):
         if not values:
             return True
         if all(
-            (val in self.valid_solidity_function or self._is_constant_var(val) for val in values)
+                (
+                        val in self.valid_solidity_function or self._is_constant_var(val)
+                        for val in values
+                )
         ):
             return True
         return False
@@ -76,13 +88,19 @@ class ConstCandidateStateVars(AbstractDetector):
             v for v in all_variables if self._valid_candidate(v)
         }
 
-        all_functions = [c.all_functions_called for c in self.compilation_unit.contracts]
+        all_functions = [
+            c.all_functions_called for c in self.compilation_unit.contracts
+        ]
         all_functions = list({item for sublist in all_functions for item in sublist})
 
         all_variables_written = [
-            f.state_variables_written for f in all_functions if not f.is_constructor_variables
+            f.state_variables_written
+            for f in all_functions
+            if not f.is_constructor_variables
         ]
-        all_variables_written = {item for sublist in all_variables_written for item in sublist}
+        all_variables_written = {
+            item for sublist in all_variables_written for item in sublist
+        }
 
         constable_variables = [
             v
@@ -90,7 +108,9 @@ class ConstCandidateStateVars(AbstractDetector):
             if (not v in all_variables_written) and self._constant_initial_expression(v)
         ]
         # Order for deterministic results
-        constable_variables = sorted(constable_variables, key=lambda x: x.canonical_name)
+        constable_variables = sorted(
+            constable_variables, key=lambda x: x.canonical_name
+        )
 
         # Create a result for each finding
         for v in constable_variables:
@@ -101,5 +121,5 @@ class ConstCandidateStateVars(AbstractDetector):
         return results
 
     @staticmethod
-    def _format(compilation_unit: FalconCompilationUnit, result):
+    def _format(compilation_unit: SlitherCompilationUnit, result):
         custom_format(compilation_unit, result)

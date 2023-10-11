@@ -2,7 +2,7 @@
 Module detecting usage of `tx.origin` in a conditional node
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 
 
 class TxOrigin(AbstractDetector):

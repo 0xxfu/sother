@@ -2,13 +2,13 @@
 Module detecting any path leading to usage of a local variable before it is declared.
 """
 
-from falcon.core.cfg.node import NodeType
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.core.cfg.node import NodeType
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 
 
 class PredeclarationUsageLocal(AbstractDetector):
     """
-     Pre-declaration usage of local variable
+    Pre-declaration usage of local variable
     """
 
     ARGUMENT = "variable-scope"
@@ -139,10 +139,13 @@ Additionally, the for-loop uses the variable `max`, which is declared in a previ
         for contract in self.contracts:
             predeclared_usages = self.detect_predeclared_in_contract(contract)
             if predeclared_usages:
-                for (predeclared_usage_function, predeclared_usage_nodes) in predeclared_usages:
+                for (
+                    predeclared_usage_function,
+                    predeclared_usage_nodes,
+                ) in predeclared_usages:
                     for (
-                            predeclared_usage_node,
-                            predeclared_usage_local_variable,
+                        predeclared_usage_node,
+                        predeclared_usage_local_variable,
                     ) in predeclared_usage_nodes:
                         info = [
                             "Variable '",

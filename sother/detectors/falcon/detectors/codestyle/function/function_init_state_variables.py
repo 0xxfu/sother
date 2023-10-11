@@ -2,13 +2,14 @@
 Module detecting state variables initializing from an immediate function call (prior to constructor run).
 """
 
-from falcon.core.declarations.function import Function
-from falcon.core.variables.state_variable import StateVariable
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.visitors.expression.export_values import ExportValues
+from slither.core.declarations.function import Function
+from slither.core.variables.state_variable import StateVariable
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.visitors.expression.export_values import ExportValues
 
 
 # def check_if_all_exported_value_
+
 
 def detect_function_init_state_vars(contract):
     """
@@ -20,19 +21,22 @@ def detect_function_init_state_vars(contract):
     readable_variable = []
     # Loop for each state variable explicitly defined in this contract.
     for state_variable in contract.variables:
-
         # Skip this variable if it is inherited and not explicitly defined in this contract definition.
         if state_variable.contract != contract:
             continue
         # If it has an expression, we try to break it down to identify if it contains a function call, or reference
         # to a non-constant state variable.
-        if state_variable.expression and not check_state_variable_expression_recrusively(state_variable):
-
+        if (
+            state_variable.expression
+            and not check_state_variable_expression_recrusively(state_variable)
+        ):
             exported_values = ExportValues(state_variable.expression).result()
 
             for exported_value in exported_values:
-                if (isinstance(exported_value, StateVariable) and not exported_value.is_constant) or (
-                        isinstance(exported_value, Function) and not exported_value.pure):
+                if (
+                    isinstance(exported_value, StateVariable)
+                    and not exported_value.is_constant
+                ) or (isinstance(exported_value, Function) and not exported_value.pure):
                     results.append(state_variable)
                     break
 
@@ -40,13 +44,19 @@ def detect_function_init_state_vars(contract):
 
 
 def check_state_variable_expression_recrusively(state_variable):
-    if state_variable.expression and len(ExportValues(state_variable.expression).result()) == 0:
+    if (
+        state_variable.expression
+        and len(ExportValues(state_variable.expression).result()) == 0
+    ):
         return True  # has been assigned value
     else:
         exported_values = ExportValues(state_variable.expression).result()
         for exported_value in exported_values:
-            if hasattr(exported_value, 'expression') and exported_value.expression and \
-                    check_state_variable_expression_recrusively(exported_value):
+            if (
+                hasattr(exported_value, "expression")
+                and exported_value.expression
+                and check_state_variable_expression_recrusively(exported_value)
+            ):
                 continue
             else:  # have no expression, not been assigned value
                 return False

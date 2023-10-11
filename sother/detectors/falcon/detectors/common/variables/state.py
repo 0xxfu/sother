@@ -3,9 +3,10 @@ Module detecting shadowing of state variables
 """
 import logging
 
-from falcon.core.declarations import Contract
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.detectors.common.variables.common import is_upgradable_gap_variable
+from slither.core.declarations import Contract
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+
+from sother.detectors.falcon.detectors.common.variables.common import is_upgradable_gap_variable
 
 
 def detect_shadowing(contract: Contract):

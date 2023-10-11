@@ -5,14 +5,13 @@
     read before being written
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.core.cfg.node import NodeType
-from falcon.core.declarations.structure_contract import StructureContract
-from falcon.ir.operations.member import Member
+from slither.core.cfg.node import NodeType
+from slither.core.declarations.structure_contract import StructureContract
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations.member import Member
 
 
 class UninitializedLocalVars(AbstractDetector):
-
     ARGUMENT = "uninitialized-local"
     HELP = "Uninitialized local variables"
     IMPACT = DetectorClassification.MEDIUM
@@ -59,7 +58,9 @@ Bob calls `transfer`. As a result, all Ether is sent to the address `0x0` and is
         else:
             self.visited_all_paths[node] = []
 
-        self.visited_all_paths[node] = list(set(self.visited_all_paths[node] + fathers_context))
+        self.visited_all_paths[node] = list(
+            set(self.visited_all_paths[node] + fathers_context)
+        )
 
         if self.key in node.context:
             fathers_context += node.context[self.key]
@@ -70,7 +71,9 @@ Bob calls `transfer`. As a result, all Ether is sent to the address `0x0` and is
                 self.results.append((function, uninitialized_local_variable))
 
         # Only save the local variables that are not yet written
-        uninitialized_local_variables = list(set(fathers_context) - set(node.variables_written))
+        uninitialized_local_variables = list(
+            set(fathers_context) - set(node.variables_written)
+        )
         node.context[self.key] = uninitialized_local_variables
 
         for son in node.sons:
@@ -92,13 +95,16 @@ Bob calls `transfer`. As a result, all Ether is sent to the address `0x0` and is
         struct_dic = {}
         for node in func.nodes:
             if node.type == NodeType.VARIABLE and node.variable_declaration:
-                if node.variable_declaration.uninitialized \
-                        and hasattr(node.variable_declaration, 'type')\
-                        and hasattr(node.variable_declaration.type, 'type'):
+                if (
+                    node.variable_declaration.uninitialized
+                    and hasattr(node.variable_declaration, "type")
+                    and hasattr(node.variable_declaration.type, "type")
+                ):
                     obj = node.variable_declaration.type.type
                     if obj and isinstance(obj, StructureContract):
                         struct_dic[obj.name] = node.variable_declaration
         return struct_dic
+
     def _find_uninit_member(self, func, struct_dic):
         uninit_member_dic = {}
         for struct in struct_dic:
@@ -107,7 +113,10 @@ Bob calls `transfer`. As a result, all Ether is sent to the address `0x0` and is
                 if node.irs:
                     for ir in node.irs:
                         if isinstance(ir, Member):
-                            if ir.variable_left and ir.variable_left == struct_dic[struct]:
+                            if (
+                                ir.variable_left
+                                and ir.variable_left == struct_dic[struct]
+                            ):
                                 if ir.expression.is_lvalue:
                                     ws.append(ir.expression.member_name)
                                 else:
@@ -115,8 +124,7 @@ Bob calls `transfer`. As a result, all Ether is sent to the address `0x0` and is
             uninit_member = [i for i in rs if i not in ws]
             if uninit_member:
                 uninit_member_dic[struct] = uninit_member
-        return uninit_member_dic    
-
+        return uninit_member_dic
 
     def _detect(self):
         """Detect uninitialized local variables
@@ -126,7 +134,7 @@ Bob calls `transfer`. As a result, all Ether is sent to the address `0x0` and is
             dict: [contract name] = set(local variable uninitialized)
         """
         results = []
-        info=[]
+        info = []
         # pylint: disable=attribute-defined-outside-init
         self.results = []
         self.visited_all_paths = {}
@@ -142,9 +150,15 @@ Bob calls `transfer`. As a result, all Ether is sent to the address `0x0` and is
                         continue
                     # dont consider storage variable, as they are detected by another detector
                     uninitialized_local_variables = [
-                        v for v in function.local_variables if not v.is_storage and v.uninitialized and not self._is_try_catch_var(function, v)
+                        v
+                        for v in function.local_variables
+                        if not v.is_storage
+                        and v.uninitialized
+                        and not self._is_try_catch_var(function, v)
                     ]
-                    function.entry_point.context[self.key] = uninitialized_local_variables
+                    function.entry_point.context[
+                        self.key
+                    ] = uninitialized_local_variables
                     self._detect_uninitialized(function, function.entry_point, [])
         all_results = list(set(self.results))
 
@@ -155,13 +169,26 @@ Bob calls `transfer`. As a result, all Ether is sent to the address `0x0` and is
                 if uninit_members:
                     for struct in uninit_members:
                         for member in uninit_members[struct]:
-                            info.append(self.generate_result([member,  " is a member never initialized in ", uninit_var[struct], "\n"]))
+                            info.append(
+                                self.generate_result(
+                                    [
+                                        member,
+                                        " is a member never initialized in ",
+                                        uninit_var[struct],
+                                        "\n",
+                                    ]
+                                )
+                            )
             else:
-                info.append(self.generate_result([
-                    uninitialized_local_variable,
-                    " is a local variable never initialized\n",
-                ]))
-        
+                info.append(
+                    self.generate_result(
+                        [
+                            uninitialized_local_variable,
+                            " is a local variable never initialized\n",
+                        ]
+                    )
+                )
+
         results.extend(info) if info else None
 
         return results

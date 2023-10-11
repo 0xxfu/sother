@@ -1,11 +1,12 @@
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations.assignment import Assignment
-from falcon.ir.operations.binary import Binary
-from falcon.ir.operations.index import Index
-from falcon.ir.operations.low_level_call import LowLevelCall
-from falcon.ir.operations.solidity_call import SolidityCall
-from falcon.ir.operations.transfer import Transfer
-from falcon.utils.function_permission_check import (
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations.assignment import Assignment
+from slither.slithir.operations.binary import Binary
+from slither.slithir.operations.index import Index
+from slither.slithir.operations.low_level_call import LowLevelCall
+from slither.slithir.operations.solidity_call import SolidityCall
+from slither.slithir.operations.transfer import Transfer
+
+from sother.detectors.falcon.utils.function_permission_check import (
     function_has_caller_check,
 )
 

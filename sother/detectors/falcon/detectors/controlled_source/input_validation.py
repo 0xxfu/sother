@@ -1,31 +1,33 @@
 # -*- coding:utf-8 -*-
 from typing import List
 
-from falcon.analyses.data_dependency.data_dependency import is_dependent, Context_types
-from falcon.core.cfg.node import Node
-from falcon.core.declarations import Contract, SolidityFunction
-from falcon.core.expressions import CallExpression, Identifier
-from falcon.core.expressions.member_access import MemberAccess
-from falcon.core.solidity_types import MappingType
-from falcon.core.variables.state_variable import StateVariable
-from falcon.core.variables.variable import Variable
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import Condition, Assignment
-from falcon.utils.output import Output
-from falcon.utils.modifier_utils import ModifierUtil
+from slither.analyses.data_dependency.data_dependency import is_dependent, Context_types
+from slither.core.cfg.node import Node
+from slither.core.declarations import Contract, SolidityFunction
+from slither.core.expressions import CallExpression, Identifier
+from slither.core.expressions.member_access import MemberAccess
+from slither.core.solidity_types import MappingType
+from slither.core.variables.state_variable import StateVariable
+from slither.core.variables.variable import Variable
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import Condition, Assignment
+from slither.utils.output import Output
+
+from sother.detectors.falcon.utils.modifier_utils import ModifierUtil
+
 
 class InputValidation(AbstractDetector):
-    ARGUMENT = 'input-validation'
+    ARGUMENT = "input-validation"
 
     IMPACT = DetectorClassification.LOW
     CONFIDENCE = DetectorClassification.MEDIUM
 
-    HELP = 'input validation'
-    WIKI = 'input validation'
-    WIKI_TITLE = 'Input Validation'
-    WIKI_DESCRIPTION = ''' '''
-    WIKI_RECOMMENDATION = ''' '''
-    WIKI_EXPLOIT_SCENARIO = ''' '''
+    HELP = "input validation"
+    WIKI = "input validation"
+    WIKI_TITLE = "Input Validation"
+    WIKI_DESCRIPTION = """ """
+    WIKI_RECOMMENDATION = """ """
+    WIKI_EXPLOIT_SCENARIO = """ """
 
     @staticmethod
     def _has_dependency(vars, target_vars, context: Context_types):
@@ -38,11 +40,13 @@ class InputValidation(AbstractDetector):
     @staticmethod
     def _is_require_expression(node: Node) -> bool:
         for expression in node.calls_as_expression:
-            if isinstance(expression, CallExpression) and \
-                    isinstance(expression.called, Identifier) and \
-                    hasattr(expression.called, 'value') and \
-                    isinstance(expression.called.value, SolidityFunction):
-                return expression.called.value.full_name == 'require(bool,string)'
+            if (
+                isinstance(expression, CallExpression)
+                and isinstance(expression.called, Identifier)
+                and hasattr(expression.called, "value")
+                and isinstance(expression.called.value, SolidityFunction)
+            ):
+                return expression.called.value.full_name == "require(bool,string)"
         return False
 
     @staticmethod
@@ -60,10 +64,15 @@ class InputValidation(AbstractDetector):
             variables.extend(modifier.state_variables_written)
         return variables
 
-    def _get_condition_related_state_variables(self, contract: Contract) -> List[Variable]:
+    def _get_condition_related_state_variables(
+        self, contract: Contract
+    ) -> List[Variable]:
         variables = []
         for func in contract.functions:
-            if len(func.state_variables_read) <= 0 or len(func.state_variables_written) <= 0:
+            if (
+                len(func.state_variables_read) <= 0
+                or len(func.state_variables_written) <= 0
+            ):
                 continue
             for node in func.nodes:
                 if self._is_require_expression(node):
@@ -79,9 +88,11 @@ class InputValidation(AbstractDetector):
         condition_related_vars = self._get_condition_related_state_variables(contract)
 
         for variable in contract.state_variables:
-            if isinstance(variable.type, MappingType) or \
-                    variable in modifier_related_vars or \
-                    variable in condition_related_vars:
+            if (
+                isinstance(variable.type, MappingType)
+                or variable in modifier_related_vars
+                or variable in condition_related_vars
+            ):
                 key_state_variables.append(variable)
 
         for fn in contract.functions:
@@ -90,7 +101,9 @@ class InputValidation(AbstractDetector):
                     if isinstance(external_call, CallExpression):
                         if isinstance(external_call.called, MemberAccess):
                             if isinstance(external_call.called.expression, Identifier):
-                                external_contract_var = external_call.called.expression.value
+                                external_contract_var = (
+                                    external_call.called.expression.value
+                                )
                                 if isinstance(external_contract_var, StateVariable):
                                     key_state_variables.append(external_contract_var)
 
@@ -104,7 +117,7 @@ class InputValidation(AbstractDetector):
             return []
 
         for func in contract.functions:
-            if func.visibility != 'public':
+            if func.visibility != "public":
                 # all internal or privateFunction,no need to check
                 continue
             if func.is_constructor or func in contract.constructors:
@@ -125,10 +138,14 @@ class InputValidation(AbstractDetector):
                     if not isinstance(ir, Assignment):
                         continue
 
-                    if self._has_dependency([ir.lvalue], key_variables, func) and \
-                            self._has_dependency([ir.rvalue], func.parameters, func) and \
-                            ir.rvalue not in validated_variables:
-                        results.append(['value assignment lack of validation\t', func, node, '\n'])
+                    if (
+                        self._has_dependency([ir.lvalue], key_variables, func)
+                        and self._has_dependency([ir.rvalue], func.parameters, func)
+                        and ir.rvalue not in validated_variables
+                    ):
+                        results.append(
+                            ["value assignment lack of validation\t", func, node, "\n"]
+                        )
 
         return results
 

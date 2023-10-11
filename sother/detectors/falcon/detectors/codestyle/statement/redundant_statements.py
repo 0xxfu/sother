@@ -2,10 +2,12 @@
 Module detecting redundant statements.
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.core.cfg.node import NodeType
-from falcon.core.expressions.elementary_type_name_expression import ElementaryTypeNameExpression
-from falcon.core.expressions.identifier import Identifier
+from slither.core.cfg.node import NodeType
+from slither.core.expressions.elementary_type_name_expression import (
+    ElementaryTypeNameExpression,
+)
+from slither.core.expressions.identifier import Identifier
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 
 
 class RedundantStatements(AbstractDetector):
@@ -45,7 +47,9 @@ contract RedundantStatementsContract {
 Each commented line references types/identifiers, but performs no action with them, so no code will be generated for such statements and they can be removed."""
     # endregion wiki_exploit_scenario
 
-    WIKI_RECOMMENDATION = "Remove redundant statements if they congest code but offer no value."
+    WIKI_RECOMMENDATION = (
+        "Remove redundant statements if they congest code but offer no value."
+    )
 
     # This is a disallowed list of tuple (node.type, type(node.expression))
     REDUNDANT_TOP_LEVEL_EXPRESSIONS = (ElementaryTypeNameExpression, Identifier)
@@ -59,7 +63,6 @@ Each commented line references types/identifiers, but performs no action with th
 
         # Loop through all functions + modifiers defined explicitly in this contract.
         for function in contract.functions_and_modifiers_declared:
-
             # Loop through each node in this function.
             for node in function.nodes:
                 if node.expression:
@@ -82,9 +85,14 @@ Each commented line references types/identifiers, but performs no action with th
         for contract in self.contracts:
             redundant_statements = self.detect_redundant_statements_contract(contract)
             if redundant_statements:
-
                 for redundant_statement in redundant_statements:
-                    info = ['Redundant expression "', redundant_statement, '" in', contract, "\n"]
+                    info = [
+                        'Redundant expression "',
+                        redundant_statement,
+                        '" in',
+                        contract,
+                        "\n",
+                    ]
                     json = self.generate_result(info)
                     results.append(json)
 

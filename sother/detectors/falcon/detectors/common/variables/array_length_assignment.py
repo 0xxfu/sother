@@ -2,12 +2,12 @@
 Module detecting assignment of array length
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.core.cfg.node import NodeType
-from falcon.ir.operations import Assignment, Length
-from falcon.ir.variables.reference import ReferenceVariable
-from falcon.ir.operations.binary import Binary
-from falcon.analyses.data_dependency.data_dependency import is_tainted
+from slither.analyses.data_dependency.data_dependency import is_tainted
+from slither.core.cfg.node import NodeType
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import Assignment, Length
+from slither.slithir.operations.binary import Binary
+from slither.slithir.variables.reference import ReferenceVariable
 
 
 def detect_array_length_assignment(contract):
@@ -31,7 +31,6 @@ def detect_array_length_assignment(contract):
         for node in function.nodes:
             if node.type == NodeType.EXPRESSION:
                 for ir in node.irs:
-
                     # First we look for the member access for 'length', for which a reference is created.
                     # We add the reference to our list of array length references.
                     if isinstance(ir, Length):  # a
@@ -101,6 +100,7 @@ Note that storage slots here are indexed via a hash of the indexers; nonetheless
     # region wiki_recommendation
     WIKI_RECOMMENDATION = """Do not allow array lengths to be set directly set; instead, opt to add values as needed.
 Otherwise, thoroughly review the contract to ensure a user-controlled variable cannot reach an array length assignment."""
+
     # endregion wiki_recommendation
 
     def _detect(self):
@@ -109,7 +109,10 @@ Otherwise, thoroughly review the contract to ensure a user-controlled variable c
         """
         results = []
         # Starting from 0.6 .length is read only
-        if self.compilation_unit.solc_version and self.compilation_unit.solc_version >= "0.6.":
+        if (
+            self.compilation_unit.solc_version
+            and self.compilation_unit.solc_version >= "0.6."
+        ):
             return results
         for contract in self.contracts:
             array_length_assignments = detect_array_length_assignment(contract)

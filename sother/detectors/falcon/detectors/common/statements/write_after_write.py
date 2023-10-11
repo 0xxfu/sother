@@ -1,11 +1,11 @@
 from typing import List, Set, Tuple, Dict
 
-from falcon.core.cfg.node import Node, NodeType
-from falcon.core.solidity_types import ElementaryType
-from falcon.core.variables.state_variable import StateVariable
-from falcon.core.variables.variable import Variable
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import (
+from slither.core.cfg.node import Node, NodeType
+from slither.core.solidity_types import ElementaryType
+from slither.core.variables.state_variable import StateVariable
+from slither.core.variables.variable import Variable
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import (
     OperationWithLValue,
     HighLevelCall,
     InternalDynamicCall,
@@ -13,8 +13,12 @@ from falcon.ir.operations import (
     LowLevelCall,
     Operation,
 )
-from falcon.ir.variables import ReferenceVariable, TemporaryVariable, TupleVariable
-from falcon.ir.variables.variable import FalconIRVariable
+from slither.slithir.variables import (
+    ReferenceVariable,
+    TemporaryVariable,
+    TupleVariable,
+)
+from slither.slithir.variables.variable import SlithIRVariable
 
 
 def _remove_states(written: Dict[Variable, Node]):
@@ -40,7 +44,7 @@ def _handle_ir(
             if (
                 isinstance(read, Variable)
                 and isinstance(read.type, ElementaryType)
-                and not isinstance(read, FalconIRVariable)
+                and not isinstance(read, SlithIRVariable)
                 and read in written
             ):
                 del written[read]
@@ -49,7 +53,7 @@ def _handle_ir(
         if (
             isinstance(read, Variable)
             and isinstance(read.type, ElementaryType)
-            and not isinstance(read, FalconIRVariable)
+            and not isinstance(read, SlithIRVariable)
             and read in written
         ):
             del written[read]
@@ -59,7 +63,9 @@ def _handle_ir(
         if (
             ir.lvalue
             and isinstance(ir.lvalue.type, ElementaryType)
-            and not isinstance(ir.lvalue, (ReferenceVariable, TemporaryVariable, TupleVariable))
+            and not isinstance(
+                ir.lvalue, (ReferenceVariable, TemporaryVariable, TupleVariable)
+            )
         ):
             if ir.lvalue.name == "_":
                 return
@@ -102,7 +108,9 @@ class WriteAfterWrite(AbstractDetector):
     WIKI = " "
 
     WIKI_TITLE = "Write after write"
-    WIKI_DESCRIPTION = """Detects variables that are written but never read and written again."""
+    WIKI_DESCRIPTION = (
+        """Detects variables that are written but never read and written again."""
+    )
 
     # region wiki_exploit_scenario
     WIKI_EXPLOIT_SCENARIO = """
@@ -130,7 +138,14 @@ class WriteAfterWrite(AbstractDetector):
                     ret = []
                     _detect_write_after_write(function.entry_point, set(), {}, ret)
                     for var, node1, node2 in ret:
-                        info = [var, " is written in both\n\t", node1, "\n\t", node2, "\n"]
+                        info = [
+                            var,
+                            " is written in both\n\t",
+                            node1,
+                            "\n\t",
+                            node2,
+                            "\n",
+                        ]
 
                         res = self.generate_result(info)
                         results.append(res)

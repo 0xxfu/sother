@@ -3,21 +3,21 @@ Module detecting missing zero address validation
 
 """
 from collections import defaultdict
-from typing import DefaultDict, List, Tuple, Union
+from typing import DefaultDict, List, Tuple
 
-from falcon.analyses.data_dependency.data_dependency import is_tainted
-from falcon.core.cfg.node import Node
-from falcon.core.declarations.contract import Contract
-from falcon.core.declarations.function import ModifierStatements
-from falcon.core.declarations.function_contract import FunctionContract
-from falcon.core.solidity_types.elementary_type import ElementaryType
-from falcon.core.solidity_types.mapping_type import MappingType
-from falcon.core.variables.local_variable import LocalVariable
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import Call
-from falcon.ir.operations import Send, Transfer, LowLevelCall
-from falcon.ir.operations.high_level_call import HighLevelCall
-from falcon.utils.output import Output
+from slither.analyses.data_dependency.data_dependency import is_tainted
+from slither.core.cfg.node import Node
+from slither.core.declarations.contract import Contract
+from slither.core.declarations.function import ModifierStatements
+from slither.core.declarations.function_contract import FunctionContract
+from slither.core.solidity_types.elementary_type import ElementaryType
+from slither.core.solidity_types.mapping_type import MappingType
+from slither.core.variables.local_variable import LocalVariable
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import Call
+from slither.slithir.operations import Send, Transfer, LowLevelCall
+from slither.slithir.operations.high_level_call import HighLevelCall
+from slither.utils.output import Output
 
 
 class MissingZeroAddressValidation(AbstractDetector):
@@ -65,7 +65,12 @@ Bob calls `updateOwner` without specifying the `newOwner`, so Bob loses ownershi
                 # function f(a) my_modif(some_internal_function(a, b)) {
                 if len(node.irs) != 1:
                     continue
-                args = [arg for ir in node.irs if isinstance(ir, Call) for arg in ir.arguments]
+                args = [
+                    arg
+                    for ir in node.irs
+                    if isinstance(ir, Call)
+                    for arg in ir.arguments
+                ]
                 # Check in modifier call arguments and then identify validation of corresponding parameter within modifier context
                 if var in args and self._zero_address_validation(
                     mod.modifier.parameters[args.index(var)], mod.modifier.nodes[-1], []
@@ -99,7 +104,6 @@ Bob calls `updateOwner` without specifying the `newOwner`, so Bob loses ownershi
     def _detect_missing_zero_address_validation(
         self, contract: Contract
     ) -> List[Tuple[FunctionContract, DefaultDict[LocalVariable, List[Node]]]]:
-
         """
         Detects if addresses are zero address validated before use.
         :param contract: The contract to check
@@ -114,13 +118,23 @@ Bob calls `updateOwner` without specifying the `newOwner`, so Bob loses ownershi
                 sv_addrs_written = [
                     sv
                     for sv in node.state_variables_written
-                    if sv.type == ElementaryType("address") or (isinstance(sv.type , MappingType) and sv.type.type_from == ElementaryType("address"))
+                    if sv.type == ElementaryType("address")
+                    or (
+                        isinstance(sv.type, MappingType)
+                        and sv.type.type_from == ElementaryType("address")
+                    )
                 ]
                 addr_calls = False
                 for ir in node.irs:
                     if isinstance(ir, (Send, Transfer, LowLevelCall)):
                         addr_calls = True
-                    if isinstance(ir,HighLevelCall) and len(ir.arguments)>=1 and hasattr(ir.arguments[0],"type") and hasattr(ir.arguments[0].type,"type") and ir.arguments[0].type.type=="address":
+                    if (
+                        isinstance(ir, HighLevelCall)
+                        and len(ir.arguments) >= 1
+                        and hasattr(ir.arguments[0], "type")
+                        and hasattr(ir.arguments[0].type, "type")
+                        and ir.arguments[0].type.type == "address"
+                    ):
                         addr_calls = True
 
                 # Continue if no address-typed state variables are written and if no send/transfer/call
@@ -139,7 +153,7 @@ Bob calls `updateOwner` without specifying the `newOwner`, so Bob loses ownershi
                             self._zero_address_validation_in_modifier(
                                 var, function.modifiers_statements
                             )
-                            or  self._zero_address_validation(var, node, [])
+                            or self._zero_address_validation(var, node, [])
                         ):
                             # Report a variable only once per function
                             var_nodes[var].append(node)
@@ -156,14 +170,23 @@ Bob calls `updateOwner` without specifying the `newOwner`, so Bob loses ownershi
         # Check derived contracts for missing zero address validation
         results = []
         info = []
-        
+
         for contract in self.compilation_unit.contracts_derived:
-            
-            missing_zero_address_validation = self._detect_missing_zero_address_validation(contract)
-            for (_, var_nodes) in missing_zero_address_validation:
+            missing_zero_address_validation = (
+                self._detect_missing_zero_address_validation(contract)
+            )
+            for _, var_nodes in missing_zero_address_validation:
                 for var, nodes in var_nodes.items():
                     for node in nodes:
-                        info.append(self.generate_result(["variable lacks a zero-check on \t\t- ", node.function, "\n"]))
+                        info.append(
+                            self.generate_result(
+                                [
+                                    "variable lacks a zero-check on \t\t- ",
+                                    node.function,
+                                    "\n",
+                                ]
+                            )
+                        )
         results.extend(info) if info else None
 
         return results

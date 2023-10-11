@@ -4,7 +4,7 @@ Module detecting suicidal contract
 A suicidal contract is an unprotected function that calls selfdestruct
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 
 
 class Suicidal(AbstractDetector):
@@ -20,7 +20,9 @@ class Suicidal(AbstractDetector):
     WIKI = " "
 
     WIKI_TITLE = "Suicidal"
-    WIKI_DESCRIPTION = "Unprotected call to a function executing `selfdestruct`/`suicide`."
+    WIKI_DESCRIPTION = (
+        "Unprotected call to a function executing `selfdestruct`/`suicide`."
+    )
 
     # region wiki_exploit_scenario
     WIKI_EXPLOIT_SCENARIO = """
@@ -73,7 +75,6 @@ Bob calls `kill` and destructs the contract."""
         for c in self.contracts:
             functions = self.detect_suicidal(c)
             for func in functions:
-
                 info = [func, " allows someone to destruct the contract\n"]
 
                 res = self.generate_result(info)

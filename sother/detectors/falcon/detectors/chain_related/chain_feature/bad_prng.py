@@ -4,19 +4,19 @@ Module detecting bad PRNG due to the use of block.timestamp, now or blockhash (b
 
 from typing import List, Tuple
 
-from falcon.analyses.data_dependency.data_dependency import is_dependent_ssa
-from falcon.core.cfg.node import Node
-from falcon.core.declarations import Function, Contract
-from falcon.core.declarations.solidity_variables import (
+from slither.analyses.data_dependency.data_dependency import is_dependent_ssa
+from slither.core.cfg.node import Node
+from slither.core.declarations import Function, Contract
+from slither.core.declarations.solidity_variables import (
     SolidityVariable,
     SolidityFunction,
     SolidityVariableComposed,
 )
-from falcon.core.variables.variable import Variable
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import BinaryType, Binary
-from falcon.ir.operations import SolidityCall
-from falcon.utils.output import Output, AllSupportedOutput
+from slither.core.variables.variable import Variable
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import BinaryType, Binary
+from slither.slithir.operations import SolidityCall
+from slither.utils.output import Output, AllSupportedOutput
 
 
 def collect_return_values_of_bad_PRNG_functions(f: Function) -> List:

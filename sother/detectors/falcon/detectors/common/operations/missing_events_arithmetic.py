@@ -3,11 +3,12 @@ Module detecting missing events for critical contract parameters set by owners a
 
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.analyses.data_dependency.data_dependency import is_tainted
-from falcon.ir.operations.event_call import EventCall
-from falcon.core.solidity_types.elementary_type import ElementaryType, Int, Uint
-from falcon.utils.modifier_utils import ModifierUtil
+from slither.analyses.data_dependency.data_dependency import is_tainted
+from slither.core.solidity_types.elementary_type import ElementaryType, Int, Uint
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations.event_call import EventCall
+
+from sother.detectors.falcon.utils.modifier_utils import ModifierUtil
 
 
 class MissingEventsArithmetic(AbstractDetector):
@@ -52,7 +53,9 @@ contract C {
     @staticmethod
     def _detect_unprotected_use(contract, sv):
         unprotected_functions = [
-            function for function in contract.functions_declared if not function.is_protected()
+            function
+            for function in contract.functions_declared
+            if not function.is_protected()
         ]
         return [
             (node, function)
@@ -75,7 +78,12 @@ contract C {
                 continue
             # Check for any events in the function and skip if found
             # Note: not checking if event corresponds to critical parameter
-            if any(ir for node in function.nodes for ir in node.irs if isinstance(ir, EventCall)):
+            if any(
+                ir
+                for node in function.nodes
+                for ir in node.irs
+                if isinstance(ir, EventCall)
+            ):
                 continue
 
             # Ignore constructors and private/internal functions
@@ -113,9 +121,9 @@ contract C {
         results = []
         for contract in self.compilation_unit.contracts_derived:
             missing_events = self._detect_missing_events(contract)
-            for (function, nodes) in missing_events:
+            for function, nodes in missing_events:
                 info = [function, " should emit an event for: \n"]
-                for (node, _) in nodes:
+                for node, _ in nodes:
                     info += ["\t- ", node, " \n"]
                 res = self.generate_result(info)
                 results.append(res)

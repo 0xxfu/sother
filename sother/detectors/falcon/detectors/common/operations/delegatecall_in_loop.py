@@ -1,9 +1,10 @@
 from typing import List, Optional
-from falcon.core.cfg.node import NodeType, Node
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import LowLevelCall, InternalCall
-from falcon.core.declarations import Contract
-from falcon.utils.output import Output
+
+from slither.core.cfg.node import NodeType, Node
+from slither.core.declarations import Contract
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import LowLevelCall, InternalCall
+from slither.utils.output import Output
 
 
 def detect_delegatecall_in_loop(contract: Contract) -> List[Node]:
@@ -17,7 +18,6 @@ def detect_delegatecall_in_loop(contract: Contract) -> List[Node]:
 def delegatecall_in_loop(
     node: Optional[Node], in_loop_counter: int, visited: List[Node], results: List[Node]
 ) -> None:
-
     if node is None:
         return
 
@@ -36,11 +36,16 @@ def delegatecall_in_loop(
             in_loop_counter > 0
             and isinstance(ir, (LowLevelCall))
             and ir.function_name == "delegatecall"
-            and any("msg.value" in str(node) or "msg.sender" in str(node) for node in ir.node.function.nodes)
+            and any(
+                "msg.value" in str(node) or "msg.sender" in str(node)
+                for node in ir.node.function.nodes
+            )
         ):
             results.append(ir.node)
         if isinstance(ir, (InternalCall)):
-            delegatecall_in_loop(ir.function.entry_point, in_loop_counter, visited, results)
+            delegatecall_in_loop(
+                ir.function.entry_point, in_loop_counter, visited, results
+            )
 
     for son in node.sons:
         delegatecall_in_loop(son, in_loop_counter, visited, results)
@@ -59,7 +64,9 @@ class DelegatecallInLoop(AbstractDetector):
     WIKI = " "
 
     WIKI_TITLE = "Payable functions using `delegatecall` inside a loop"
-    WIKI_DESCRIPTION = "Detect the use of `delegatecall` inside a loop in a payable function."
+    WIKI_DESCRIPTION = (
+        "Detect the use of `delegatecall` inside a loop in a payable function."
+    )
 
     # region wiki_exploit_scenario
     WIKI_EXPLOIT_SCENARIO = """
@@ -96,7 +103,12 @@ Carefully check that the function called by `delegatecall` is not payable/doesn'
             for node in values:
                 func = node.function
 
-                info = [func, " has delegatecall inside a loop in a payable function: ", node, "\n"]
+                info = [
+                    func,
+                    " has delegatecall inside a loop in a payable function: ",
+                    node,
+                    "\n",
+                ]
                 res = self.generate_result(info)
                 results.append(res)
 

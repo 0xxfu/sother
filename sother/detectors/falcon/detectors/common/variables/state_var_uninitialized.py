@@ -2,10 +2,7 @@
 Detect deletion on structure containing a array
 """
 
-from falcon.core.declarations import Structure
-from falcon.core.solidity_types import UserDefinedType, ArrayType
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import Delete
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 
 
 class StateVariableNotInitialized(AbstractDetector):
@@ -41,11 +38,7 @@ class StateVariableNotInitialized(AbstractDetector):
 The array `balances` is never deleted, so `remove` does not work as intended."""
     # endregion wiki_exploit_scenario
 
-    WIKI_RECOMMENDATION = (
-        "Use a lock mechanism instead of a deletion to disable structure containing a array."
-    )
-
-    
+    WIKI_RECOMMENDATION = "Use a lock mechanism instead of a deletion to disable structure containing a array."
 
     def _detect(self):
         """Detect array deletion
@@ -57,10 +50,17 @@ The array `balances` is never deleted, so `remove` does not work as intended."""
 
         for c in self.contracts:
             for state_var in c.state_variables:
-                if not state_var.initialized and state_var not in c.all_state_variables_written and state_var in c.all_state_variables_read:
-                    info = ["state variable: ", state_var, " not initialized and not written in contract but be used in contract\n"]
+                if (
+                    not state_var.initialized
+                    and state_var not in c.all_state_variables_written
+                    and state_var in c.all_state_variables_read
+                ):
+                    info = [
+                        "state variable: ",
+                        state_var,
+                        " not initialized and not written in contract but be used in contract\n",
+                    ]
                     res = self.generate_result(info)
                     results.append(res)
-            
 
         return results

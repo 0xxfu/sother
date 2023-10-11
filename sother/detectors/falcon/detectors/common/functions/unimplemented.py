@@ -8,7 +8,7 @@ Consider public state variables as implemented functions
 Do not consider fallback function or constructor
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 
 # Since 0.5.1, Solidity allows creating state variable matching a function signature.
 older_solc_versions = ["0.5.0"] + ["0.4." + str(x) for x in range(0, 27)]
@@ -74,10 +74,10 @@ All unimplemented functions must be implemented on a contract that is meant to b
         unimplemented = set()
         for f in contract.all_functions_called:
             if (
-                not f.is_implemented
-                and not f.is_constructor
-                and not f.is_fallback
-                and not f.is_constructor_variables
+                    not f.is_implemented
+                    and not f.is_constructor
+                    and not f.is_fallback
+                    and not f.is_constructor_variables
             ):
                 if self.compilation_unit.solc_version not in older_solc_versions:
                     # Since 0.5.1, Solidity allows creating state variable matching a function signature

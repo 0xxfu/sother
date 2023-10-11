@@ -1,9 +1,5 @@
-from typing import List
-from falcon.core.declarations import FunctionContract
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.utils.output import Output
-from falcon.core.declarations.event import Event
-from falcon.core.declarations.solidity_variables import SolidityFunction
+from slither.core.declarations.solidity_variables import SolidityFunction
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 
 
 class InitializePermission(AbstractDetector):
@@ -17,19 +13,19 @@ class InitializePermission(AbstractDetector):
     1. visibility为external或public
     2. 当方法名包含init字符串
     """
-    ARGUMENT = 'initialize-permission'
+
+    ARGUMENT = "initialize-permission"
 
     IMPACT = DetectorClassification.LOW
     CONFIDENCE = DetectorClassification.MEDIUM
 
-    HELP = 'initialize method should has permission check'
+    HELP = "initialize method should has permission check"
     WIKI = HELP
     WIKI_TITLE = HELP
     WIKI_DESCRIPTION = HELP
     WIKI_RECOMMENDATION = HELP
-    WIKI_EXPLOIT_SCENARIO = ''' '''
+    WIKI_EXPLOIT_SCENARIO = """ """
 
-    
     def detect_initilize(self, func):
         if "init" in func.name.lower():
             return True
@@ -54,25 +50,31 @@ class InitializePermission(AbstractDetector):
         self.explore(func, initialized_in_init, [])
         should_be_initialized = func.all_conditional_state_variables_read()
 
-        if set(should_be_initialized) == (set(should_be_initialized) & set(initialized_in_init)):
+        if set(should_be_initialized) == (
+            set(should_be_initialized) & set(initialized_in_init)
+        ):
             return True
         return False
 
     def _detect(self):
         results = []
-        info=[]
+        info = []
         for contract in self.compilation_unit.contracts:
             for f in contract.functions:
                 # Check if a function has 'init' in its name
-                if len(f.modifiers)>0:
+                if len(f.modifiers) > 0:
                     continue
                 if self.detect_initilize(f):
                     # Check if condition variable is initialized
                     if not self.check_state_variables_in_conditions_are_initialzed(f):
-                        info.append(self.generate_result([
-                            "Condition variable is not initialized found in ",
-                            f,
-                            "\n",
-                        ]))
+                        info.append(
+                            self.generate_result(
+                                [
+                                    "Condition variable is not initialized found in ",
+                                    f,
+                                    "\n",
+                                ]
+                            )
+                        )
         results.extend(info) if info else None
         return results

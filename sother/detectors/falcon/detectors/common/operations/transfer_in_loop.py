@@ -1,9 +1,10 @@
 from typing import List, Optional
-from falcon.core.cfg.node import NodeType, Node
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import InternalCall
-from falcon.core.declarations import SolidityVariableComposed, Contract
-from falcon.utils.output import Output
+
+from slither.core.cfg.node import NodeType, Node
+from slither.core.declarations import Contract
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import InternalCall
+from slither.utils.output import Output
 
 
 def detect_transfer_in_loop(contract: Contract) -> List[Node]:
@@ -17,7 +18,6 @@ def detect_transfer_in_loop(contract: Contract) -> List[Node]:
 def transfer_in_loop(
     node: Optional[Node], in_loop_counter: int, visited: List[Node], results: List[Node]
 ) -> None:
-
     if node is None:
         return
 
@@ -25,7 +25,6 @@ def transfer_in_loop(
         return
     # shared visited
     visited.append(node)
-
 
     if node.type == NodeType.STARTLOOP:
         in_loop_counter += 1
@@ -39,7 +38,9 @@ def transfer_in_loop(
                 if not "msg.sender" in str(node):
                     results.append(ir.node)
             if isinstance(ir, (InternalCall)):
-                transfer_in_loop(ir.function.entry_point, in_loop_counter, visited, results)
+                transfer_in_loop(
+                    ir.function.entry_point, in_loop_counter, visited, results
+                )
 
     for son in node.sons:
         transfer_in_loop(son, in_loop_counter, visited, results)

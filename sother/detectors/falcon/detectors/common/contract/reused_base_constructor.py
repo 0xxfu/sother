@@ -2,7 +2,7 @@
 Module detecting re-used base constructors in inheritance hierarchy.
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 
 
 # Helper: adds explicitly called constructors with arguments to the results lookup.
@@ -13,7 +13,9 @@ def _add_constructors_with_args(
         if len(explicit_base_constructor.parameters) > 0:
             if explicit_base_constructor not in results:
                 results[explicit_base_constructor] = []
-            results[explicit_base_constructor] += [(current_contract, called_by_constructor)]
+            results[explicit_base_constructor] += [
+                (current_contract, called_by_constructor)
+            ]
 
 
 class ReusedBaseConstructor(AbstractDetector):
@@ -85,7 +87,6 @@ The constructor of `A` is called multiple times in `D` and `E`:
 
         # Loop until there are no queued contracts left.
         while len(queued_contracts) > 0:
-
             # Pop a contract off the front of the queue, if it has already been processed, we stop.
             current_contract = queued_contracts.pop(0)
             if current_contract in processed_contracts:
@@ -127,14 +128,18 @@ The constructor of `A` is called multiple times in `D` and `E`:
         results = []
 
         # The bug is not possible with solc >= 0.5.0
-        if self.compilation_unit.solc_version and not self.compilation_unit.solc_version.startswith("0.4."):
+        if (
+            self.compilation_unit.solc_version
+            and not self.compilation_unit.solc_version.startswith("0.4.")
+        ):
             return []
 
         # Loop for each contract
         for contract in self.contracts:
-
             # Detect all locations which all underlying base constructors with arguments were called from.
-            called_base_constructors = self._detect_explicitly_called_base_constructors(contract)
+            called_base_constructors = self._detect_explicitly_called_base_constructors(
+                contract
+            )
             for base_constructor, call_list in called_base_constructors.items():
                 # Only report if there are multiple calls to the same base constructor.
                 if len(call_list) <= 1:
@@ -148,7 +153,7 @@ The constructor of `A` is called multiple times in `D` and `E`:
                     " arguments more than once in inheritance hierarchy:\n",
                 ]
 
-                for (calling_contract, called_by_constructor) in call_list:
+                for calling_contract, called_by_constructor in call_list:
                     info += [
                         "\t- From ",
                         calling_contract,

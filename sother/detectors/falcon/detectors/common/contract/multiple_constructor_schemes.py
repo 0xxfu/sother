@@ -1,4 +1,4 @@
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 
 
 class MultipleConstructorSchemes(AbstractDetector):
@@ -15,9 +15,7 @@ class MultipleConstructorSchemes(AbstractDetector):
     WIKI = " "
 
     WIKI_TITLE = "Multiple constructor schemes"
-    WIKI_DESCRIPTION = (
-        "Detect multiple constructor definitions in the same contract (using new and old schemes)."
-    )
+    WIKI_DESCRIPTION = "Detect multiple constructor definitions in the same contract (using new and old schemes)."
 
     # region wiki_exploit_scenario
     WIKI_EXPLOIT_SCENARIO = """
@@ -49,11 +47,16 @@ In Solidity [0.4.22](https://github.com/ethereum/solidity/releases/tag/v0.4.23),
         results = []
         for contract in self.contracts:
             # Obtain any constructors defined in this contract
-            constructors = [f for f in contract.constructors if f.contract_declarer == contract]
+            constructors = [
+                f for f in contract.constructors if f.contract_declarer == contract
+            ]
 
             # If there is more than one, we encountered the described issue occurring.
             if constructors and len(constructors) > 1:
-                info = [contract, " contains multiple constructors in the same contract:\n"]
+                info = [
+                    contract,
+                    " contains multiple constructors in the same contract:\n",
+                ]
                 for constructor in constructors:
                     info += ["\t- ", constructor, "\n"]
 

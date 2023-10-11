@@ -2,10 +2,10 @@
 Module detecting public mappings with nested variables (returns incorrect values prior to 0.5.x)
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.core.solidity_types.mapping_type import MappingType
-from falcon.core.solidity_types.user_defined_type import UserDefinedType
-from falcon.core.declarations.structure import Structure
+from slither.core.declarations.structure import Structure
+from slither.core.solidity_types.mapping_type import MappingType
+from slither.core.solidity_types.user_defined_type import UserDefinedType
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 
 
 def detect_public_nested_mappings(contract):
@@ -28,9 +28,9 @@ def detect_public_nested_mappings(contract):
             continue
 
         # Verify the value type is a user defined type (struct)
-        if not isinstance(state_variable.type.type_to, UserDefinedType) or not isinstance(
-            state_variable.type.type_to.type, Structure
-        ):
+        if not isinstance(
+            state_variable.type.type_to, UserDefinedType
+        ) or not isinstance(state_variable.type.type_to.type, Structure):
             continue
 
         # Obtain the struct
@@ -72,11 +72,15 @@ class PublicMappingNested(AbstractDetector):
         """
         results = []
 
-        if self.compilation_unit.solc_version and self.compilation_unit.solc_version >= "0.5.0":
+        if (
+            self.compilation_unit.solc_version
+            and self.compilation_unit.solc_version >= "0.5.0"
+        ):
             return []
 
-        if self.compilation_unit.solc_version and self.compilation_unit.solc_version.startswith(
-            "0.5."
+        if (
+            self.compilation_unit.solc_version
+            and self.compilation_unit.solc_version.startswith("0.5.")
         ):
             return []
 
@@ -84,7 +88,10 @@ class PublicMappingNested(AbstractDetector):
             public_nested_mappings = detect_public_nested_mappings(contract)
             if public_nested_mappings:
                 for public_nested_mapping in public_nested_mappings:
-                    info = [public_nested_mapping, " is a public mapping with nested variables\n"]
+                    info = [
+                        public_nested_mapping,
+                        " is a public mapping with nested variables\n",
+                    ]
                     json = self.generate_result(info)
                     results.append(json)
 

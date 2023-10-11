@@ -3,9 +3,10 @@ Detect false deposit risk in erc20 contracts.
 If there is no require or assert statment in transfer or transferFrom, it may lead to false deposit.
 """
 
-from falcon.utils.modifier_utils import ModifierUtil
-from falcon.core.declarations import FunctionContract
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.core.declarations import FunctionContract
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+
+from sother.detectors.falcon.utils.modifier_utils import ModifierUtil
 
 
 class UnnecessaryReentrancyLock(AbstractDetector):
@@ -18,7 +19,7 @@ class UnnecessaryReentrancyLock(AbstractDetector):
     IMPACT = DetectorClassification.OPTIMIZATION
     CONFIDENCE = DetectorClassification.HIGH
 
-    WIKI = "http://"  # private repo does not have wiki page 
+    WIKI = "http://"  # private repo does not have wiki page
 
     WIKI_TITLE = "If there has no call in the function, the reentrancy lock is unnecessary, can be replaced by the require logic"
     WIKI_DESCRIPTION = "If there has no call in the function, the reentrancy lock is unnecessary, can be replaced by the require logic"
@@ -29,14 +30,14 @@ class UnnecessaryReentrancyLock(AbstractDetector):
 if there has no call in the function, the reentrancy lock is unnecessary, can be replaced by the require logic."""
     # endregion wiki_exploit_scenario
 
-    WIKI_RECOMMENDATION = (
-        "Remove deletion logic for storage variable"
-    )
+    WIKI_RECOMMENDATION = "Remove deletion logic for storage variable"
 
     @staticmethod
     def unnecessary_reentrancy_lock_detection(f: FunctionContract):
         ret = []
-        if len(f.calls_as_expressions) == len(f.modifiers)+1 and len(f.modifiers)>0:# include modifiers and tuple()， which means no external calls
+        if (
+            len(f.calls_as_expressions) == len(f.modifiers) + 1 and len(f.modifiers) > 0
+        ):  # include modifiers and tuple()， which means no external calls
             for mod in f.modifiers:
                 if ModifierUtil.is_reentrancy_lock(mod):
                     ret.append(f)
@@ -45,7 +46,7 @@ if there has no call in the function, the reentrancy lock is unnecessary, can be
     def _detect(self):
         results = []
         for c in self.compilation_unit.contracts_derived:
-            contract_info = ["unnecessary reentrancy lock found in", c.name, '\n']
+            contract_info = ["unnecessary reentrancy lock found in", c.name, "\n"]
             for f in c.functions:
                 if not any("initializer" in mod.name.lower() for mod in f.modifiers):
                     ret = self.unnecessary_reentrancy_lock_detection(f)

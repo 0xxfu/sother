@@ -1,14 +1,19 @@
 """
 Module detecting misuse of Boolean constants
 """
-from falcon.core.cfg.node import NodeType
-from falcon.core.solidity_types import ElementaryType
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import (
+from slither.core.cfg.node import NodeType
+from slither.core.solidity_types import ElementaryType
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import (
     Binary,
-    BinaryType, Condition, Assignment, Call, Return, InitArray,
+    BinaryType,
+    Condition,
+    Assignment,
+    Call,
+    Return,
+    InitArray,
 )
-from falcon.ir.variables import Constant
+from slither.slithir.variables import Constant
 
 
 class BooleanEquality(AbstractDetector):
@@ -46,7 +51,6 @@ Boolean constants can be used directly and do not need to be compare to `true` o
 
     @staticmethod
     def _detect_boolean_equality(contract):
-
         # Create our result set.
         results = []
 
@@ -86,12 +90,11 @@ Boolean constants can be used directly and do not need to be compare to `true` o
 
             # Loop for every node in this function, looking for boolean constants
             for node in function.nodes:
-
                 # Do not report "while(true)"
                 if node.type == NodeType.IFLOOP and node.irs and len(node.irs) == 1:
                     ir = node.irs[0]
                     if isinstance(ir, Condition) and ir.value == Constant(
-                            "True", ElementaryType("bool")
+                        "True", ElementaryType("bool")
                     ):
                         continue
 
@@ -122,7 +125,7 @@ Boolean constants can be used directly and do not need to be compare to `true` o
         results = []
         for contract in self.contracts:
             boolean_constant_misuses = self._detect_boolean_equality(contract)
-            for (func, nodes) in boolean_constant_misuses:
+            for func, nodes in boolean_constant_misuses:
                 for node in nodes:
                     info = [
                         func,
@@ -133,7 +136,7 @@ Boolean constants can be used directly and do not need to be compare to `true` o
 
                     res = self.generate_result(info)
                     results.append(res)
-            for (func, nodes) in boolean_constant_misuses:
+            for func, nodes in boolean_constant_misuses:
                 for node in nodes:
                     info = [
                         func,

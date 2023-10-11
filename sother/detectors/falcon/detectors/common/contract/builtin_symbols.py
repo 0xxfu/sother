@@ -2,7 +2,7 @@
 Module detecting reserved keyword shadowing
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 
 
 class BuiltinSymbolShadowing(AbstractDetector):

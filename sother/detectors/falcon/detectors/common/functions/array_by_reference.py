@@ -2,12 +2,12 @@
 Detects the passing of arrays located in memory to functions which expect to modify arrays via storage reference.
 """
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.core.solidity_types.array_type import ArrayType
-from falcon.core.variables.state_variable import StateVariable
-from falcon.core.variables.local_variable import LocalVariable
-from falcon.ir.operations.high_level_call import HighLevelCall
-from falcon.ir.operations.internal_call import InternalCall
+from slither.core.solidity_types.array_type import ArrayType
+from slither.core.variables.local_variable import LocalVariable
+from slither.core.variables.state_variable import StateVariable
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations.high_level_call import HighLevelCall
+from slither.slithir.operations.internal_call import InternalCall
 
 
 class ArrayByReference(AbstractDetector):
@@ -67,7 +67,6 @@ As a result, Bob's usage of the contract is incorrect."""
         # Loop through all functions in all contracts.
         for contract in contracts:
             for function in contract.functions_declared:
-
                 # Skip any constructor functions.
                 if function.is_constructor:
                     continue
@@ -75,7 +74,10 @@ As a result, Bob's usage of the contract is incorrect."""
                 # Determine if this function takes an array as a parameter and the location isn't storage.
                 # If it has been written to, we know this sets an non-storage-ref array.
                 for param in function.parameters:
-                    if isinstance(param.type, ArrayType) and param.location != "storage":
+                    if (
+                        isinstance(param.type, ArrayType)
+                        and param.location != "storage"
+                    ):
                         if param in function.variables_written:
                             results.add(function)
                             break
@@ -105,7 +107,6 @@ As a result, Bob's usage of the contract is incorrect."""
         for contract in contracts:
             for function in contract.functions_and_modifiers_declared:
                 for node in function.nodes:
-
                     # If this node has no expression, skip it.
                     if not node.expression:
                         continue
@@ -129,7 +130,8 @@ As a result, Bob's usage of the contract is incorrect."""
 
                             # If it is a state variable OR a local variable referencing storage, we add it to the list.
                             if isinstance(arg, StateVariable) or (
-                                isinstance(arg, LocalVariable) and arg.location == "storage"
+                                isinstance(arg, LocalVariable)
+                                and arg.location == "storage"
                             ):
                                 results.append((node, arg, ir.function))
         return results

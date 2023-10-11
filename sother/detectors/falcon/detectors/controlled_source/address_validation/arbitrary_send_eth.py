@@ -57,24 +57,24 @@ def arbitrary_send(func: Function, c: Contract):
         for ir in node.irs:
             if isinstance(ir, SolidityCall):
                 if ir.function == SolidityFunction(
-                    "ecrecover(bytes32,uint8,bytes32,bytes32)"
+                        "ecrecover(bytes32,uint8,bytes32,bytes32)"
                 ):
                     return False
             if isinstance(ir, Index):
                 if ir.variable_right == SolidityVariableComposed("msg.sender"):
                     return False
                 if is_dependent(
-                    ir.variable_right,
-                    SolidityVariableComposed("msg.sender"),
-                    func.contract,
+                        ir.variable_right,
+                        SolidityVariableComposed("msg.sender"),
+                        func.contract,
                 ):
                     return False
             if isinstance(ir, (HighLevelCall, LowLevelCall, Transfer, Send)):
                 if isinstance(ir, (HighLevelCall)):
                     if isinstance(ir.function, Function):
                         if (
-                            ir.function.full_name
-                            == "transferFrom(address,address,uint256)"
+                                ir.function.full_name
+                                == "transferFrom(address,address,uint256)"
                         ):
                             return False
                 if ir.call_value is None:
@@ -82,9 +82,9 @@ def arbitrary_send(func: Function, c: Contract):
                 if ir.call_value == SolidityVariableComposed("msg.value"):
                     continue
                 if is_dependent(
-                    ir.call_value,
-                    SolidityVariableComposed("msg.value"),
-                    func.contract,
+                        ir.call_value,
+                        SolidityVariableComposed("msg.value"),
+                        func.contract,
                 ):
                     continue
 

@@ -1,9 +1,9 @@
 import re
 
-from falcon.analyses.data_dependency.data_dependency import is_tainted
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import Binary
-from falcon.ir.variables.reference import ReferenceVariable
+from slither.analyses.data_dependency.data_dependency import is_tainted
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import Binary
+from slither.slithir.variables.reference import ReferenceVariable
 
 PATTERN = re.compile(r"(\^|>|>=|<|<=)?([ ]+)?(\d+)\.(\d+)\.(\d+)")
 
@@ -13,7 +13,7 @@ class IntegerUnderflow(AbstractDetector):
     Detect contracts that may contain integer overflow in its functions
     """
 
-    ARGUMENT = "integer-underflow"  # falcon will launch the detector with falcon.py --mydetector
+    ARGUMENT = "integer-underflow"  # slither will launch the detector with slither.py --mydetector
     HELP = "contract needs to check if the function input incase of integer underflow or overflow"
     IMPACT = DetectorClassification.HIGH
     CONFIDENCE = DetectorClassification.HIGH

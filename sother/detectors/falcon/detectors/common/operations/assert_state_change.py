@@ -1,8 +1,8 @@
 """
 Module detecting state changes in assert calls
 """
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations.internal_call import InternalCall
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations.internal_call import InternalCall
 
 
 def detect_assert_state_change(contract):
@@ -28,7 +28,8 @@ def detect_assert_state_change(contract):
                 any(
                     ir
                     for ir in node.irs
-                    if isinstance(ir, InternalCall) and ir.function.state_variables_written
+                    if isinstance(ir, InternalCall)
+                    and ir.function.state_variables_written
                 )
             ):
                 results.append((function, node))
@@ -76,7 +77,7 @@ The assert in `bad()` increments the state variable `s_a` while checking for the
         results = []
         for contract in self.contracts:
             assert_state_change = detect_assert_state_change(contract)
-            for (func, node) in assert_state_change:
+            for func, node in assert_state_change:
                 info = [func, " has an assert() call which possibly changes state.\n"]
                 info += ["\t-", node, "\n"]
                 info += [

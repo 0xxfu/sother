@@ -1,19 +1,20 @@
 # -*- coding:utf-8 -*-
 from typing import List
 
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.utils.modifier_utils import ModifierUtil
-from falcon.utils.output import Output
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.utils.output import Output
+
+from sother.detectors.falcon.utils.modifier_utils import ModifierUtil
 
 
 class PublicMintBurnDetector(AbstractDetector):
     ARGUMENT = "public-mint-burn"
 
-    HELP = ' '
+    HELP = " "
     IMPACT = DetectorClassification.MEDIUM
     CONFIDENCE = DetectorClassification.MEDIUM
 
-    WIKI = 'check public mint method'
+    WIKI = "check public mint method"
     WIKI_TITLE = WIKI
     WIKI_DESCRIPTION = WIKI_TITLE
     WIKI_RECOMMENDATION = WIKI_TITLE
@@ -28,14 +29,23 @@ class PublicMintBurnDetector(AbstractDetector):
             for func in contract.functions:
                 if any("revert()" in str(node) for node in func.nodes):
                     continue
-                if func.is_constructor or func.is_fallback \
-                        or func.is_receive or func.view or func.pure \
-                        or not func.entry_point:
+                if (
+                    func.is_constructor
+                    or func.is_fallback
+                    or func.is_receive
+                    or func.view
+                    or func.pure
+                    or not func.entry_point
+                ):
                     continue
 
-                if func.name in ['mint', 'burn'] and \
-                        func.entry_point is not None and \
-                        func.visibility in ['external', 'public'] and \
-                        not ModifierUtil._has_msg_sender_check_new(func):
-                    results.append(self.generate_result(['public mint or burn found in ', func]))
+                if (
+                    func.name in ["mint", "burn"]
+                    and func.entry_point is not None
+                    and func.visibility in ["external", "public"]
+                    and not ModifierUtil._has_msg_sender_check_new(func)
+                ):
+                    results.append(
+                        self.generate_result(["public mint or burn found in ", func])
+                    )
         return results
