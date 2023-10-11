@@ -6,9 +6,9 @@
 """
 from collections import namedtuple, defaultdict
 
-from falcon.detectors.abstract_detector import DetectorClassification
-from falcon.utils.ReentrancyUtil import ReentrancyUtil
+from slither.detectors.abstract_detector import DetectorClassification
 
+from sother.detectors.falcon.utils.ReentrancyUtil import ReentrancyUtil
 from .reentrancy import Reentrancy, to_hashable
 
 FindingKey = namedtuple("FindingKey", ["function", "calls"])

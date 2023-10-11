@@ -6,11 +6,11 @@
 """
 from collections import namedtuple, defaultdict
 
-from falcon.core.variables.variable import Variable
-from falcon.detectors.abstract_detector import DetectorClassification
-from falcon.ir.operations import Send, Transfer, EventCall
+from slither.detectors.abstract_detector import DetectorClassification
+from slither.slithir.operations import Send, Transfer
+
+from sother.detectors.falcon.utils.ReentrancyUtil import ReentrancyUtil
 from .reentrancy import Reentrancy, to_hashable
-from falcon.utils.ReentrancyUtil import ReentrancyUtil
 
 FindingKey = namedtuple("FindingKey", ["function", "calls", "send_eth"])
 FindingValue = namedtuple("FindingValue", ["variable", "node", "nodes"])
@@ -61,7 +61,10 @@ Only report reentrancy that is based on `transfer` or `send`."""
     def find_reentrancies(self):
         result = defaultdict(set)
         for contract in self.contracts:
-            if contract.is_library or contract.name.lower() in ReentrancyUtil.skiped_contract_name:
+            if (
+                contract.is_library
+                or contract.name.lower() in ReentrancyUtil.skiped_contract_name
+            ):
                 continue
             for f in contract.functions_and_modifiers_declared:
                 for node in f.nodes:
@@ -113,14 +116,14 @@ Only report reentrancy that is based on `transfer` or `send`."""
             info = ["Reentrancy in ", func, ":\n"]
 
             info += ["\tExternal calls:\n"]
-            for (call_info, calls_list) in calls:
+            for call_info, calls_list in calls:
                 info += ["\t- ", call_info, "\n"]
                 for call_list_info in calls_list:
                     if call_list_info != call_info:
                         info += ["\t\t- ", call_list_info, "\n"]
             if calls != send_eth and send_eth:
                 info += ["\tExternal calls sending eth:\n"]
-                for (call_info, calls_list) in send_eth:
+                for call_info, calls_list in send_eth:
                     info += ["\t- ", call_info, "\n"]
                     for call_list_info in calls_list:
                         if call_list_info != call_info:
@@ -133,7 +136,7 @@ Only report reentrancy that is based on `transfer` or `send`."""
             res.add(func)
 
             # Add all underlying calls in the function which are potentially problematic.
-            for (call_info, calls_list) in calls:
+            for call_info, calls_list in calls:
                 res.add(call_info, {"underlying_type": "external_calls"})
                 for call_list_info in calls_list:
                     if call_list_info != call_info:
@@ -146,8 +149,10 @@ Only report reentrancy that is based on `transfer` or `send`."""
 
             # If the calls are not the same ones that send eth, add the eth sending nodes.
             if calls != send_eth:
-                for (call_info, calls_list) in send_eth:
-                    res.add(call_info, {"underlying_type": "external_calls_sending_eth"})
+                for call_info, calls_list in send_eth:
+                    res.add(
+                        call_info, {"underlying_type": "external_calls_sending_eth"}
+                    )
                     for call_list_info in calls_list:
                         if call_list_info != call_info:
                             res.add(

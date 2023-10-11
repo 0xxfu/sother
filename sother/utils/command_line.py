@@ -13,7 +13,7 @@ from slither.detectors.abstract_detector import (
     classification_txt,
     DetectorClassification,
 )
-from slither.utils.colors import blue, green
+from slither.utils.colors import blue, green, yellow
 
 from sother.detectors import get_all_detectors, get_detectors
 from sother.detectors.falcon.detectors import all_detectors as falcon_all_detectors
@@ -31,6 +31,9 @@ def output_detector_stats(detectors: list[Type[AbstractDetector]]) -> None:
     for item in impacts:
         print(f"{classification_txt[item]}: {len(impact_detectors[item])}")
     print(green(f"Total: {len(detectors)}"))
+    for item in detectors:
+        if not isinstance(item.IMPACT, DetectorClassification):
+            print(yellow(f"{item.__name__} {item.ARGUMENT}"))
 
 
 def output_stats():
