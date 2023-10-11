@@ -1,12 +1,10 @@
 from typing import List, Optional
+
 from falcon.core.cfg.node import NodeType, Node
+from falcon.core.declarations import SolidityVariableComposed, Contract
 from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
 from falcon.ir.operations import InternalCall
-from falcon.core.declarations import SolidityVariableComposed, Contract
-from falcon.ir.operations.binary import BinaryType
 from falcon.utils.output import Output
-from falcon.ir.operations import Binary
-
 
 
 def detect_msg_value_in_loop(contract: Contract) -> List[Node]:
@@ -20,7 +18,6 @@ def detect_msg_value_in_loop(contract: Contract) -> List[Node]:
 def msg_value_in_loop(
     node: Optional[Node], in_loop_counter: int, visited: List[Node], results: List[Node]
 ) -> None:
-
     if node is None:
         return
 
@@ -28,7 +25,7 @@ def msg_value_in_loop(
         return
     # shared visited
     visited.append(node)
-    
+
     if node.type == NodeType.STARTLOOP:
         in_loop_counter += 1
     elif node.type == NodeType.ENDLOOP:
@@ -36,11 +33,15 @@ def msg_value_in_loop(
 
     for ir in node.all_falconir_operations():
         if in_loop_counter > 0 and SolidityVariableComposed("msg.value") in ir.read:
-            if len(node.variables_written)>0 and "IF_LOOP" not in str(node):# 当使用msg.value时，必须涉及到storage写入才行
-            # if not (ir.type in [BinaryType.EQUAL, BinaryType.NOT_EQUAL,BinaryType.GREATER, BinaryType.LESS,BinaryType.GREATER_EQUAL,BinaryType.LESS_EQUAL]):
+            if len(node.variables_written) > 0 and "IF_LOOP" not in str(
+                node
+            ):  # 当使用msg.value时，必须涉及到storage写入才行
+                # if not (ir.type in [BinaryType.EQUAL, BinaryType.NOT_EQUAL,BinaryType.GREATER, BinaryType.LESS,BinaryType.GREATER_EQUAL,BinaryType.LESS_EQUAL]):
                 results.append(ir.node)
         if isinstance(ir, (InternalCall)):
-            msg_value_in_loop(ir.function.entry_point, in_loop_counter, visited, results)
+            msg_value_in_loop(
+                ir.function.entry_point, in_loop_counter, visited, results
+            )
 
     for son in node.sons:
         msg_value_in_loop(son, in_loop_counter, visited, results)
@@ -53,7 +54,7 @@ class MsgValueInLoop(AbstractDetector):
 
     ARGUMENT = "dangerous-msg-value-usage"
     HELP = "msg.value inside a loop"
-    IMPACT = DetectorClassification.CRITICAL
+    IMPACT = DetectorClassification.HIGH
     CONFIDENCE = DetectorClassification.MEDIUM
 
     WIKI = " "

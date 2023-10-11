@@ -11,18 +11,19 @@
 """
 from typing import List
 
-from falcon.core.cfg.node import Node
-from falcon.core.declarations import Function, Contract
-from falcon.analyses.data_dependency.data_dependency import is_tainted, is_dependent
-from falcon.core.declarations.function_contract import FunctionContract
-from falcon.core.declarations.solidity_variables import (
+# todo replace utils
+from falcon.utils.function_permission_check import (
+    function_has_caller_check,
+)
+from slither.analyses.data_dependency.data_dependency import is_tainted, is_dependent
+from slither.core.cfg.node import Node
+from slither.core.declarations import Function, Contract
+from slither.core.declarations.solidity_variables import (
     SolidityFunction,
     SolidityVariableComposed,
 )
-from falcon.core.expressions import CallExpression, Identifier
-from falcon.utils.function_permission_check import function_has_caller_check, function_can_only_initialized_once
-from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from falcon.ir.operations import (
+from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.slithir.operations import (
     HighLevelCall,
     Index,
     LowLevelCall,
@@ -30,20 +31,17 @@ from falcon.ir.operations import (
     SolidityCall,
     Transfer,
 )
-
-
 # pylint: disable=too-many-nested-blocks,too-many-branches
-from falcon.utils.output import Output
+from slither.utils.output import Output
 
 
-def arbitrary_send(func: Function,c:Contract):
+def arbitrary_send(func: Function, c: Contract):
     if func.is_protected():
         return []
     if function_has_caller_check(func):
         return []
     ret: List[Node] = []
-    input_and_require_param=[]
-
+    input_and_require_param = []
 
     # for node in func.nodes:
     #     if ("require" in str(node) or "assert" in str(node)) and ".call" not in str(node):
@@ -58,7 +56,9 @@ def arbitrary_send(func: Function,c:Contract):
             continue
         for ir in node.irs:
             if isinstance(ir, SolidityCall):
-                if ir.function == SolidityFunction("ecrecover(bytes32,uint8,bytes32,bytes32)"):
+                if ir.function == SolidityFunction(
+                    "ecrecover(bytes32,uint8,bytes32,bytes32)"
+                ):
                     return False
             if isinstance(ir, Index):
                 if ir.variable_right == SolidityVariableComposed("msg.sender"):
@@ -72,7 +72,10 @@ def arbitrary_send(func: Function,c:Contract):
             if isinstance(ir, (HighLevelCall, LowLevelCall, Transfer, Send)):
                 if isinstance(ir, (HighLevelCall)):
                     if isinstance(ir.function, Function):
-                        if ir.function.full_name == "transferFrom(address,address,uint256)":
+                        if (
+                            ir.function.full_name
+                            == "transferFrom(address,address,uint256)"
+                        ):
                             return False
                 if ir.call_value is None:
                     continue
@@ -89,7 +92,8 @@ def arbitrary_send(func: Function,c:Contract):
                     ret.append(node)
 
     return ret
-    
+
+
 def detect_arbitrary_send(contract: Contract):
     """
         Detect arbitrary send
@@ -100,20 +104,24 @@ def detect_arbitrary_send(contract: Contract):
     """
     ret = []
     for f in [f for f in contract.functions if f.contract_declarer == contract]:
-        nodes = arbitrary_send(f,contract)
+        nodes = arbitrary_send(f, contract)
         if nodes:
             ret.append((f, nodes))
     return ret
+
+
 class ArbitrarySendEth(AbstractDetector):
     ARGUMENT = "arbitrary-transfer"
     HELP = "Functions that send Ether to arbitrary destinations"
-    IMPACT = DetectorClassification.CRITICAL
+    IMPACT = DetectorClassification.HIGH
     CONFIDENCE = DetectorClassification.MEDIUM
 
     WIKI = " "
 
     WIKI_TITLE = "Functions that send Ether to arbitrary destinations"
-    WIKI_DESCRIPTION = "Unprotected call to a function sending Ether to an arbitrary address."
+    WIKI_DESCRIPTION = (
+        "Unprotected call to a function sending Ether to an arbitrary address."
+    )
 
     # region wiki_exploit_scenario
     WIKI_EXPLOIT_SCENARIO = """
@@ -132,19 +140,19 @@ contract ArbitrarySendEth{
 Bob calls `setDestination` and `withdraw`. As a result he withdraws the contract's balance."""
     # endregion wiki_exploit_scenario
 
-    WIKI_RECOMMENDATION = "Ensure that an arbitrary user cannot withdraw unauthorized funds."
-
+    WIKI_RECOMMENDATION = (
+        "Ensure that an arbitrary user cannot withdraw unauthorized funds."
+    )
 
     def _detect(self) -> List[Output]:
         """"""
         results = []
 
         for c in self.contracts:
-            if c.contract_kind=="library":
+            if c.contract_kind == "library":
                 continue
             arbitrary_send_result = detect_arbitrary_send(c)
-            for (func, nodes) in arbitrary_send_result:
-
+            for func, nodes in arbitrary_send_result:
                 info = [func, " sends eth to arbitrary user\n"]
                 info += ["\tDangerous calls:\n"]
 

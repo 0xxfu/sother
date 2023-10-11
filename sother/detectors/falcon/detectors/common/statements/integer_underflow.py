@@ -15,7 +15,7 @@ class IntegerUnderflow(AbstractDetector):
 
     ARGUMENT = "integer-underflow"  # falcon will launch the detector with falcon.py --mydetector
     HELP = "contract needs to check if the function input incase of integer underflow or overflow"
-    IMPACT = DetectorClassification.CRITICAL
+    IMPACT = DetectorClassification.HIGH
     CONFIDENCE = DetectorClassification.HIGH
 
     WIKI = "https://swcregistry.io/docs/SWC-101"
@@ -44,10 +44,15 @@ class IntegerUnderflow(AbstractDetector):
 
         pragma_version_gte8_map = {}
         for pragma_directive in self.compilation_unit.pragma_directives:
-            if not pragma_directive.is_solidity_version or len(pragma_directive.directive) < 1:
+            if (
+                not pragma_directive.is_solidity_version
+                or len(pragma_directive.directive) < 1
+            ):
                 return results
             version = pragma_directive.version
-            pragma_version_gte8_map[str(pragma_directive.scope)] = self.version_gte8(version)
+            pragma_version_gte8_map[str(pragma_directive.scope)] = self.version_gte8(
+                version
+            )
 
         # need to check
         for contract in self.compilation_unit.contracts:
@@ -55,7 +60,7 @@ class IntegerUnderflow(AbstractDetector):
                 continue
             if pragma_version_gte8_map.get(str(contract.file_scope)):
                 continue
-            
+
             for fn in contract.functions_declared:
                 if "remove" in fn.name:
                     continue
@@ -81,7 +86,11 @@ class IntegerUnderflow(AbstractDetector):
                                             has_tainted_int_result = True
                                             tainted_node = node
                                             break
-                                        if is_tainted(lvar.points_to_origin, fn, only_unprotected=True):
+                                        if is_tainted(
+                                            lvar.points_to_origin,
+                                            fn,
+                                            only_unprotected=True,
+                                        ):
                                             has_tainted_int_result = True
                                             tainted_node = node
                                             break
@@ -90,26 +99,45 @@ class IntegerUnderflow(AbstractDetector):
                                             has_tainted_int_result = True
                                             tainted_node = node
                                             break
-                                        if is_tainted(rvar.points_to_origin, fn, only_unprotected=True):
+                                        if is_tainted(
+                                            rvar.points_to_origin,
+                                            fn,
+                                            only_unprotected=True,
+                                        ):
                                             has_tainted_int_result = True
                                             tainted_node = node
                                             break
 
                     if has_tainted_int_result:
-                        var_read=tainted_node.variables_read
-                        state_var_read=tainted_node.state_variables_read
-                        var_flag=0
-                        state_var_flag=0
+                        var_read = tainted_node.variables_read
+                        state_var_read = tainted_node.state_variables_read
+                        var_flag = 0
+                        state_var_flag = 0
                         for var in var_read:
                             for n in fn.nodes:
-                                if "require" in str(n) and var in n.variables_read and any(isinstance(ir,Binary) for ir in n.irs):
-                                    var_flag+=1
+                                if (
+                                    "require" in str(n)
+                                    and var in n.variables_read
+                                    and any(isinstance(ir, Binary) for ir in n.irs)
+                                ):
+                                    var_flag += 1
                         for state_var in state_var_read:
                             for n in fn.nodes:
-                                if "require" in str(n) and state_var in n.state_variables_read and any(isinstance(ir,Binary) for ir in n.irs):
-                                    state_var_flag+=1
-                        if not (var_flag==len(var_read) and state_var_flag==len(state_var_read)):
-                            info = [fn.full_name, " has possible integer overflow/underflow:", "\n"]
+                                if (
+                                    "require" in str(n)
+                                    and state_var in n.state_variables_read
+                                    and any(isinstance(ir, Binary) for ir in n.irs)
+                                ):
+                                    state_var_flag += 1
+                        if not (
+                            var_flag == len(var_read)
+                            and state_var_flag == len(state_var_read)
+                        ):
+                            info = [
+                                fn.full_name,
+                                " has possible integer overflow/underflow:",
+                                "\n",
+                            ]
                             info += ["\t- ", tainted_node, "\n"]
                             res = self.generate_result(info)
                             results.append(res)

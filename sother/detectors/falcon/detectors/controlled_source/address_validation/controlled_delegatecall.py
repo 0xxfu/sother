@@ -1,8 +1,9 @@
+from falcon.analyses.data_dependency.data_dependency import is_tainted
+from falcon.core.variables.state_variable import StateVariable
 from falcon.detectors.abstract_detector import AbstractDetector, DetectorClassification
 from falcon.ir.operations import LowLevelCall
-from falcon.analyses.data_dependency.data_dependency import is_tainted
 from falcon.utils.modifier_utils import ModifierUtil
-from falcon.core.variables.state_variable import StateVariable
+
 
 def controlled_delegatecall(function):
     ret = []
@@ -15,22 +16,23 @@ def controlled_delegatecall(function):
                 "callcode",
             ]:
                 if is_tainted(ir.destination, function.contract):
-                    if not isinstance(ir.destination,StateVariable):
+                    if not isinstance(ir.destination, StateVariable):
                         ret.append(node)
     return ret
 
 
 class ControlledDelegateCall(AbstractDetector):
-
     ARGUMENT = "arbitrary-delegatecall"
     HELP = "Controlled delegatecall destination"
-    IMPACT = DetectorClassification.CRITICAL
+    IMPACT = DetectorClassification.HIGH
     CONFIDENCE = DetectorClassification.MEDIUM
 
     WIKI = " "
 
     WIKI_TITLE = "Controlled Delegatecall"
-    WIKI_DESCRIPTION = "`Delegatecall` or `callcode` to an address controlled by the user."
+    WIKI_DESCRIPTION = (
+        "`Delegatecall` or `callcode` to an address controlled by the user."
+    )
 
     # region wiki_exploit_scenario
     WIKI_EXPLOIT_SCENARIO = """
@@ -48,7 +50,7 @@ Bob calls `delegate` and delegates the execution to his malicious contract. As a
 
     def _detect(self):
         results = []
-        safe_contracts=['erc1967upgradeupgradeable']
+        safe_contracts = ["erc1967upgradeupgradeable"]
         for contract in self.compilation_unit.contracts_derived:
             if contract.name.lower() in safe_contracts:
                 continue

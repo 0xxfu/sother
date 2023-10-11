@@ -39,7 +39,9 @@ def collect_return_values_of_bad_PRNG_functions(f: Function) -> List:
     return values_returned
 
 
-def contains_bad_PRNG_sources(func: Function, blockhash_ret_values: List[Variable]) -> List[Node]:
+def contains_bad_PRNG_sources(
+    func: Function, blockhash_ret_values: List[Variable]
+) -> List[Node]:
     """
          Check if any node in function has a modulus operator and the first operand is dependent on block.timestamp, now or blockhash()
     Returns:
@@ -47,14 +49,25 @@ def contains_bad_PRNG_sources(func: Function, blockhash_ret_values: List[Variabl
     """
     ret = set()
     # # The rules here are relatively strict because false positives can only be filtered through semantic judgments such as random and seed.
-    if "random" in func.name.lower() or "seed" in func.name.lower() or any("random" in str(node).lower() or "seed" in str(node).lower() for node in func.nodes):
+    if (
+        "random" in func.name.lower()
+        or "seed" in func.name.lower()
+        or any(
+            "random" in str(node).lower() or "seed" in str(node).lower()
+            for node in func.nodes
+        )
+    ):
         # pylint: disable=too-many-nested-blocks
         for node in func.nodes:
             for ir in node.irs_ssa:
                 if isinstance(ir, Binary) and ir.type == BinaryType.MODULO:
                     if is_dependent_ssa(
-                        ir.variable_left, SolidityVariableComposed("block.timestamp"), func.contract
-                    ) or is_dependent_ssa(ir.variable_left, SolidityVariable("now"), func.contract):
+                        ir.variable_left,
+                        SolidityVariableComposed("block.timestamp"),
+                        func.contract,
+                    ) or is_dependent_ssa(
+                        ir.variable_left, SolidityVariable("now"), func.contract
+                    ):
                         ret.add(node)
                         break
 
@@ -90,7 +103,7 @@ class BadPRNG(AbstractDetector):
 
     ARGUMENT = "prng"
     HELP = "Weak PRNG"
-    IMPACT = DetectorClassification.CRITICAL
+    IMPACT = DetectorClassification.HIGH
     CONFIDENCE = DetectorClassification.MEDIUM
 
     WIKI = " "
@@ -125,9 +138,13 @@ As a result, Eve wins the game."""
         for c in self.compilation_unit.contracts_derived:
             values = detect_bad_PRNG(c)
             for func, nodes in values:
-
                 for node in nodes:
-                    info: List[AllSupportedOutput] = [func, ' uses a weak PRNG: "', node, '" \n']
+                    info: List[AllSupportedOutput] = [
+                        func,
+                        ' uses a weak PRNG: "',
+                        node,
+                        '" \n',
+                    ]
                     res = self.generate_result(info)
                     results.append(res)
 
