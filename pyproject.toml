@@ -13,6 +13,7 @@ click = "^8.1.6"
 slither-analyzer = { git = "https://github.com/0xxfu/slither-certik", branch = "certik" }
 #slither-analyzer = { git = "https://github.com/CertiKProject/slither-certik.git", branch = "certik" }
 #slitherin = { git = "https://github.com/0xxfu/slitherin.git", branch = "master" }
+falcon-analyzer = { git = "https://github.com/0xxfu/falcon-metatrust.git", branch = "main" }
 
 [tool.poetry.scripts]
 sother = "sother.main:start"
