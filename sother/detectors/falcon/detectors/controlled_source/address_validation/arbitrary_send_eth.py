@@ -31,6 +31,7 @@ from slither.slithir.operations import (
     SolidityCall,
     Transfer,
 )
+
 # pylint: disable=too-many-nested-blocks,too-many-branches
 from slither.utils.output import Output
 

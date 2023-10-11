@@ -32,24 +32,27 @@ def output_detector_stats(detectors: list[Type[AbstractDetector]]) -> None:
     print(green(f"Total: {len(detectors)}"))
 
 
+def output_stats():
+    print(blue("------ All ------"))
+    detectors = get_all_detectors()
+    output_detector_stats(detectors)
+
+    print(blue("\n------ Sother ------"))
+    detectors = get_detectors()
+    output_detector_stats(detectors)
+
+    print(blue("\n------ Slither ------"))
+    output_detector_stats(DetectorUtils.get_detectors_from_file(slither_all_detectors))
+
+    print(blue("\n------ Falcon ------"))
+    output_detector_stats(DetectorUtils.get_detectors_from_file(falcon_all_detectors))
+
+    print("\n")
+
+
 class CommandLineTestCase(unittest.TestCase):
     def test_stat_detectors(self):
-        print(blue("------ All ------"))
-        detectors = get_all_detectors()
-        output_detector_stats(detectors)
-
-        print(blue("\n------ Sother ------"))
-        detectors = get_detectors()
-        output_detector_stats(detectors)
-
-        print(blue("\n------ Slither ------"))
-        output_detector_stats(
-            DetectorUtils.get_detectors_from_file(slither_all_detectors)
-        )
-        print(blue("\n------ Falcon ------"))
-        output_detector_stats(
-            DetectorUtils.get_detectors_from_file(falcon_all_detectors)
-        )
+        output_stats()
 
 
 if __name__ == "__main__":
