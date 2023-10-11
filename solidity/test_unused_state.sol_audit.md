@@ -5,6 +5,14 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [H-0] | Uninitialized state variables | 1 |
+| [H-1] | State variable not initialized | 1 |
+
+
+### Medium Risk Issues
+
+|ID|Issues|Instances|
+|---|:---|:---:|
+| [M-0] | Void function | 1 |
 
 
 ### Low Risk Issues
@@ -12,6 +20,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [L-0] | Don't use `payable.transfer()`/`payable.send()` | 1 |
+| [L-1] | Missing Event Setter | 1 |
 
 
 ### Non-critical Issues
@@ -20,6 +29,7 @@
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 1 |
 | [N-1] | Conformance to Solidity naming conventions | 1 |
+| [N-2] | Unnecessary Public Function Modifier | 1 |
 
 
 ### Gas Optimizations
@@ -35,6 +45,7 @@
 | [G-6] | Empty blocks should be removed or emit something | 1 |
 | [G-7] | Use `delete` to Clear Variables | 3 |
 | [G-8] | State variables that could be declared constant | 2 |
+| [G-9] | State variables that could be declared constant | 2 |
 
 
 
@@ -75,6 +86,80 @@ High
 
 ### category
 uninitialized-state
+
+### confidence
+High
+
+## [High] State variable not initialized
+
+### description
+A state variable not initialized and not written in contract but be used in contract
+
+**There is `1` instance of this issue:**
+
+- state variable: [UnUsedState.destination](solidity/test_unused_state.sol#L2) not initialized and not written in contract but be used in contract
+
+#### Exploit scenario
+
+```solidity
+    struct BalancesStruct{
+        address owner;
+        array[]] balances;
+    }
+    array[] public stackBalance;
+
+    function remove() internal{
+         delete stackBalance[msg.sender];
+    }
+```
+`remove` deletes an item of `stackBalance`.
+The array `balances` is never deleted, so `remove` does not work as intended.
+
+### recommendation
+Use a lock mechanism instead of a deletion to disable structure containing a array.
+
+### locations
+- solidity/test_unused_state.sol#L2
+
+### severity
+High
+
+### category
+state-variable-not-initialized
+
+### confidence
+High
+
+## [Medium] Void function
+
+### description
+Detect the call to a function that is not implemented
+
+**There is `1` instance of this issue:**
+
+- function:[UnusedStruct.f0(UnusedStruct.StructUsedA)](solidity/test_unused_state.sol#L104)is empty 
+
+#### Exploit scenario
+
+```solidity
+contract A{}
+contract B is A{
+    constructor() public A(){}
+}
+```
+When reading `B`'s constructor definition, we might assume that `A()` initiates the contract, but no code is executed.
+
+### recommendation
+Implement the function
+
+### locations
+- solidity/test_unused_state.sol#L104
+
+### severity
+Medium
+
+### category
+void-function
 
 ### confidence
 High
@@ -126,6 +211,33 @@ payable-calls
 
 ### confidence
 High
+
+## [Low] Missing Event Setter
+
+### description
+Setter-functions must emit events
+
+**There is `1` instance of this issue:**
+
+- Setter function [UnusedLocalVar.notBad0()](solidity/test_unused_state.sol#L73-L76) does not emit an event
+
+#### Exploit scenario
+N/A
+
+### recommendation
+Emit events in setter functions
+
+### locations
+- solidity/test_unused_state.sol#L73-L76
+
+### severity
+Low
+
+### category
+pess-event-setter
+
+### confidence
+Medium
 
 ## [Informational] Incorrect versions of Solidity
 
@@ -190,6 +302,40 @@ Informational
 
 ### category
 naming-convention
+
+### confidence
+High
+
+## [Informational] Unnecessary Public Function Modifier
+
+### description
+Detect the public function which can be replaced with external
+
+**There is `1` instance of this issue:**
+
+- function:[UnUsedState.transfer()](solidity/test_unused_state.sol#L7-L9)is public and can be replaced with external 
+
+#### Exploit scenario
+
+```solidity
+contract A{}
+contract B is A{
+    constructor() public A(){}
+}
+```
+When reading `B`'s constructor definition, we might assume that `A()` initiates the contract, but no code is executed.
+
+### recommendation
+Replace public with external
+
+### locations
+- solidity/test_unused_state.sol#L7-L9
+
+### severity
+Informational
+
+### category
+unnecessary-public-function-modifier
 
 ### confidence
 High
@@ -325,8 +471,8 @@ Removing those variables can save deployment and called gas. and improve code qu
 **There are `2` instances of this issue:**
 
 - The local variables in [UnusedLocalVar.bad0()](solidity/test_unused_state.sol#L66-L71) are unused.
-	- [UnusedLocalVar.bad0().b](solidity/test_unused_state.sol#L68)
 	- [UnusedLocalVar.bad0().c](solidity/test_unused_state.sol#L69)
+	- [UnusedLocalVar.bad0().b](solidity/test_unused_state.sol#L68)
 
 - The local variables in [UnusedStruct.f1(uint256)](solidity/test_unused_state.sol#L106-L108) are unused.
 	- [UnusedStruct.f1(uint256).localB](solidity/test_unused_state.sol#L107)
@@ -518,6 +664,34 @@ Optimization
 
 ### category
 constable-states
+
+### confidence
+High
+
+## [Optimization] State variables that could be declared constant
+
+### description
+Constant state variables should be declared constant to save gas.
+
+**There are `2` instances of this issue:**
+
+- [UnUsedState.destination](solidity/test_unused_state.sol#L2) should be constant
+
+- [UnUsedState.unusedState](solidity/test_unused_state.sol#L4) should be constant
+
+
+### recommendation
+Add the `constant` attributes to state variables that never change.
+
+### locations
+- solidity/test_unused_state.sol#L2
+- solidity/test_unused_state.sol#L4
+
+### severity
+Optimization
+
+### category
+state-should-be-constant
 
 ### confidence
 High

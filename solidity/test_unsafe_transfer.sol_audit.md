@@ -6,6 +6,7 @@
 |---|:---|:---:|
 | [H-0] | Uninitialized state variables | 1 |
 | [H-1] | Arbitrary `from` in transferFrom | 1 |
+| [H-2] | State variable not initialized | 2 |
 
 
 ### Medium Risk Issues
@@ -30,6 +31,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 1 |
+| [N-1] | Unnecessary Public Function Modifier | 14 |
 
 
 ### Gas Optimizations
@@ -126,6 +128,49 @@ High
 
 ### category
 arbitrary-send-erc20
+
+### confidence
+High
+
+## [High] State variable not initialized
+
+### description
+A state variable not initialized and not written in contract but be used in contract
+
+**There are `2` instances of this issue:**
+
+- state variable: [UnsafeErc721Transfer.t](solidity/test_unsafe_transfer.sol#L28) not initialized and not written in contract but be used in contract
+
+- state variable: [UnsafeErc20Transfer.t](solidity/test_unsafe_transfer.sol#L48) not initialized and not written in contract but be used in contract
+
+#### Exploit scenario
+
+```solidity
+    struct BalancesStruct{
+        address owner;
+        array[]] balances;
+    }
+    array[] public stackBalance;
+
+    function remove() internal{
+         delete stackBalance[msg.sender];
+    }
+```
+`remove` deletes an item of `stackBalance`.
+The array `balances` is never deleted, so `remove` does not work as intended.
+
+### recommendation
+Use a lock mechanism instead of a deletion to disable structure containing a array.
+
+### locations
+- solidity/test_unsafe_transfer.sol#L28
+- solidity/test_unsafe_transfer.sol#L48
+
+### severity
+High
+
+### category
+state-variable-not-initialized
 
 ### confidence
 High
@@ -431,6 +476,79 @@ Informational
 
 ### category
 solc-version
+
+### confidence
+High
+
+## [Informational] Unnecessary Public Function Modifier
+
+### description
+Detect the public function which can be replaced with external
+
+**There are `14` instances of this issue:**
+
+- function:[UnsafeErc721Transfer.bad0(address,address,uint256)](solidity/test_unsafe_transfer.sol#L30-L36)is public and can be replaced with external 
+
+- function:[UnsafeErc721Transfer.good0(address,address,uint256)](solidity/test_unsafe_transfer.sol#L38-L44)is public and can be replaced with external 
+
+- function:[UnsafeErc20Transfer.bad0()](solidity/test_unsafe_transfer.sol#L51-L53)is public and can be replaced with external 
+
+- function:[UnsafeErc20Transfer.good0()](solidity/test_unsafe_transfer.sol#L55-L57)is public and can be replaced with external 
+
+- function:[UnsafeErc20Transfer.good1()](solidity/test_unsafe_transfer.sol#L59-L61)is public and can be replaced with external 
+
+- function:[UnsafeErc20Transfer.good2()](solidity/test_unsafe_transfer.sol#L63-L65)is public and can be replaced with external 
+
+- function:[UnsafeErc20Transfer.good3()](solidity/test_unsafe_transfer.sol#L67-L69)is public and can be replaced with external 
+
+- function:[UnsafeErc20Transfer.good4()](solidity/test_unsafe_transfer.sol#L71-L73)is public and can be replaced with external 
+
+- function:[UnsafeErc20Transfer.bad1()](solidity/test_unsafe_transfer.sol#L76-L78)is public and can be replaced with external 
+
+- function:[UnsafeErc20Transfer.good5()](solidity/test_unsafe_transfer.sol#L80-L82)is public and can be replaced with external 
+
+- function:[UnsafeErc20Transfer.good6()](solidity/test_unsafe_transfer.sol#L84-L86)is public and can be replaced with external 
+
+- function:[UnsafeErc20Transfer.good7()](solidity/test_unsafe_transfer.sol#L88-L90)is public and can be replaced with external 
+
+- function:[UnsafeErc20Transfer.good8()](solidity/test_unsafe_transfer.sol#L92-L94)is public and can be replaced with external 
+
+- function:[UnsafeErc20Transfer.good9()](solidity/test_unsafe_transfer.sol#L96-L98)is public and can be replaced with external 
+
+#### Exploit scenario
+
+```solidity
+contract A{}
+contract B is A{
+    constructor() public A(){}
+}
+```
+When reading `B`'s constructor definition, we might assume that `A()` initiates the contract, but no code is executed.
+
+### recommendation
+Replace public with external
+
+### locations
+- solidity/test_unsafe_transfer.sol#L30-L36
+- solidity/test_unsafe_transfer.sol#L38-L44
+- solidity/test_unsafe_transfer.sol#L51-L53
+- solidity/test_unsafe_transfer.sol#L55-L57
+- solidity/test_unsafe_transfer.sol#L59-L61
+- solidity/test_unsafe_transfer.sol#L63-L65
+- solidity/test_unsafe_transfer.sol#L67-L69
+- solidity/test_unsafe_transfer.sol#L71-L73
+- solidity/test_unsafe_transfer.sol#L76-L78
+- solidity/test_unsafe_transfer.sol#L80-L82
+- solidity/test_unsafe_transfer.sol#L84-L86
+- solidity/test_unsafe_transfer.sol#L88-L90
+- solidity/test_unsafe_transfer.sol#L92-L94
+- solidity/test_unsafe_transfer.sol#L96-L98
+
+### severity
+Informational
+
+### category
+unnecessary-public-function-modifier
 
 ### confidence
 High

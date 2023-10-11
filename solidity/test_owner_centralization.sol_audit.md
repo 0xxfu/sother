@@ -5,6 +5,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [H-0] | Uninitialized state variables | 2 |
+| [H-1] | State variable not initialized | 2 |
 
 
 ### Medium Risk Issues
@@ -12,6 +13,14 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [M-0] | The owner is a single point of failure and a centralization risk | 1 |
+| [M-1] | Void function | 4 |
+
+
+### Low Risk Issues
+
+|ID|Issues|Instances|
+|---|:---|:---:|
+| [L-0] | Missing Event Setter | 7 |
 
 
 ### Non-critical Issues
@@ -28,6 +37,7 @@
 | [G-0] | Functions guaranteed to revert when called by normal users can be marked `payable` | 4 |
 | [G-1] | Empty blocks should be removed or emit something | 4 |
 | [G-2] | State variables that could be declared constant | 2 |
+| [G-3] | State variables that could be declared constant | 2 |
 
 
 
@@ -74,6 +84,49 @@ uninitialized-state
 ### confidence
 High
 
+## [High] State variable not initialized
+
+### description
+A state variable not initialized and not written in contract but be used in contract
+
+**There are `2` instances of this issue:**
+
+- state variable: [Centralization.owner](solidity/test_owner_centralization.sol#L2) not initialized and not written in contract but be used in contract
+
+- state variable: [Centralization.test](solidity/test_owner_centralization.sol#L3) not initialized and not written in contract but be used in contract
+
+#### Exploit scenario
+
+```solidity
+    struct BalancesStruct{
+        address owner;
+        array[]] balances;
+    }
+    array[] public stackBalance;
+
+    function remove() internal{
+         delete stackBalance[msg.sender];
+    }
+```
+`remove` deletes an item of `stackBalance`.
+The array `balances` is never deleted, so `remove` does not work as intended.
+
+### recommendation
+Use a lock mechanism instead of a deletion to disable structure containing a array.
+
+### locations
+- solidity/test_owner_centralization.sol#L2
+- solidity/test_owner_centralization.sol#L3
+
+### severity
+High
+
+### category
+state-variable-not-initialized
+
+### confidence
+High
+
 ## [Medium] The owner is a single point of failure and a centralization risk
 
 ### description
@@ -109,6 +162,94 @@ owner-centralization
 
 ### confidence
 High
+
+## [Medium] Void function
+
+### description
+Detect the call to a function that is not implemented
+
+**There are `4` instances of this issue:**
+
+- function:[Centralization.bad()](solidity/test_owner_centralization.sol#L19)is empty 
+
+- function:[Centralization.bad0()](solidity/test_owner_centralization.sol#L21)is empty 
+
+- function:[Centralization.bad2()](solidity/test_owner_centralization.sol#L23)is empty 
+
+- function:[Centralization.notbad()](solidity/test_owner_centralization.sol#L25)is empty 
+
+#### Exploit scenario
+
+```solidity
+contract A{}
+contract B is A{
+    constructor() public A(){}
+}
+```
+When reading `B`'s constructor definition, we might assume that `A()` initiates the contract, but no code is executed.
+
+### recommendation
+Implement the function
+
+### locations
+- solidity/test_owner_centralization.sol#L19
+- solidity/test_owner_centralization.sol#L21
+- solidity/test_owner_centralization.sol#L23
+- solidity/test_owner_centralization.sol#L25
+
+### severity
+Medium
+
+### category
+void-function
+
+### confidence
+High
+
+## [Low] Missing Event Setter
+
+### description
+Setter-functions must emit events
+
+**There are `7` instances of this issue:**
+
+- Setter function [Centralization.onlyAllowed()](solidity/test_owner_centralization.sol#L4-L7) does not emit an event
+
+- Setter function [Centralization.onlyOwner()](solidity/test_owner_centralization.sol#L9-L12) does not emit an event
+
+- Setter function [Centralization.onlyTest()](solidity/test_owner_centralization.sol#L14-L17) does not emit an event
+
+- Setter function [Centralization.bad()](solidity/test_owner_centralization.sol#L19) does not emit an event
+
+- Setter function [Centralization.bad0()](solidity/test_owner_centralization.sol#L21) does not emit an event
+
+- Setter function [Centralization.bad2()](solidity/test_owner_centralization.sol#L23) does not emit an event
+
+- Setter function [Centralization.notbad()](solidity/test_owner_centralization.sol#L25) does not emit an event
+
+#### Exploit scenario
+N/A
+
+### recommendation
+Emit events in setter functions
+
+### locations
+- solidity/test_owner_centralization.sol#L4-L7
+- solidity/test_owner_centralization.sol#L9-L12
+- solidity/test_owner_centralization.sol#L14-L17
+- solidity/test_owner_centralization.sol#L19
+- solidity/test_owner_centralization.sol#L21
+- solidity/test_owner_centralization.sol#L23
+- solidity/test_owner_centralization.sol#L25
+
+### severity
+Low
+
+### category
+pess-event-setter
+
+### confidence
+Medium
 
 ## [Informational] Incorrect versions of Solidity
 
@@ -261,6 +402,34 @@ Optimization
 
 ### category
 constable-states
+
+### confidence
+High
+
+## [Optimization] State variables that could be declared constant
+
+### description
+Constant state variables should be declared constant to save gas.
+
+**There are `2` instances of this issue:**
+
+- [Centralization.owner](solidity/test_owner_centralization.sol#L2) should be constant
+
+- [Centralization.test](solidity/test_owner_centralization.sol#L3) should be constant
+
+
+### recommendation
+Add the `constant` attributes to state variables that never change.
+
+### locations
+- solidity/test_owner_centralization.sol#L2
+- solidity/test_owner_centralization.sol#L3
+
+### severity
+Optimization
+
+### category
+state-should-be-constant
 
 ### confidence
 High

@@ -8,6 +8,8 @@
 | [M-1] | Unsafe use of `transfer()/transferFrom()` with IERC20 | 1 |
 | [M-2] | Incompatibility with transfer-on-fee or deflationary tokens | 1 |
 | [M-3] | The owner is a single point of failure and a centralization risk | 1 |
+| [M-4] | Integer Overflow and Underflow | 4 |
+| [M-5] | Void function | 2 |
 
 
 ### Low Risk Issues
@@ -17,6 +19,7 @@
 | [L-0] | Lack of a double-step `transferOwnership()` pattern | 1 |
 | [L-1] | Unsafe to use floating pragma | 5 |
 | [L-2] | Functions calling contracts/addresses with transfer hooks are missing reentrancy guards | 1 |
+| [L-3] | Missing Event Setter | 6 |
 
 
 ### Non-critical Issues
@@ -28,6 +31,7 @@
 | [N-2] | Different pragma directives are used | 1 |
 | [N-3] | Low-level calls | 1 |
 | [N-4] | Conformance to Solidity naming conventions | 1 |
+| [N-5] | Unnecessary Public Function Modifier | 14 |
 
 
 ### Gas Optimizations
@@ -54,6 +58,7 @@
 | [G-17] | Use `selfbalance()` instead of `address(this).balance` | 2 |
 | [G-18] | Use `delete` to Clear Variables | 1 |
 | [G-19] | State variables that could be declared constant | 1 |
+| [G-20] | State variables that could be declared constant | 1 |
 
 
 
@@ -216,6 +221,87 @@ owner-centralization
 ### confidence
 High
 
+## [Medium] Integer Overflow and Underflow
+
+### description
+
+    若不使用OpenZeppelin的SafeMath(或类似的库)检查溢出/下溢，
+    如果用户/攻击者能够控制这种算术运算的整数操作数，
+    可能会导致漏洞或意外行为。
+    Solc v0.8.0为所有算术运算引入了默认的溢出/底溢检查。(见这里和这里)
+
+**There are `4` instances of this issue:**
+
+- increaseAllowance(address,uint256) has possible integer overflow/underflow:
+	- [_approve(_msgSender(),spender,_allowances[_msgSender()][spender] + addedValue)](solidity/token_fallback_test.sol.sol#L108)
+
+- _transfer(address,address,uint256) has possible integer overflow/underflow:
+	- [_balances[recipient] += amount](solidity/token_fallback_test.sol.sol#L137)
+
+- receive() has possible integer overflow/underflow:
+	- [balance += msg.value](solidity/token_fallback_test.sol.sol#L225)
+
+- fallback() has possible integer overflow/underflow:
+	- [balance += msg.value](solidity/token_fallback_test.sol.sol#L229)
+
+#### Exploit scenario
+..
+
+### recommendation
+..
+
+### locations
+- solidity/token_fallback_test.sol.sol#L108
+- solidity/token_fallback_test.sol.sol#L137
+- solidity/token_fallback_test.sol.sol#L225
+- solidity/token_fallback_test.sol.sol#L229
+
+### severity
+Medium
+
+### category
+integer-overflow
+
+### confidence
+High
+
+## [Medium] Void function
+
+### description
+Detect the call to a function that is not implemented
+
+**There are `2` instances of this issue:**
+
+- function:[ERC20._beforeTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L168-L172)is empty 
+
+- function:[ERC20._afterTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L174-L178)is empty 
+
+#### Exploit scenario
+
+```solidity
+contract A{}
+contract B is A{
+    constructor() public A(){}
+}
+```
+When reading `B`'s constructor definition, we might assume that `A()` initiates the contract, but no code is executed.
+
+### recommendation
+Implement the function
+
+### locations
+- solidity/token_fallback_test.sol.sol#L168-L172
+- solidity/token_fallback_test.sol.sol#L174-L178
+
+### severity
+Medium
+
+### category
+void-function
+
+### confidence
+High
+
 ## [Low] Lack of a double-step `transferOwnership()` pattern
 
 ### description
@@ -368,6 +454,48 @@ reentrancy-transfer
 
 ### confidence
 High
+
+## [Low] Missing Event Setter
+
+### description
+Setter-functions must emit events
+
+**There are `6` instances of this issue:**
+
+- Setter function [AmazoniumToken.slitherConstructorVariables()](solidity/token_fallback_test.sol.sol#L202-L232) does not emit an event
+
+- Setter function [AmazoniumToken.constructor()](solidity/token_fallback_test.sol.sol#L207-L211) does not emit an event
+
+- Setter function [AmazoniumToken.Distribute()](solidity/token_fallback_test.sol.sol#L212-L217) does not emit an event
+
+- Setter function [AmazoniumToken.purgeBadToken(IERC20)](solidity/token_fallback_test.sol.sol#L219-L222) does not emit an event
+
+- Setter function [AmazoniumToken.receive()](solidity/token_fallback_test.sol.sol#L224-L226) does not emit an event
+
+- Setter function [AmazoniumToken.fallback()](solidity/token_fallback_test.sol.sol#L228-L230) does not emit an event
+
+#### Exploit scenario
+N/A
+
+### recommendation
+Emit events in setter functions
+
+### locations
+- solidity/token_fallback_test.sol.sol#L202-L232
+- solidity/token_fallback_test.sol.sol#L207-L211
+- solidity/token_fallback_test.sol.sol#L212-L217
+- solidity/token_fallback_test.sol.sol#L219-L222
+- solidity/token_fallback_test.sol.sol#L224-L226
+- solidity/token_fallback_test.sol.sol#L228-L230
+
+### severity
+Low
+
+### category
+pess-event-setter
+
+### confidence
+Medium
 
 ## [Informational] Incorrect versions of Solidity
 
@@ -551,6 +679,79 @@ Informational
 
 ### category
 naming-convention
+
+### confidence
+High
+
+## [Informational] Unnecessary Public Function Modifier
+
+### description
+Detect the public function which can be replaced with external
+
+**There are `14` instances of this issue:**
+
+- function:[ERC20.name()](solidity/token_fallback_test.sol.sol#L57-L59)is public and can be replaced with external 
+
+- function:[ERC20.symbol()](solidity/token_fallback_test.sol.sol#L61-L63)is public and can be replaced with external 
+
+- function:[ERC20.decimals()](solidity/token_fallback_test.sol.sol#L65-L67)is public and can be replaced with external 
+
+- function:[ERC20.totalSupply()](solidity/token_fallback_test.sol.sol#L69-L71)is public and can be replaced with external 
+
+- function:[ERC20.balanceOf(address)](solidity/token_fallback_test.sol.sol#L73-L75)is public and can be replaced with external 
+
+- function:[ERC20.transfer(address,uint256)](solidity/token_fallback_test.sol.sol#L77-L80)is public and can be replaced with external 
+
+- function:[ERC20.allowance(address,address)](solidity/token_fallback_test.sol.sol#L82-L84)is public and can be replaced with external 
+
+- function:[ERC20.approve(address,uint256)](solidity/token_fallback_test.sol.sol#L86-L89)is public and can be replaced with external 
+
+- function:[ERC20.transferFrom(address,address,uint256)](solidity/token_fallback_test.sol.sol#L91-L105)is public and can be replaced with external 
+
+- function:[ERC20.increaseAllowance(address,uint256)](solidity/token_fallback_test.sol.sol#L107-L110)is public and can be replaced with external 
+
+- function:[ERC20.decreaseAllowance(address,uint256)](solidity/token_fallback_test.sol.sol#L112-L120)is public and can be replaced with external 
+
+- function:[Ownable.owner()](solidity/token_fallback_test.sol.sol#L190-L192)is public and can be replaced with external 
+
+- function:[AmazoniumToken.Distribute()](solidity/token_fallback_test.sol.sol#L212-L217)is public and can be replaced with external 
+
+- function:[AmazoniumToken.purgeBadToken(IERC20)](solidity/token_fallback_test.sol.sol#L219-L222)is public and can be replaced with external 
+
+#### Exploit scenario
+
+```solidity
+contract A{}
+contract B is A{
+    constructor() public A(){}
+}
+```
+When reading `B`'s constructor definition, we might assume that `A()` initiates the contract, but no code is executed.
+
+### recommendation
+Replace public with external
+
+### locations
+- solidity/token_fallback_test.sol.sol#L57-L59
+- solidity/token_fallback_test.sol.sol#L61-L63
+- solidity/token_fallback_test.sol.sol#L65-L67
+- solidity/token_fallback_test.sol.sol#L69-L71
+- solidity/token_fallback_test.sol.sol#L73-L75
+- solidity/token_fallback_test.sol.sol#L77-L80
+- solidity/token_fallback_test.sol.sol#L82-L84
+- solidity/token_fallback_test.sol.sol#L86-L89
+- solidity/token_fallback_test.sol.sol#L91-L105
+- solidity/token_fallback_test.sol.sol#L107-L110
+- solidity/token_fallback_test.sol.sol#L112-L120
+- solidity/token_fallback_test.sol.sol#L190-L192
+- solidity/token_fallback_test.sol.sol#L212-L217
+- solidity/token_fallback_test.sol.sol#L219-L222
+
+### severity
+Informational
+
+### category
+unnecessary-public-function-modifier
 
 ### confidence
 High
@@ -751,14 +952,14 @@ Removing those variables can save deployment and called gas. and improve code qu
 **There are `2` instances of this issue:**
 
 - The param variables in [ERC20._beforeTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L168-L172) are unused.
-	- [ERC20._beforeTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L171)
 	- [ERC20._beforeTokenTransfer(address,address,uint256).from](solidity/token_fallback_test.sol.sol#L169)
 	- [ERC20._beforeTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L170)
+	- [ERC20._beforeTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L171)
 
 - The param variables in [ERC20._afterTokenTransfer(address,address,uint256)](solidity/token_fallback_test.sol.sol#L174-L178) are unused.
+	- [ERC20._afterTokenTransfer(address,address,uint256).from](solidity/token_fallback_test.sol.sol#L175)
 	- [ERC20._afterTokenTransfer(address,address,uint256).to](solidity/token_fallback_test.sol.sol#L176)
 	- [ERC20._afterTokenTransfer(address,address,uint256).amount](solidity/token_fallback_test.sol.sol#L177)
-	- [ERC20._afterTokenTransfer(address,address,uint256).from](solidity/token_fallback_test.sol.sol#L175)
 
 
 ### recommendation
@@ -830,8 +1031,8 @@ The instances below point to the second+ call of the function within a single fu
 	- [_approve(_msgSender(),spender,currentAllowance - subtractedValue)](solidity/token_fallback_test.sol.sol#L116)
 
 - `ERC20.totalSupply()` called result should be cached with local variable in [AmazoniumToken.constructor()](solidity/token_fallback_test.sol.sol#L207-L211), It is called more than once:
-	- [_approve(address(this),msg.sender,totalSupply())](solidity/token_fallback_test.sol.sol#L209)
 	- [_transfer(address(this),msg.sender,totalSupply())](solidity/token_fallback_test.sol.sol#L210)
+	- [_approve(address(this),msg.sender,totalSupply())](solidity/token_fallback_test.sol.sol#L209)
 
 
 ### recommendation
@@ -1318,6 +1519,31 @@ Optimization
 
 ### category
 constable-states
+
+### confidence
+High
+
+## [Optimization] State variables that could be declared constant
+
+### description
+Constant state variables should be declared constant to save gas.
+
+**There is `1` instance of this issue:**
+
+- [AmazoniumToken.distAddr](solidity/token_fallback_test.sol.sol#L205) should be constant
+
+
+### recommendation
+Add the `constant` attributes to state variables that never change.
+
+### locations
+- solidity/token_fallback_test.sol.sol#L205
+
+### severity
+Optimization
+
+### category
+state-should-be-constant
 
 ### confidence
 High

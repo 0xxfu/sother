@@ -1,5 +1,19 @@
 ## Summary 
 
+### High Risk Issues
+
+|ID|Issues|Instances|
+|---|:---|:---:|
+| [H-0] | Integer Overflow and Underflow | 2 |
+
+
+### Medium Risk Issues
+
+|ID|Issues|Instances|
+|---|:---|:---:|
+| [M-0] | Integer Overflow and Underflow | 7 |
+
+
 ### Low Risk Issues
 
 |ID|Issues|Instances|
@@ -12,6 +26,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [N-0] | Incorrect versions of Solidity | 1 |
+| [N-1] | .. | 2 |
 
 
 ### Gas Optimizations
@@ -23,6 +38,98 @@
 | [G-2] | The result of function calls should be cached rather than re-calling the function | 3 |
 
 
+
+## [High] Integer Overflow and Underflow
+
+### description
+
+    若不使用OpenZeppelin的SafeMath(或类似的库)检查溢出/下溢，
+    如果用户/攻击者能够控制这种算术运算的整数操作数，
+    可能会导致漏洞或意外行为。
+    Solc v0.8.0为所有算术运算引入了默认的溢出/底溢检查。(见这里和这里)
+
+**There are `2` instances of this issue:**
+
+- bad0(uint256,uint256) has possible integer overflow/underflow:
+	- [10 / (f0() * a - 100)](solidity/division_by_zero.sol#L11)
+
+- bad0(uint256,uint256) has possible integer overflow/underflow:
+	- [f0() / a - 1](solidity/division_by_zero.sol#L13)
+
+#### Exploit scenario
+..
+
+### recommendation
+..
+
+### locations
+- solidity/division_by_zero.sol#L11
+- solidity/division_by_zero.sol#L13
+
+### severity
+High
+
+### category
+integer-underflow
+
+### confidence
+High
+
+## [Medium] Integer Overflow and Underflow
+
+### description
+
+    若不使用OpenZeppelin的SafeMath(或类似的库)检查溢出/下溢，
+    如果用户/攻击者能够控制这种算术运算的整数操作数，
+    可能会导致漏洞或意外行为。
+    Solc v0.8.0为所有算术运算引入了默认的溢出/底溢检查。(见这里和这里)
+
+**There are `7` instances of this issue:**
+
+- bad0(uint256,uint256) has possible integer overflow/underflow:
+	- [10 / (a * b)](solidity/division_by_zero.sol#L7)
+
+- bad0(uint256,uint256) has possible integer overflow/underflow:
+	- [10 / (f0() * a)](solidity/division_by_zero.sol#L9)
+
+- notBad0(uint256,uint256) has possible integer overflow/underflow:
+	- [10 / (a * b)](solidity/division_by_zero.sol#L27)
+
+- notBad0(uint256,uint256) has possible integer overflow/underflow:
+	- [10 / (f0() * a)](solidity/division_by_zero.sol#L29)
+
+- notBad2(uint256,uint256) has possible integer overflow/underflow:
+	- [10 / (a + 1)](solidity/division_by_zero.sol#L45)
+
+- notBad2(uint256,uint256) has possible integer overflow/underflow:
+	- [10 / (a * b + 1)](solidity/division_by_zero.sol#L47)
+
+- notBad2(uint256,uint256) has possible integer overflow/underflow:
+	- [a / (b + 1)](solidity/division_by_zero.sol#L51)
+
+#### Exploit scenario
+..
+
+### recommendation
+..
+
+### locations
+- solidity/division_by_zero.sol#L7
+- solidity/division_by_zero.sol#L9
+- solidity/division_by_zero.sol#L27
+- solidity/division_by_zero.sol#L29
+- solidity/division_by_zero.sol#L45
+- solidity/division_by_zero.sol#L47
+- solidity/division_by_zero.sol#L51
+
+### severity
+Medium
+
+### category
+integer-overflow
+
+### confidence
+High
 
 ## [Low] Division by zero not prevented
 
@@ -123,6 +230,38 @@ solc-version
 ### confidence
 High
 
+## [Informational] ..
+
+### description
+..
+
+**There are `2` instances of this issue:**
+
+- require() missing error messages
+	 - [require(bool)(a != 0)](solidity/division_by_zero.sol#L33)
+
+- require() missing error messages
+	 - [require(bool)(b != 0)](solidity/division_by_zero.sol#L34)
+
+#### Exploit scenario
+..
+
+### recommendation
+..
+
+### locations
+- solidity/division_by_zero.sol#L33
+- solidity/division_by_zero.sol#L34
+
+### severity
+Informational
+
+### category
+error-msg
+
+### confidence
+Medium
+
 ## [Optimization] Using custom errors replace `require` or `assert`
 
 ### description
@@ -210,8 +349,8 @@ The instances below point to the second+ call of the function within a single fu
 	- [10 / (f0() * a)](solidity/division_by_zero.sol#L29)
 
 - `DivisionByZero.f0()` called result should be cached with local variable in [DivisionByZero.notBad1(uint256,uint256)](solidity/division_by_zero.sol#L32-L42), It is called more than once:
-	- [10 / (f0() * a)](solidity/division_by_zero.sol#L41)
 	- [f0() / a](solidity/division_by_zero.sol#L37)
+	- [10 / (f0() * a)](solidity/division_by_zero.sol#L41)
 
 
 ### recommendation
