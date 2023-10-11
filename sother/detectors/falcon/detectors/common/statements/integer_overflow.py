@@ -2,10 +2,21 @@ import re
 
 from slither.analyses.data_dependency.data_dependency import is_tainted
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
-from slither.slithir.operations import Binary
+from slither.slithir.operations import Binary, BinaryType
 from slither.slithir.variables.reference import ReferenceVariable
 
 PATTERN = re.compile(r"(\^|>|>=|<|<=)?([ ]+)?(\d+)\.(\d+)\.(\d+)")
+
+
+def can_be_checked_for_overflow(type):
+    return type in [
+        BinaryType.POWER,
+        BinaryType.MULTIPLICATION,
+        # BinaryType.MODULO, # 取模不会产生溢出
+        BinaryType.ADDITION,
+        # BinaryType.SUBTRACTION,
+        # BinaryType.DIVISION, #除法不会产生溢出
+    ]
 
 
 class IntegerOverflow(AbstractDetector):
@@ -72,7 +83,7 @@ class IntegerOverflow(AbstractDetector):
 
                     for ir in node.irs:
                         if isinstance(ir, Binary):
-                            if ir.type.can_be_checked_for_overflow():
+                            if can_be_checked_for_overflow(ir.type):
                                 lvalue = ir.lvalue
                                 if is_tainted(lvalue, fn, only_unprotected=True):
                                     has_tainted_int_result = True
