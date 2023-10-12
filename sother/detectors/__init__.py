@@ -12,6 +12,9 @@ from slither.detectors.abstract_detector import AbstractDetector
 
 from sother.core.models import DetectorWiki
 from sother.detectors.attributes.incorrect_solc import IncorrectSolc
+from sother.detectors.dapp.uniswap.lack_deadline_for_uniswap import (
+    LackDeadlineForUniswap,
+)
 from sother.detectors.dependency.chainlink import (
     DeprecatedChainLink,
     IgnoredChainlinkReturns,
@@ -338,6 +341,7 @@ def get_detectors() -> list[Type[AbstractDetector]]:
         TooManyDigits,
         IncorrectStrictEquality,
         OwnerCentralization,
+        LackDeadlineForUniswap,
     ]
 
 
