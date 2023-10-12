@@ -340,13 +340,13 @@ The instances below point to the second+ call of the function within a single fu
 
 - `DivisionByZero.f0()` called result should be cached with local variable in [DivisionByZero.bad0(uint256,uint256)](solidity/division_by_zero.sol#L2-L14), It is called more than once:
 	- [10 / (f0() * a - 100)](solidity/division_by_zero.sol#L11)
+	- [f0() / a](solidity/division_by_zero.sol#L5)
 	- [f0() / a - 1](solidity/division_by_zero.sol#L13)
 	- [10 / (f0() * a)](solidity/division_by_zero.sol#L9)
-	- [f0() / a](solidity/division_by_zero.sol#L5)
 
 - `DivisionByZero.f0()` called result should be cached with local variable in [DivisionByZero.notBad0(uint256,uint256)](solidity/division_by_zero.sol#L16-L30), It is called more than once:
-	- [f0() / a](solidity/division_by_zero.sol#L25)
 	- [10 / (f0() * a)](solidity/division_by_zero.sol#L29)
+	- [f0() / a](solidity/division_by_zero.sol#L25)
 
 - `DivisionByZero.f0()` called result should be cached with local variable in [DivisionByZero.notBad1(uint256,uint256)](solidity/division_by_zero.sol#L32-L42), It is called more than once:
 	- [f0() / a](solidity/division_by_zero.sol#L37)

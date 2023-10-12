@@ -72,8 +72,8 @@ for the stack variable.
 	- [UnusedReturnName.bad1().b](solidity/test_unused_named_return_variables.sol#L6)
 
 - The named return variables in [UnusedReturnName.bad2()](solidity/test_unused_named_return_variables.sol#L11-L13) are unused.
-	- [UnusedReturnName.bad2().b](solidity/test_unused_named_return_variables.sol#L11)
 	- [UnusedReturnName.bad2().a](solidity/test_unused_named_return_variables.sol#L11)
+	- [UnusedReturnName.bad2().b](solidity/test_unused_named_return_variables.sol#L11)
 
 
 ### recommendation

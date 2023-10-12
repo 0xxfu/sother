@@ -1031,8 +1031,8 @@ The instances below point to the second+ call of the function within a single fu
 	- [_approve(_msgSender(),spender,currentAllowance - subtractedValue)](solidity/token_fallback_test.sol.sol#L116)
 
 - `ERC20.totalSupply()` called result should be cached with local variable in [AmazoniumToken.constructor()](solidity/token_fallback_test.sol.sol#L207-L211), It is called more than once:
-	- [_transfer(address(this),msg.sender,totalSupply())](solidity/token_fallback_test.sol.sol#L210)
 	- [_approve(address(this),msg.sender,totalSupply())](solidity/token_fallback_test.sol.sol#L209)
+	- [_transfer(address(this),msg.sender,totalSupply())](solidity/token_fallback_test.sol.sol#L210)
 
 
 ### recommendation
