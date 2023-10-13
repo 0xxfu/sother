@@ -15,6 +15,9 @@ from sother.detectors.attributes.incorrect_solc import IncorrectSolc
 from sother.detectors.dapp.uniswap.lack_deadline_for_uniswap import (
     LackDeadlineForUniswap,
 )
+from sother.detectors.dapp.uniswap.lack_slippage_protection import (
+    LackSlippageProtection,
+)
 from sother.detectors.dependency.chainlink import (
     DeprecatedChainLink,
     IgnoredChainlinkReturns,
@@ -342,6 +345,7 @@ def get_detectors() -> list[Type[AbstractDetector]]:
         IncorrectStrictEquality,
         OwnerCentralization,
         LackDeadlineForUniswap,
+        LackSlippageProtection,
     ]
 
 
