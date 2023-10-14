@@ -12,6 +12,7 @@
 |ID|Issues|Instances|
 |---|:---|:---:|
 | [M-0] | Unused return | 6 |
+| [M-1] | Lack of slippage protection can lead to significant loss of user funds | 3 |
 
 
 ### Non-critical Issues
@@ -123,6 +124,50 @@ unused-return
 
 ### confidence
 Medium
+
+## [Medium] Lack of slippage protection can lead to significant loss of user funds
+
+### description
+
+Strategy contracts interact with Uniswap V3 in multiple areas of the code. 
+However, none of these interactions contain any slippage control, 
+meaning that the contract, and by extension all users who hold shares, 
+can lose significant value due to illiquid pools or MEV sandwich attacks every time 
+any of the relevant functions are called.
+
+In each of the below instances, a call to Uniswap V3 is made and `amount0Min` and `amount1Min` 
+are each set to 0, which allows for **100% slippage tolerance**. 
+This means that the action could lead to the caller losing up to 100% of their tokens due to slippage.
+
+
+**There are `3` instances of this issue:**
+
+- [positionManager.mint(INonfungiblePositionManager.MintParams({token0:token0,token1:token1,fee:0,tickLower:tickLower,tickUpper:tickUpper,amount0Desired:amount0Desired,amount1Desired:amount1Desired,amount0Min:0,amount1Min:0,recipient:address(this),deadline:block.timestamp}))](solidity/test_lack_slippage_protection.sol#L85-L99) lack of slippage protection.
+
+- [positionManager.increaseLiquidity(INonfungiblePositionManager.IncreaseLiquidityParams({tokenId:tokenId,amount0Desired:amount0Desired,amount1Desired:amount1Desired,amount0Min:0,amount1Min:0,deadline:block.timestamp}))](solidity/test_lack_slippage_protection.sol#L101-L110) lack of slippage protection.
+
+- [positionManager.decreaseLiquidity(INonfungiblePositionManager.DecreaseLiquidityParams({tokenId:tokenId,liquidity:liquidity,amount0Min:0,amount1Min:0,deadline:block.timestamp}))](solidity/test_lack_slippage_protection.sol#L112-L120) lack of slippage protection.
+
+
+### recommendation
+
+For each vulnerable function, allow the caller to specify values 
+for `amount0Min` and `amount1Min` instead of setting them to 0.
+
+
+### locations
+- solidity/test_lack_slippage_protection.sol#L85-L99
+- solidity/test_lack_slippage_protection.sol#L101-L110
+- solidity/test_lack_slippage_protection.sol#L112-L120
+
+### severity
+Medium
+
+### category
+lack-slippage-protection
+
+### confidence
+High
 
 ## [Informational] Incorrect versions of Solidity
 
@@ -305,11 +350,11 @@ However, this is only the case for value types, whereas indexing [reference type
 
 - The following variables should be indexed in [INonfungiblePositionManager.IncreaseLiquidity(uint256,uint128,uint256,uint256)](solidity/test_lack_slippage_protection.sol#L2-L7):
 
+	- [amount0](solidity/test_lack_slippage_protection.sol#L5)
+
 	- [liquidity](solidity/test_lack_slippage_protection.sol#L4)
 
 	- [amount1](solidity/test_lack_slippage_protection.sol#L6)
-
-	- [amount0](solidity/test_lack_slippage_protection.sol#L5)
 
 - The following variables should be indexed in [INonfungiblePositionManager.DecreaseLiquidity(uint256,uint128,uint256,uint256)](solidity/test_lack_slippage_protection.sol#L9-L14):
 
