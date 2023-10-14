@@ -116,3 +116,4 @@ crytic-export/
 # Auto-generated Github pages docs
 docs/
 cache/
+out/
