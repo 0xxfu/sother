@@ -5,7 +5,6 @@
 """
 import unittest
 
-from loguru import logger
 from slither.core.cfg.node import Node
 from slither.core.declarations import Function, Structure
 from slither.core.solidity_types import UserDefinedType
@@ -18,7 +17,7 @@ from sother.detectors.abstracts.abstract_detect_has_instance import (
 from sother.detectors.detector_settings import DetectorSettings
 
 
-# todo impl
+# todo impl amount0Min/amount1Min variables doesn't in if condition
 class LackSlippageProtection(AbstractDetectHasInstance):
     ARGUMENT = "lack-slippage-protection"
     HELP = "Lack of slippage protection can lead to significant loss of user funds"
@@ -32,7 +31,7 @@ class LackSlippageProtection(AbstractDetectHasInstance):
     )
     WIKI_DESCRIPTION = """
 Strategy contracts interact with Uniswap V3 in multiple areas of the code. 
-However none of these interactions contain any slippage control, 
+However, none of these interactions contain any slippage control, 
 meaning that the contract, and by extension all users who hold shares, 
 can lose significant value due to illiquid pools or MEV sandwich attacks every time 
 any of the relevant functions are called.
@@ -67,12 +66,9 @@ for `amount0Min` and `amount1Min` instead of setting them to 0.
                         for item in ["amount0Min", "amount1Min"]
                     )
                 ):
-                    elems = param_type.type.elems
-                    logger.debug(
-                        f"{ir.function.name} {elems['amount0Min']} {type(elems['amount0Min'])}"
-                        f" {elems['amount0Min'].expression}"
-                    )
-                    return True
+                    return "amount0Min:0" in str(
+                        ir.expression
+                    ) and "amount1Min:0" in str(ir.expression)
 
         return False
 
