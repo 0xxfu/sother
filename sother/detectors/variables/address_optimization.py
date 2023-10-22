@@ -6,10 +6,9 @@
 import unittest
 from typing import List
 
-from loguru import logger
 from slither.core.cfg.node import Node
 from slither.core.declarations import FunctionContract
-from slither.core.expressions import BinaryOperation, AssignmentOperation, Identifier
+from slither.core.expressions import AssignmentOperation, Identifier
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 from slither.utils.output import Output
 

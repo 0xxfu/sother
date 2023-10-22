@@ -31,7 +31,7 @@ def msg_value_in_loop(
     elif node.type == NodeType.ENDLOOP:
         in_loop_counter -= 1
 
-    for ir in node.all_falconir_operations():
+    for ir in node.all_slithir_operations():
         if in_loop_counter > 0 and SolidityVariableComposed("msg.value") in ir.read:
             if len(node.variables_written) > 0 and "IF_LOOP" not in str(
                 node
