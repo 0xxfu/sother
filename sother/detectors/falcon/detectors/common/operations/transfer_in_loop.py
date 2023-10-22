@@ -33,7 +33,7 @@ def transfer_in_loop(
 
     # Only search for "transfer dest" if we are inside a loop
     if in_loop_counter > 0:
-        for ir in node.all_falconir_operations():
+        for ir in node.all_slithir_operations():
             if "transfer dest" in str(ir).lower():
                 if not "msg.sender" in str(node):
                     results.append(ir.node)
