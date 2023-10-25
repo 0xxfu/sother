@@ -19,7 +19,7 @@ from sother.detectors.detector_settings import DetectorSettings
 class MissingGapStateVariable(AbstractDetector):
     ARGUMENT = "missing-gap-state-variable"
     HELP = "Upgradeable contract is missing a `__gap` storage variable to allow for new storage variables in later versions"
-    IMPACT = DetectorClassification.LOW
+    IMPACT = DetectorClassification.MEDIUM
     CONFIDENCE = DetectorClassification.HIGH
 
     WIKI = DetectorSettings.default_wiki
