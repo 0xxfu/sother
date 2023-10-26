@@ -46,7 +46,7 @@ function loopArray_cached(uint256[] calldata ns) public returns (uint256 sum) {
     for(uint256 i = 0; i < length;) {
         sum += ns[i];
         unchecked {
-            i++;
+            ++i;
         }
     }
 }
