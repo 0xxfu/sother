@@ -56,13 +56,11 @@ contract Contract {
     def _detect(self) -> List[Output]:
         results = []
         for contract in self.compilation_unit.contracts:
-            if not contract.is_upgradeable or any(
-                ["Upgradeable" in item.name for item in contract.inheritance]
-            ):
+            if not contract.is_upgradeable:
                 continue
             # All state variables
             if not any(
-                "__gap" == state.name for state in contract.state_variables_ordered
+                "__gap" == state.name for state in contract.state_variables_declared
             ):
                 info: DETECTOR_INFO = [
                     contract,
