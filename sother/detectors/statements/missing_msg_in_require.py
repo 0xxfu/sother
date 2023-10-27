@@ -19,7 +19,7 @@ from sother.detectors.detector_settings import DetectorSettings
 class MissingMsgInRequire(AbstractDetectHasInstance):
     ARGUMENT = "missing-msg-in-require"
     HELP = "Missing Error Messages in `require/revert` Statements"
-    IMPACT = DetectorClassification.OPTIMIZATION
+    IMPACT = DetectorClassification.INFORMATIONAL
     CONFIDENCE = DetectorClassification.HIGH
 
     WIKI = DetectorSettings.default_wiki
