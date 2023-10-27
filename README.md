@@ -34,6 +34,12 @@ poetry update slither-analyzer
 sother file.sol --print slithir
 ```
 
+Slither IR
+
+```shell
+slither file.sol --print slithirÏ
+```
+
 ## Awesome
 
 - https://github.com/pessimistic-io/slitherin

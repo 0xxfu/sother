@@ -6,17 +6,17 @@
 import unittest
 
 from sother.core.models import OutputResult
-from sother.detectors.statements.inefficient_new_bytes import InefficientNewBytes
+from sother.detectors.statements.missing_msg_in_require import MissingMsgInRequire
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 
-class TestInefficientNewBytes(DetectorTestCase):
+class TestMissingMsgInRequire(DetectorTestCase):
     def test_detect(self):
         results: list[OutputResult] = self.detect(
             f"{self.get_test_solidity_filename(__file__)}.sol",
-            InefficientNewBytes,
+            MissingMsgInRequire,
         )
-        self.check_detect_results(InefficientNewBytes.WIKI_TITLE, results)
+        self.check_detect_results(MissingMsgInRequire.WIKI_TITLE, results)
 
 
 if __name__ == "__main__":

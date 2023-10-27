@@ -7,8 +7,6 @@ import unittest
 
 from sother.core.models import OutputResult
 from sother.detectors.statements.incorrect_deadline import IncorrectDeadline
-from sother.detectors.statements.inefficient_new_bytes import InefficientNewBytes
-from sother.detectors.statements.memory_from_storage import MemoryFromStorage
 from tests.e2e.detectors.detector_testcase import DetectorTestCase
 
 

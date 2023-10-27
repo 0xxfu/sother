@@ -117,6 +117,7 @@ from sother.detectors.statements.incorrect_strict_equality import (
     IncorrectStrictEquality,
 )
 from sother.detectors.statements.inefficient_new_bytes import InefficientNewBytes
+from sother.detectors.statements.missing_msg_in_require import MissingMsgInRequire
 from sother.detectors.statements.operator_and_in_require import OperatorAndInRequire
 from sother.detectors.statements.revert_long_strings import RevertLongStrings
 from sother.detectors.statements.susceptible_ecrecover import (
@@ -346,6 +347,7 @@ def get_detectors() -> list[Type[AbstractDetector]]:
         OwnerCentralization,
         LackDeadlineForUniswap,
         LackSlippageProtection,
+        MissingMsgInRequire,
     ]
 
 
