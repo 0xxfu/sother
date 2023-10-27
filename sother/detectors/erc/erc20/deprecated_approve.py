@@ -19,35 +19,27 @@ from sother.utils.function_utils import FunctionUtils
 
 class DeprecatedApprove(AbstractDetectHasInstance):
     ARGUMENT = "deprecated-approve"
-    HELP = "Did not Approve to zero first"
+    HELP = "`Approve` Race Condition"
     IMPACT = DetectorClassification.MEDIUM
     CONFIDENCE = DetectorClassification.HIGH
 
     WIKI = DetectorSettings.default_wiki
 
-    WIKI_TITLE = "Did not Approve to zero first"
+    WIKI_TITLE = "`Approve` Race Condition"
     WIKI_DESCRIPTION = """
-Calling `approve()` without first calling `approve(0)` if the current approval is non-zero 
-will revert with some tokens, such as Tether (USDT). While Tether is known to do this, 
-it applies to other tokens as well, which are trying to protect against 
-[this attack vector](https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/edit). 
-`safeApprove()` itself also implements this protection.
-Always reset the approval to zero before changing it to a new value, 
-or use `safeIncreaseAllowance()`/`safeDecreaseAllowance()`
+The standard ERC20 implementation contains a widely-known racing condition in its approve function, wherein a spender is able to witness the token owner broadcast a transaction altering their approval and quickly sign and broadcast a transaction using to move the current approved amount from the owner’s balance to the spender. If the
+spender’s transaction is validated before the owner’s, the spender will be able to get both approval amounts of both transactions.
 
-"""
-    WIKI_EXPLOIT_SCENARIO = """
-Some ERC20 tokens like `USDT` require resetting the approval to 0 first before being 
-able to reset it to another value.
+It is also mentioned in the [EIP-20](https://eips.ethereum.org/EIPS/eip-20):
 
-Unsafe ERC20 approve that do not handle non-standard erc20 behavior.
-1. Some token contracts do not return any value.
-2. Some token contracts revert the transaction when the allowance is not zero.
+> NOTE: To prevent attack vectors like the one described here and discussed here, clients SHOULD make sure to create user interfaces in such a way that they set the allowance first to 0 before setting it to another value for the same spender. THOUGH The contract itself shouldn’t enforce it, to allow backwards compatibility with contracts deployed before
+
+More detail see [here](https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM) and [here](https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729).
 """
+    WIKI_EXPLOIT_SCENARIO = """ """
 
     WIKI_RECOMMENDATION = """
-As suggested by the [OpenZeppelin comment](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/bfff03c0d2a59bcd8e2ead1da9aed9edf0080d05/contracts/token/ERC20/utils/SafeERC20.sol#L38-L45),
-replace `approve()/safeApprove()` with `safeIncreaseAllowance()` or `safeDecreaseAllowance()` instead.
+Use OpenZeppelin's [increaseAllowance](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/7c8b7a27284f503ce8ae23d63ac9403096dcf6fe/contracts/token/ERC20/utils/SafeERC20.sol#L52-L55) and [decreaseAllowance](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/7c8b7a27284f503ce8ae23d63ac9403096dcf6fe/contracts/token/ERC20/utils/SafeERC20.sol#L61-L69) functions to modify the approval amount instead of using the `approve()` function to modify it.
 """
 
     @classmethod
