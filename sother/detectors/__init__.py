@@ -145,9 +145,6 @@ from sother.detectors.variables.address_optimization import AssemblyUpdateAddres
 from sother.detectors.variables.bool_state_variables import BoolStateVariables
 from sother.detectors.variables.constants_optimization import (
     StringConstants,
-    CalculateConstants,
-    KeccakConstants,
-    KeccakConstantInFunctions,
 )
 from sother.detectors.variables.could_be_immutable import CouldBeImmutable
 from sother.detectors.variables.multiple_address_mappings import MultipleAddressMappings
@@ -293,9 +290,6 @@ def get_detectors() -> list[Type[AbstractDetector]]:
         UnsignedIntCompareZero,
         ZeroInitializedStateVariable,
         StringConstants,
-        CalculateConstants,
-        KeccakConstants,
-        KeccakConstantInFunctions,
         RevertLongStrings,
         AssemblyUpdateAddress,
         ExternalFunction,

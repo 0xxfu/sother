@@ -4,18 +4,15 @@
 @date: 2023-07
 """
 import unittest
-from typing import List, Any
+from typing import List
 
-from loguru import logger
 from slither.core.cfg.node import Node
-from slither.core.declarations import SolidityFunction
 from slither.core.expressions import BinaryOperation, CallExpression
 from slither.core.variables import StateVariable
 from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
 from slither.slithir.operations import SolidityCall
 from slither.slithir.variables import Constant
 from slither.utils.output import Output
-from slither.utils.type_helpers import InternalCallType
 
 from sother.detectors.detector_settings import DetectorSettings
 from sother.utils.gas_utils import GasUtils
@@ -69,6 +66,7 @@ Replace `string` constant with `bytes(1..32)` constant.
         return results
 
 
+# invalid
 class CalculateConstants(AbstractDetector):
     ARGUMENT = "calculate-constants"
     HELP = "Do not calculate constants"
@@ -112,6 +110,7 @@ Pre-calculate the results(hardcode) instead of calculation in runtime.
         return False
 
 
+# invalid
 class KeccakConstants(AbstractDetector):
     ARGUMENT = "keccak-constants"
     HELP = "Instead of calculating a state variable with `keccak256()`/`abi.encode**()` every time the contract is made pre calculate them before and only give the result to a constant"
@@ -167,6 +166,7 @@ Pre-calculate the results(hardcode) instead of calculate `keccak256`/`abi.encode
         return False
 
 
+# invalid
 class KeccakConstantInFunctions(AbstractDetector):
     ARGUMENT = "keccak-constant-in-function"
     HELP = """
