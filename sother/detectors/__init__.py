@@ -129,7 +129,6 @@ from sother.detectors.statements.unchecked_array_length import UncheckedArrayLen
 from sother.detectors.statements.unchecked_in_loop import UncheckedInLoop
 from sother.detectors.statements.use_concat import UseConcatOnString, UseConcatOnBytes
 from sother.detectors.statements.use_delete_statement import UseDeleteStatement
-from sother.detectors.statements.used_custom_error import UsedCustomError
 from sother.detectors.upgradeable.missing_gap_state_variable import (
     MissingGapStateVariable,
 )
@@ -249,7 +248,6 @@ def get_detectors() -> list[Type[AbstractDetector]]:
         InternalFunctionToInline,
         ArrayLengthInLoop,
         UncheckedInLoop,
-        UsedCustomError,
         SmallerUintInt,
         PublicToPrivateConstant,
         RereadStateVariables,

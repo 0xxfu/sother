@@ -15,6 +15,7 @@ from sother.detectors.detector_settings import DetectorSettings
 from sother.utils.gas_utils import GasUtils
 
 
+# invalid
 class UsedCustomError(AbstractDetector):
     ARGUMENT = "use-custom-error"
     HELP = "Using custom errors replace `require` or `assert`"
