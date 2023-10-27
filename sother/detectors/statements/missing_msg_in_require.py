@@ -45,7 +45,7 @@ Consider adding error messages in require statement.Ï
     def _detect_node_info(cls, node: Node) -> DETECTOR_INFO:
         return [
             node,
-            " is missing message in require statementÏ\n",
+            " is missing message in `require/revert` statement\n",
         ]
 
 
