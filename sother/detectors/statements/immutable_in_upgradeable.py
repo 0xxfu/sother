@@ -6,6 +6,8 @@
 import unittest
 from typing import List
 
+from slither.core.declarations import Contract, Function
+from slither.core.variables import Variable
 from slither.detectors.abstract_detector import (
     AbstractDetector,
     DetectorClassification,
@@ -46,18 +48,39 @@ Remove the `immutable` keyword and move the constructor logic to initialize func
         for contract in self.compilation_unit.contracts:
             if not contract.is_upgradeable:
                 continue
+            immutable_states = []
             for state in contract.state_variables_declared:
                 if state.is_immutable:
-                    res = self.generate_result(
-                        [
-                            "`immutable` keyword of ",
-                            state,
-                            " should be removed.\n",
-                        ]
-                    )
-                    results.append(res)
+                    immutable_states.append(state)
+            for state in immutable_states:
+                res = self.generate_result(
+                    [
+                        "`immutable` keyword of ",
+                        state,
+                        " should be removed.\n",
+                    ]
+                )
+                # todo detect initialization in constructor
+                results.append(res)
 
         return results
+
+    def _variable_init_constructor(
+        self, variable: Variable, contract: Contract
+    ) -> bool:
+        while True:
+            try:
+                constructor = contract.constructors_declared
+                if self._variable_init_in_function(variable, constructor):
+                    return True
+            except StopIteration:
+                break
+        return False
+
+    def _variable_init_in_function(
+        self, variable: Variable, function: Function
+    ) -> bool:
+        return False
 
 
 if __name__ == "__main__":
