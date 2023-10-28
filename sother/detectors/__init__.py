@@ -112,6 +112,7 @@ from sother.detectors.statements.calls_in_loop import MultipleCallsInLoop
 from sother.detectors.statements.deprecated_assert import DeprecatedAssert
 from sother.detectors.statements.empty_block import EmptyBlock
 from sother.detectors.statements.fetch_storage_to_memory import FetchStorageToMemory
+from sother.detectors.statements.immutable_in_upgradeable import ImmutableInUpgradeable
 from sother.detectors.statements.incorrect_deadline import IncorrectDeadline
 from sother.detectors.statements.incorrect_strict_equality import (
     IncorrectStrictEquality,
@@ -340,6 +341,7 @@ def get_detectors() -> list[Type[AbstractDetector]]:
         LackDeadlineForUniswap,
         LackSlippageProtection,
         MissingMsgInRequire,
+        ImmutableInUpgradeable,
     ]
 
 
