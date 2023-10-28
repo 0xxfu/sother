@@ -21,7 +21,7 @@ from sother.utils.pragma_utils import PragmaUtil
 class UpgradeToLatest(AbstractDetector):
     ARGUMENT = "upgrade-to-latest"
     HELP = f"Should use latest solidity version"
-    IMPACT = DetectorClassification.OPTIMIZATION
+    IMPACT = DetectorClassification.INFORMATIONAL
     CONFIDENCE = DetectorClassification.HIGH
 
     WIKI = DetectorSettings.default_wiki
