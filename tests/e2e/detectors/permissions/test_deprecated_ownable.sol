@@ -4,14 +4,23 @@ abstract contract Ownable {
 
 }
 
+abstract contract Ownable2Step is Ownable {
+
+}
+
 abstract contract OwnableUpgradeable {}
 
 contract DeprecatedOwnable is Ownable {}
 
 contract DeprecatedOwnableUpgradeable is OwnableUpgradeable {}
 
+contract NotBadTransferOwnerShip is Ownable2Step {
+
+}
+
 contract DeprecatedTransferOwnerShip {
     address private _owner;
+
     event OwnershipTransferred(
         address indexed previousOwner,
         address indexed newOwner
@@ -44,10 +53,10 @@ contract DeprecatedTransferOwnerShipFixed is DeprecatedTransferOwnerShip {
     address private _pendingOwner;
 
     function transferOwnership(address newOwner)
-        public
-        virtual
-        override
-        onlyOwner
+    public
+    virtual
+    override
+    onlyOwner
     {
         _pendingOwner = newOwner;
     }
