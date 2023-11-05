@@ -14,7 +14,6 @@ from sother.detectors.abstracts.abstract_detect_has_instance import (
     AbstractDetectHasInstance,
 )
 from sother.detectors.detector_settings import DetectorSettings
-from sother.utils.function_utils import FunctionUtils
 
 
 class DeprecatedApprove(AbstractDetectHasInstance):
@@ -51,9 +50,9 @@ Use OpenZeppelin's [increaseAllowance](https://github.com/OpenZeppelin/openzeppe
             and isinstance(ir.function, Function)
             and ir.function.solidity_signature in ["approve(address,uint256)"]
             # only include destination come from param
-            and FunctionUtils.is_local_var_dependent_param(
-                ir.destination, ir.node.function
-            )
+            # and FunctionUtils.is_local_var_dependent_param(
+            #     ir.destination, ir.node.function
+            # )
         ):
             return True
         return False
