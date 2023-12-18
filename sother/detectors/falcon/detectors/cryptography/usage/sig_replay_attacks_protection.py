@@ -903,7 +903,7 @@ contract Token{
     ):
         func_args_list = []
         for called_args in called_function_args_list:
-            for ir in function.falconir_operations:
+            for ir in function.slithir_operations:
                 if (
                     isinstance(ir, HighLevelCall) or isinstance(ir, InternalCall)
                 ) and ir.function == called_function:
