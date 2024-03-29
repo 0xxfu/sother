@@ -4,11 +4,9 @@
 @date: 2023-06
 """
 import unittest
-from dataclasses import dataclass, asdict
 from typing import Optional, Any
 
-from pydantic import BaseModel, PrivateAttr
-from slither.core.source_mapping.source_mapping import Source
+from pydantic import BaseModel
 from slither.detectors.abstract_detector import DetectorClassification
 
 
@@ -34,7 +32,7 @@ class OutputSourceMapping(BaseModel):
     def get_location(self):
         lines = f"#L{self.lines[0]}" if len(self.lines) > 0 else ""
         if len(self.lines) > 1:
-            lines += f"-L{self.lines[len(self.lines)-1]}"
+            lines += f"-L{self.lines[len(self.lines) - 1]}"
         return f"{self.filename_relative}{lines}"
 
 
@@ -86,7 +84,7 @@ class SourceMappingTestCase(unittest.TestCase):
             "start": 187,
             "length": 103,
             "filename_relative": "sample.sol",
-            "filename_absolute": "/Users/xfu/Documents/Projects/xfu/github/biibiibii/slither/sother/solidity/sample.sol",
+            "filename_absolute": "solidity/sample.sol",
             "filename_short": "sample.sol",
             "is_dependency": False,
             "lines": [8, 9, 10],
@@ -119,11 +117,14 @@ class SourceMappingTestCase(unittest.TestCase):
             "elements": [self.element],
             "description": "Function SafeAdd.add_v2(uint256,uint256) (sample.sol#8-10) is not in mixedCase\n",
             "markdown": "Function [SafeAdd.add_v2(uint256,uint256)](sample.sol#L8-L10) is not in mixedCase\n",
+            "first_element_line": 8,
             "first_markdown_element": "sample.sol#L8-L10",
             "id": "66963efb59490cd9c77c66de2bde0ae488e89a1b1a94cef839de1a0a586e5285",
             "check": "naming-convention",
             "impact": "Informational",
             "confidence": "High",
+            "markdown_code": "Function `SafeAdd.add_v2(uint256,uint256)` "
+            "(sample.sol#L8-L10) is not in mixedCase\n",
         }
 
     def test_source_mapping(self):
